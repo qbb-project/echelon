@@ -17,7 +17,12 @@ dataset::dataset(const object& parent, const std::string& name,
              hdf5::property_list_class(H5P_DATASET_CREATE));
 
     if(comp_level > -1)
+    {
+        std::vector<hsize_t> chunk_size(dims.size(),100);
+
+        dataset_creation_properties.set_chunk(chunk_size);
         dataset_creation_properties.set_deflate(comp_level);
+    }
 
 
     dataset_wrapper_ = hdf5::dataset(parent.id(),name,datatype.get_native_type(),
