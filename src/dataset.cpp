@@ -9,12 +9,20 @@ namespace echelon
 {
 
 dataset::dataset(const object& parent, const std::string& name,
-        const type& datatype, const std::vector<hsize_t>& dims)
-:dataset_wrapper_(parent.id(),name,datatype.get_native_type(),
-     hdf5::dataspace(dims),hdf5::default_property_list,
-     hdf5::default_property_list,hdf5::default_property_list),
- attributes(*this)
+        const type& datatype, const std::vector<hsize_t>& dims,
+        int comp_level)
+:attributes(*this),dataset_wrapper_(-1)
 {
+    hdf5::property_list dataset_creation_properties(
+             hdf5::property_list_class(H5P_DATASET_CREATE));
+
+    if(comp_level > -1)
+        dataset_creation_properties.set_deflate(comp_level);
+
+
+    dataset_wrapper_ = hdf5::dataset(parent.id(),name,datatype.get_native_type(),
+                        hdf5::dataspace(dims),hdf5::default_property_list,
+                        dataset_creation_properties,hdf5::default_property_list);
 }
 
 dataset::dataset(hdf5::dataset dataset_wrapper_)

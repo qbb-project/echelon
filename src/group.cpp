@@ -30,9 +30,10 @@ group group::add_group(const std::string& name)
     return group(object(*this), name, creation_mode::create);
 }
 
-dataset group::add_dataset(const std::string& name, const type& datatype, const std::vector<hsize_t>& dims)
+dataset group::add_dataset(const std::string& name, const type& datatype,
+                           const std::vector<hsize_t>& dims,int comp_level)
 {
-    return dataset(object(*this),name,datatype,dims);
+    return dataset(object(*this),name,datatype,dims,comp_level);
 }
 
 scalar_dataset group::add_scalar_dataset(const std::string& name, const type& datatype)

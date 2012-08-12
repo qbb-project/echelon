@@ -83,7 +83,8 @@ class dataset
 {
 public:
     dataset(const object& parent, const std::string& name,
-            const type& datatype, const std::vector<hsize_t>& dims);
+            const type& datatype, const std::vector<hsize_t>& dims,
+            int comp_level = -1);
 
     explicit dataset(hdf5::dataset dataset_wrapper_);
     

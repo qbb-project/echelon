@@ -44,13 +44,15 @@ public:
 
     group add_group(const std::string& name);
     dataset add_dataset(const std::string& name, const type& datatype,
-                        const std::vector<hsize_t>& dims);
+                        const std::vector<hsize_t>& dims,
+                        int comp_level = -1);
 
     template<typename T>
     dataset add_dataset(const std::string& name,
-                        const std::vector<hsize_t>& dims)
+                        const std::vector<hsize_t>& dims,
+                        int comp_level = -1)
     {
-        return add_dataset(name,get_hdf5_type<T>(),dims);
+        return add_dataset(name,get_hdf5_type<T>(),dims,comp_level);
     }
 
     scalar_dataset add_scalar_dataset(const std::string& name, const type& datatype);
