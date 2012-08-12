@@ -57,6 +57,16 @@ attribute& attribute::operator=(attribute&& other)
     return *this;
 }
 
+void attribute::write(const void* value)
+{
+    H5Awrite(id(),H5Aget_type(id()),value);
+}
+
+void attribute::read(void* value)const
+{
+    H5Aread(id(),H5Aget_type(id()),value);
+}
+
 hid_t attribute::id()const
 {
     return attribute_id_;

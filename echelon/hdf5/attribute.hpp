@@ -16,51 +16,6 @@ namespace echelon
 namespace hdf5
 {
 
-namespace detail
-{
-
-template<typename T>
-struct attribute_writer
-{
-    static void write(hid_t attribute_id,hid_t datatype_id,const T& value)
-    {
-        H5Awrite(attribute_id,datatype_id,&value);
-    }
-};
-
-template<int Size>
-struct attribute_writer<char[Size]>
-{
-    static void write(hid_t attribute_id,hid_t datatype_id,const char value[Size])
-    {
-        const char* str = value;
-
-        H5Awrite(attribute_id,datatype_id,&str);
-    }
-};
-
-template<typename T>
-struct attribute_reader
-{
-    static void read(hid_t attribute_id,hid_t datatype_id,T& value)
-    {
-        H5Aread(attribute_id,datatype_id,&value);
-    }
-};
-
-template<int Size>
-struct attribute_reader<char[Size]>
-{
-    static void read(hid_t attribute_id,hid_t datatype_id,char value[Size])
-    {
-        char* str = value;
-
-        H5Aread(attribute_id,datatype_id,&str);
-    }
-};
-
-}
-
 class attribute
 {
 public:
@@ -73,27 +28,8 @@ public:
     attribute& operator=(const attribute& other);
     attribute& operator=(attribute&& other);
     
-    void write(const void* value)
-    {
-        /*static_assert(std::is_standard_layout<T>::value  ||
-                      std::is_same<T,std::string>::value
-                      ,"T must be a standard layout type"
-                      "or a string");*/
-
-        //detail::attribute_writer<T>::write(id(),H5Aget_type(id()),value);
-        H5Awrite(id(),H5Aget_type(id()),value);
-    }
-
-    void read(void* value)const
-    {
-        /*static_assert(std::is_standard_layout<T>::value  ||
-                      std::is_same<T,std::string>::value
-                      ,"T must be a standard layout type"
-                      "or a string");*/
-
-        //detail::attribute_reader<T>::read(id(),H5Aget_type(id()),value);
-        H5Aread(id(),H5Aget_type(id()),value);
-    }
+    void write(const void* value);
+    void read(void* value)const;
 
     hid_t id()const;
 private:
