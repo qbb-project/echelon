@@ -61,6 +61,16 @@ public:
         return add_scalar_dataset(name,get_hdf5_type<T>());
     }
 
+    template<typename T>
+    scalar_dataset add_scalar_dataset(const std::string& name,const T& value)
+    {
+        scalar_dataset ds = add_scalar_dataset<T>(name);
+
+        ds = value;
+
+        return ds;
+    }
+
     object operator[](const std::string& name)const;
 
     object_reference ref()const;

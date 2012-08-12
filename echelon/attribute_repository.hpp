@@ -48,6 +48,16 @@ public:
         return add(name,get_hdf5_type<T>());
     }
 
+    template<typename T>
+    attribute add(const std::string& name,const T& value)
+    {
+        attribute attr = add<T>(name);
+
+        attr = value;
+
+        return attr;
+    }
+
     attribute operator[](const std::string& name)const
     {
         return attribute(object(*parent_),name);
