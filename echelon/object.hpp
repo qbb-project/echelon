@@ -25,6 +25,7 @@ private:
 
 class group;
 class dataset;
+class scalar_dataset;
 
 class object_reference;
 
@@ -43,8 +44,9 @@ public:
     object(const object& other);
     object(object&& other);
 
-    object(const group& object_);
-    object(const dataset& object_);
+    explicit object(const group& object_);
+    explicit object(const dataset& object_);
+    explicit object(const scalar_dataset& object_);
 
     ~object();
 
@@ -53,9 +55,11 @@ public:
 
     object& operator=(const group& object_);
     object& operator=(const dataset& object_);
+    object& operator=(const scalar_dataset& object_);
 
     operator group()const;
     operator dataset()const;
+    operator scalar_dataset()const;
 
     object_reference ref()const;
 

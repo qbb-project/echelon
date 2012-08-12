@@ -9,6 +9,11 @@
 #include <echelon/hdf5/dataspace.hpp>
 #include <echelon/hdf5/property_list.hpp>
 
+#include <echelon/object_reference.hpp>
+#include <echelon/attribute_repository.hpp>
+
+#include <echelon/data_transfer_broker.hpp>
+
 namespace echelon
 {
 
@@ -16,21 +21,14 @@ class scalar_dataset
 {
 public:
     scalar_dataset(const object& parent, const std::string& name,
-                   const type& datatype, const std::vector<hsize_t>& dims);
+                   const type& datatype);
 
-    virtual ~scalar_dataset() noexcept
-    {}
+    explicit scalar_dataset(hdf5::dataset dataset_wrapper_);
 
     template<typename T>
     scalar_dataset& operator=(const T& value)
     {
-        hdf5::dataspace mem_space;
-
-        hdf5::dataspace file_space = dataset_wrapper_.get_space();
-
-        dataset_wrapper_.write(dataset_wrapper_.get_type(),
-                               mem_space,file_space,
-                               hdf5::default_property_list,&value);
+        write(dataset_wrapper_,value);
 
         return *this;
     }
@@ -40,20 +38,18 @@ public:
     {
         T value;
 
-        hdf5::dataspace mem_space;
-
-        hdf5::dataspace file_space = dataset_wrapper_.get_space();
-
-        dataset_wrapper_.read(dataset_wrapper_.get_type(),
-                              mem_space,file_space,
-                              hdf5::default_property_list,&value);
+        read(dataset_wrapper_,value);
 
         return value;
     }
 
-    virtual hid_t id()const;
+    object_reference ref()const;
+
+    hid_t id()const;
 private:
     hdf5::dataset dataset_wrapper_;
+public:
+    attribute_repository<scalar_dataset> attributes;
 };
 
 }

@@ -8,6 +8,7 @@
 #include <echelon/creation_mode.hpp>
 #include <echelon/attribute_repository.hpp>
 #include <echelon/dataset.hpp>
+#include <echelon/scalar_dataset.hpp>
 #include <echelon/object_reference.hpp>
 
 #include <string>
@@ -50,6 +51,14 @@ public:
                         const std::vector<hsize_t>& dims)
     {
         return add_dataset(name,get_hdf5_type<T>(),dims);
+    }
+
+    scalar_dataset add_scalar_dataset(const std::string& name, const type& datatype);
+
+    template<typename T>
+    scalar_dataset add_scalar_dataset(const std::string& name)
+    {
+        return add_scalar_dataset(name,get_hdf5_type<T>());
     }
 
     object operator[](const std::string& name)const;

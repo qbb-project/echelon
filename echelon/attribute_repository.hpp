@@ -39,7 +39,7 @@ public:
 
     attribute add(const std::string& name, const type& datatype)
     {
-        return attribute(*parent_, name, datatype);
+        return attribute(object(*parent_), name, datatype);
     }
 
     template<typename T>
@@ -50,7 +50,7 @@ public:
 
     attribute operator[](const std::string& name)const
     {
-        return attribute(*parent_,name);
+        return attribute(object(*parent_),name);
     }
 private:
     const Parent* parent_;

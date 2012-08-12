@@ -38,6 +38,9 @@ public:
     void read(const type& mem_type, const dataspace& mem_space, const dataspace& file_space,
               const property_list& xfer_plist, void* buf)const;
 
+    void write(const void* value);
+    void read(void* value)const;
+
     void set_extent(const std::vector<hsize_t>& dims);
 
     type get_type()const;

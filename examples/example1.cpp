@@ -1,6 +1,7 @@
 #include <echelon/file.hpp>
 #include <echelon/group.hpp>
 #include <echelon/dataset.hpp>
+#include <echelon/scalar_dataset.hpp>
 #include <echelon/attribute.hpp>
 
 #include <echelon/multi_array_adaptor.hpp>
@@ -20,8 +21,6 @@ int main()
         auto root = my_file.root_group();
 
         auto foo = root.add_group("test").add_group("foo");
-
-        object_reference ref(foo);
 
         auto ds = root.add_group("bar").add_dataset<double>("my_data",{ 10, 10 });
 
@@ -79,6 +78,9 @@ int main()
 
         std::vector<float> v2(10,10);
         ds2.slice(2,_) = v2;
+
+        auto my_scalar = root.add_scalar_dataset<std::string>("my_scalar");
+        my_scalar = "MyScalar";
     }
 
     {
@@ -125,5 +127,10 @@ int main()
 
         std::vector<std::string> sa = ds3;
         std::cout << sa[0] << std::endl;
+
+        scalar_dataset my_scalar = root["my_scalar"];
+        std::string MyScalar = my_scalar;
+
+        std::cout << MyScalar << std::endl;
     }
 }

@@ -24,7 +24,7 @@ dataset::dataset(hdf5::dataset dataset_wrapper_)
 
 object_reference dataset::ref()const
 {
-    return object_reference(*this);
+    return object_reference(object(*this));
 }
 
 hid_t dataset::id()const

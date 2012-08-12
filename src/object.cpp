@@ -2,6 +2,7 @@
 
 #include <echelon/dataset.hpp>
 #include <echelon/group.hpp>
+#include <echelon/scalar_dataset.hpp>
 #include <echelon/object_reference.hpp>
 
 #include <echelon/utility.hpp>
@@ -34,6 +35,12 @@ object::object(const group& object_)
 }
 
 object::object(const dataset& object_)
+:object_id_(object_.id())
+{
+    H5Iinc_ref(id());
+}
+
+object::object(const scalar_dataset& object_)
 :object_id_(object_.id())
 {
     H5Iinc_ref(id());
@@ -96,6 +103,16 @@ object& object::operator=(const dataset& object_)
     return *this;
 }
 
+object& object::operator=(const scalar_dataset& object_)
+{
+    using std::swap;
+
+    object temp(object_);
+    std::swap(*this,temp);
+
+    return *this;
+}
+
 object::operator group()const
 {
     if(get_object_type(id()) != object_type::group)
@@ -110,6 +127,14 @@ object::operator dataset()const
         throw wrong_object_type_exception("wrong object type");
 
     return dataset(hdf5::dataset(id()));
+}
+
+object::operator scalar_dataset()const
+{
+    if(get_object_type(id()) != object_type::scalar_dataset)
+        throw wrong_object_type_exception("wrong object type");
+
+    return scalar_dataset(hdf5::dataset(id()));
 }
 
 object_reference object::ref()const

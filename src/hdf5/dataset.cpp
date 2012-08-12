@@ -88,6 +88,22 @@ void dataset::read(const type& mem_type, const dataspace& mem_space,
             xfer_plist.id(), buf);
 }
 
+void dataset::write(const void* value)
+{
+    type datatype = get_type();
+    dataspace space = get_space();
+
+    write(datatype,space,space,default_property_list,value);
+}
+
+void dataset::read(void* value)const
+{
+    type datatype = get_type();
+    dataspace space = get_space();
+
+    read(datatype,space,space,default_property_list,value);
+}
+
 void dataset::set_extent(const std::vector<hsize_t>& dims)
 {
     H5Dset_extent(id(), dims.data());
