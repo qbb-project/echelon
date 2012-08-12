@@ -39,8 +39,17 @@ public:
 
     explicit object(hid_t object_id_);
     object(hid_t loc_id_,const std::string& name);
+
+    object(const object& other);
+    object(object&& other);
+
     object(const group& object_);
     object(const dataset& object_);
+
+    ~object();
+
+    object& operator=(const object& other);
+    object& operator=(object&& other);
 
     object& operator=(const group& object_);
     object& operator=(const dataset& object_);

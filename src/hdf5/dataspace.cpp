@@ -36,6 +36,7 @@ dataspace::dataspace()
 dataspace::dataspace(hid_t dataspace_id_)
 : dataspace_id_(dataspace_id_)
 {
+    H5Iinc_ref(dataspace_id_);
 }
 
 dataspace::dataspace(const std::vector<hsize_t>& dims)

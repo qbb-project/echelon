@@ -30,6 +30,7 @@ group::group()
 group::group(hid_t group_id_)
 : group_id_(group_id_)
 {
+    H5Iinc_ref(group_id_);
 }
 
 group::group(hid_t loc_id_, const std::string& name_, hid_t lcpl_id_,

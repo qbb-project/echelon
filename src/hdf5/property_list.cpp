@@ -20,6 +20,8 @@ hid_t property_list_class::id() const
 property_list::property_list(hid_t property_list_id_)
 : property_list_id_(property_list_id_)
 {
+    if(property_list_id_ != H5P_DEFAULT)
+        H5Iinc_ref(property_list_id_);
 }
 
 property_list::property_list(property_list_class cls_)

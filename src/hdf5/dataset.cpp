@@ -14,6 +14,7 @@ namespace hdf5
 dataset::dataset(hid_t dataset_id_)
 : dataset_id_(dataset_id_)
 {
+    H5Iinc_ref(dataset_id_);
 }
 
 dataset::dataset(hid_t loc_id, const std::string& name, const type& dtype,
