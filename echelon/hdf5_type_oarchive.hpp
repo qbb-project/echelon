@@ -29,8 +29,8 @@ inline typename std::enable_if<!is_hdf5_type<T>::value, type>::type
 get_hdf5_type();
 
 class hdf5_type_oarchive:
-                          public boost::archive::detail::common_oarchive<
-                          hdf5_type_oarchive>
+       public boost::archive::detail::common_oarchive<
+                        hdf5_type_oarchive>
 {
 public:
     template<typename T>
@@ -131,12 +131,13 @@ private:
     friend class boost::archive::save_access;
 
     template<class T>
-    void save(T& t)
+    void save(const T& t)
     {
         static_assert(is_hdf5_type<T>::value,"T is not a HDF5 type");
 
         std::string name = name_stack_.top();
         std::size_t offset = reinterpret_cast<const char*>(&t) - base_address_;
+
         type member_type = get_hdf5_type<T>();
 
         layout_.add_element(name, member_type, offset);

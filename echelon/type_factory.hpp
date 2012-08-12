@@ -5,6 +5,7 @@
 #include "type_traits.hpp"
 #include <utility>
 #include <string>
+#include <complex>
 
 #include <echelon/object_reference.hpp>
 
@@ -142,6 +143,22 @@ struct hdf5_type_selector<std::string>
     static type get()
     {
         return type::string();
+    }
+};
+
+template<typename T>
+struct hdf5_type_selector<std::complex<T>>
+{
+    static type get()
+    {
+        type_layout layout(sizeof(std::complex<T>));
+
+        type scalar_type = get_hdf5_type<T>();
+
+        layout.add_element("real",scalar_type,0);
+        layout.add_element("imag",scalar_type,sizeof(T));
+
+        return type::compound_type(layout);
     }
 };
 

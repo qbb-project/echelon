@@ -1,5 +1,7 @@
 #include <echelon/echelon.hpp>
 
+#include <complex>
+
 #include <iostream>
 
 using namespace echelon;
@@ -72,6 +74,9 @@ int main()
 
         auto my_scalar = root.add_scalar_dataset<std::string>("my_scalar");
         my_scalar = "MyScalar";
+
+        std::complex<double> c(1.0,2.0);
+        root.add_scalar_dataset("complex_number",c);
     }
 
     {
