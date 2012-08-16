@@ -5,24 +5,12 @@
 #include <functional>
 #include <vector>
 
-#include <echelon/customization_hooks.hpp>
+#include <echelon/container_adaption.hpp>
 
 #include <echelon/dataset.hpp>
 
 namespace echelon
 {
-
-template<typename Container>
-inline auto data(const Container& container) -> decltype(container.data())
-{
-    return container.data();
-}
-
-template<typename Container>
-inline auto data(Container& container) -> decltype(container.data())
-{
-    return container.data();
-}
 
 template<typename Container>
 class multi_array_adaptor
@@ -35,15 +23,6 @@ public:
     :container_(container_),dims_(dims_)
     {}
 
-    multi_array_adaptor& operator=(const dataset& dset)
-    {
-        std::vector<hsize_t> h5_dims(begin(dims()),end(dims()));
-
-        dset.read(data(),h5_dims);
-
-        return *this;
-    }
-
     const value_type& operator()(std::size_t i,std::size_t j)const
     {
         return container_[dims_[1]*i + j];
@@ -52,6 +31,26 @@ public:
     value_type& operator()(std::size_t i,std::size_t j)
     {
         return container_[dims_[1]*i + j];
+    }
+
+    typename Container::iterator begin()
+    {
+        return container_.begin();
+    }
+
+    typename Container::iterator end()
+    {
+        return container_.end();
+    }
+
+    typename Container::const_iterator begin()const
+    {
+        return container_.begin();
+    }
+
+    typename Container::const_iterator end()const
+    {
+        return container_.end();
     }
 
     const value_type* data()const
@@ -75,22 +74,6 @@ public:
 private:
     Container& container_;
     std::vector<std::size_t> dims_;
-};
-
-template<typename T>
-struct dataset_write_hook<multi_array_adaptor<T> >
-{
-    static const bool is_specialized = true;
-
-    static std::vector<std::size_t> dims(const multi_array_adaptor<T>& v)
-    {
-        return v.dims();
-    }
-
-    static auto data(const multi_array_adaptor<T>& v) -> decltype(v.data())
-    {
-        return v.data();
-    }
 };
 
 }

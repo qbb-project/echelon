@@ -12,63 +12,19 @@ namespace echelon
 {
 
 template<typename T>
-struct dataset_read_hook
-{
-    static const bool is_specialized = false;
-};
-
-template<typename T>
-struct dataset_read_hook<std::vector<T>>
-{
-    static const bool is_specialized = true;
-
-    static std::vector<T> create(const std::vector<std::size_t>& dims)
-    {
-        assert(dims.size() == 1);
-
-        return std::vector<T>(dims[0]);
-    }
-
-    static auto data(std::vector<T>& v) -> decltype(v.data())
-    {
-        return v.data();
-    }
-};
-
-template<typename T>
-struct dataset_write_hook
-{
-    static const bool is_specialized = false;
-};
-
-template<typename T>
-struct dataset_write_hook<std::vector<T>>
-{
-    static const bool is_specialized = true;
-
-    static std::vector<std::size_t> dims(const std::vector<T>& v)
-    {
-        return { v.size() };
-    }
-
-    static auto data(const std::vector<T>& v) -> decltype(v.data())
-    {
-        return v.data();
-    }
-};
-
-template<typename T>
 struct type_lowering_hook
 {
     typedef typename std::decay<T>::type original_type;
     typedef typename std::decay<T>::type lowered_type;
 
-    static lowered_type lower_type(original_type value)
+    template<typename Sink>
+    static lowered_type lower_type(original_type value,const Sink& sink)
     {
         return value;
     }
 
-    static original_type raise_type(lowered_type value)
+    template<typename Source>
+    static original_type raise_type(lowered_type value,const Source& source)
     {
         return value;
     }
@@ -80,12 +36,14 @@ struct type_lowering_hook<std::string>
     typedef std::string original_type;
     typedef const char* lowered_type;
 
-    static lowered_type lower_type(const original_type& value)
+    template<typename Sink>
+    static lowered_type lower_type(const original_type& value,const Sink& sink)
     {
         return value.c_str();
     }
 
-    static original_type raise_type(lowered_type value)
+    template<typename Source>
+    static original_type raise_type(lowered_type value,const Source& source)
     {
         return std::string(value);
     }

@@ -68,7 +68,7 @@ public:
     {
         scalar_dataset ds = add_scalar_dataset<T>(name);
 
-        ds = value;
+        ds <<= value;
 
         return ds;
     }

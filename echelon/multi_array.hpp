@@ -14,8 +14,12 @@ template<typename T>
 class multi_array
 {
 public:
+    using value_type = T;
+
+    multi_array()=default;
+
     explicit multi_array(const std::vector<std::size_t>& dims_)
-    :data_(std::accumulate(begin(dims_),end(dims_),
+    :data_(std::accumulate(std::begin(dims_),std::end(dims_),
                            std::size_t(1),std::multiplies<std::size_t>())),
      dims_(dims_)
     {}
@@ -50,9 +54,37 @@ public:
         return data_.data();
     }
 
+    typename std::vector<T>::iterator begin()
+    {
+        return data_.begin();
+    }
+
+    typename std::vector<T>::iterator end()
+    {
+        return data_.end();
+    }
+
+    typename std::vector<T>::const_iterator begin()const
+    {
+        return data_.begin();
+    }
+
+    typename std::vector<T>::const_iterator end()const
+    {
+        return data_.end();
+    }
+
     const std::vector<std::size_t>& dims()const
     {
         return dims_;
+    }
+
+    void resize(const std::vector<std::size_t>& dims_)
+    {
+        data_.resize(std::accumulate(std::begin(dims_),std::end(dims_),
+                                     std::size_t(1),std::multiplies<std::size_t>()));
+
+        this->dims_ = dims_;
     }
 private:
     std::vector<T> data_;
@@ -60,36 +92,11 @@ private:
 };
 
 template<typename T>
-struct dataset_write_hook<multi_array<T> >
+inline void require_dimensions(multi_array<T>& container,
+                               const std::vector<std::size_t>& dims)
 {
-    static const bool is_specialized = true;
-
-    static std::vector<std::size_t> dims(const multi_array<T>& v)
-    {
-        return v.dims();
-    }
-
-    static auto data(const multi_array<T>& v) -> decltype(v.data())
-    {
-        return v.data();
-    }
-};
-
-template<typename T>
-struct dataset_read_hook<multi_array<T> >
-{
-    static const bool is_specialized = true;
-
-    static multi_array<T> create(const std::vector<std::size_t>& dims)
-    {
-        return multi_array<T>(dims);
-    }
-
-    static auto data(multi_array<T>& v) -> decltype(v.data())
-    {
-        return v.data();
-    }
-};
+    container.resize(dims);
+}
 
 }
 

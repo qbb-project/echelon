@@ -75,8 +75,6 @@ private:
     }
 };
 
-
-
 }
 
 class dataset
@@ -87,54 +85,34 @@ public:
             int comp_level = -1);
 
     explicit dataset(hdf5::dataset dataset_wrapper_);
-    
-    template<typename T>
-    void write(const T* data,const std::vector<hsize_t>& dims)
-    {
-        hdf5::dataspace mem_space(dims);
-        hdf5::dataspace file_space = dataset_wrapper_.get_space();
-        hdf5::type datatype = dataset_wrapper_.get_type();
-
-        ::echelon::write(dataset_wrapper_,datatype,mem_space,file_space,data);
-    }
 
     template<typename T>
-    void read(T* data,const std::vector<hsize_t>& dims)const
+    friend void operator<<=(dataset& ds,const T& array)
     {
-        hdf5::dataspace mem_space(dims);
-        hdf5::dataspace file_space = dataset_wrapper_.get_space();
-        hdf5::type datatype = dataset_wrapper_.get_type();
+        auto current_dims = dims(array);
 
-        ::echelon::read(dataset_wrapper_,datatype,mem_space,file_space,data);
-    }
+        std::vector<hsize_t> mem_dims(begin(current_dims), end(current_dims));
 
-    template<typename T>
-    typename std::enable_if< dataset_write_hook<T>::is_specialized , dataset& >::type
-    operator=(const T& array)
-    {
-        auto dims = dataset_write_hook<T>::dims(array);
+        hdf5::dataspace mem_space(mem_dims);
+        hdf5::dataspace file_space = ds.dataset_wrapper_.get_space();
+        hdf5::type datatype = ds.dataset_wrapper_.get_type();
 
-        std::vector<hsize_t> mem_dims(begin(dims), end(dims));
-
-        write(dataset_write_hook<T>::data(array),mem_dims);
-
-        return *this;
+        ::echelon::write(ds.dataset_wrapper_,datatype,mem_space,file_space,array);
     }
     
-    template<typename T,
-             typename std::enable_if< dataset_read_hook<T>::is_specialized , int>::type = 0 >
-    operator T()const
+    template<typename T>
+    friend void operator<<=(T& array,const dataset& ds)
     {
         std::vector<hsize_t> simple_extend_dims =
-            dataset_wrapper_.get_space().get_simple_extent_dims();
+            ds.dataset_wrapper_.get_space().get_simple_extent_dims();
 
         std::vector<std::size_t> dims(begin(simple_extend_dims),end(simple_extend_dims));
 
-        T result = dataset_read_hook<T>::create(dims);
+        hdf5::dataspace mem_space(simple_extend_dims);
+        hdf5::dataspace file_space = ds.dataset_wrapper_.get_space();
+        hdf5::type datatype = ds.dataset_wrapper_.get_type();
 
-        read(dataset_read_hook<T>::data(result),simple_extend_dims);
-
-        return result;
+        ::echelon::read(ds.dataset_wrapper_,datatype,mem_space,file_space,array);
     }
 
     template<typename ...Args>

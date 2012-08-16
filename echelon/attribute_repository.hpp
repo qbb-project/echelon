@@ -53,7 +53,7 @@ public:
     {
         attribute attr = add<T>(name);
 
-        attr = value;
+        attr <<= value;
 
         return attr;
     }

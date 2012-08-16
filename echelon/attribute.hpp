@@ -21,21 +21,15 @@ public:
     attribute(const object& parent, const std::string& name);
 
     template<typename T>
-    attribute& operator=(const T& value)
+    friend inline void operator<<=(attribute& attr,const T& value)
     {
-        write(attribute_wrapper_,value);
-
-        return *this;
+        write(attr.attribute_wrapper_,value);
     }
 
     template<typename T>
-    operator T()const
+    friend inline void operator<<=(T& value,const attribute& attr)
     {
-        T value;
-
-        read(attribute_wrapper_,value);
-
-        return value;
+        read(attr.attribute_wrapper_,value);
     }
 
     hid_t id()const;

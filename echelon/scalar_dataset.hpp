@@ -26,21 +26,15 @@ public:
     explicit scalar_dataset(hdf5::dataset dataset_wrapper_);
 
     template<typename T>
-    scalar_dataset& operator=(const T& value)
+    friend inline void operator<<=(scalar_dataset& attr,const T& value)
     {
-        write(dataset_wrapper_,value);
-
-        return *this;
+        write(attr.dataset_wrapper_,value);
     }
 
     template<typename T>
-    operator T()const
+    friend inline void operator<<=(T& value,const scalar_dataset& attr)
     {
-        T value;
-
-        read(dataset_wrapper_,value);
-
-        return value;
+        read(attr.dataset_wrapper_,value);
     }
 
     object_reference ref()const;

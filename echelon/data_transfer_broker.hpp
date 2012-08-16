@@ -6,9 +6,12 @@
 #include <echelon/hdf5/type.hpp>
 #include <echelon/object_reference.hpp>
 
+#include <echelon/container_adaption.hpp>
+
 #include <utility>
 #include <functional>
 #include <vector>
+#include <iterator>
 #include <algorithm>
 
 #include <boost/iterator/transform_iterator.hpp>
@@ -28,107 +31,78 @@ struct remove_base_type_cv<T*>
     typedef typename std::remove_volatile<typename std::remove_const<T>::type>::type* type;
 };
 
-template<typename Sink,typename T>
+template<typename Sink,typename C>
 inline
-typename std::enable_if<is_identity_lowering_function<type_lowering_hook<T> >::value >::type
+typename std::enable_if<is_identity_lowering_function<type_lowering_hook<typename C::value_type> >::value >::type
 write(Sink& sink,const hdf5::type& datatype,
       const hdf5::dataspace& memspace,const hdf5::dataspace& filespace,
-      const T* data)
+      const C& container)
 {
     sink.write(datatype, memspace, filespace,
                hdf5::default_property_list,
-               data);
+               data(container));
 }
 
-template<typename Sink>
-inline void write(Sink& sink,const hdf5::type& datatype,
-                  const hdf5::dataspace& memspace,const hdf5::dataspace& filespace,
-                  const object_reference* data)
-{
-    const hssize_t size = memspace.select_npoints();
-
-    std::vector<hdf5::object_reference> raw_refs(size);
-
-    std::transform(data,data + size,begin(raw_refs),
-                   [](const object_reference& ref) -> hdf5::object_reference
-                   {
-                      return ref.raw_ref();
-                   });
-
-    sink.write(datatype, memspace, filespace,
-               hdf5::default_property_list,
-               raw_refs.data());
-}
-
-template<typename Sink,typename T>
+template<typename Sink,typename C>
 inline
-typename std::enable_if<!is_identity_lowering_function<type_lowering_hook<T> >::value >::type
+typename std::enable_if<!is_identity_lowering_function<type_lowering_hook<typename C::value_type> >::value >::type
 write(Sink& sink,const hdf5::type& datatype,
       const hdf5::dataspace& memspace,const hdf5::dataspace& filespace,
-      const T* data)
+      const C& container)
 {
+    typedef typename C::value_type T;
+
     using lowered_type = typename type_lowering_hook<T>::lowered_type;
 
-    const hssize_t size = memspace.select_npoints();
+    std::vector<lowered_type> lowered_data;
 
-    std::vector<lowered_type> lowered_data(
-              boost::make_transform_iterator(data,type_lowering_hook<T>::lower_type),
-              boost::make_transform_iterator(data + size,type_lowering_hook<T>::lower_type));
+    for(const T& value : container)
+    {
+        lowered_data.push_back(type_lowering_hook<T>::lower_type(value,sink));
+    }
 
-    write(sink,datatype,memspace,filespace,lowered_data.data());
+    write(sink,datatype,memspace,filespace,lowered_data);
 }
 
-template<typename Source,typename T>
+template<typename Source,typename C>
 inline
-typename std::enable_if<is_identity_lowering_function<type_lowering_hook<T> >::value >::type
+typename std::enable_if<is_identity_lowering_function<type_lowering_hook<typename C::value_type> >::value >::type
 read(const Source& source,const hdf5::type& datatype,
      const hdf5::dataspace& memspace,const hdf5::dataspace& filespace,
-     T* data)
+     C& container)
 {
-    source.read(datatype,memspace,filespace,
-                hdf5::default_property_list,data);
-}
+    std::vector<hsize_t> dims = memspace.get_simple_extent_dims();
+    std::vector<std::size_t> dims_(begin(dims),end(dims));
 
-template<typename Source>
-inline void read(const Source& source,const hdf5::type& datatype,
-                 const hdf5::dataspace& memspace,const hdf5::dataspace& filespace,
-                 object_reference* data)
-{
-    const hssize_t size = memspace.select_npoints();
-
-    std::vector<hdf5::object_reference> raw_refs(size);
+    require_dimensions(container,dims_);
 
     source.read(datatype,memspace,filespace,
-                hdf5::default_property_list,raw_refs.data());
-
-    object any_object(source.id());
-
-    std::transform(begin(raw_refs),end(raw_refs),data,
-                   [any_object](const hdf5::object_reference& raw_ref) -> object_reference
-                   {
-                      return object_reference(raw_ref,any_object);
-                   });
+                hdf5::default_property_list,data(container));
 }
 
-template<typename Source,typename T>
+template<typename Source,typename C>
 inline
-typename std::enable_if<!is_identity_lowering_function<type_lowering_hook<T> >::value >::type
+typename std::enable_if<!is_identity_lowering_function<type_lowering_hook<typename C::value_type> >::value >::type
 read(const Source& source,const hdf5::type& datatype,
      const hdf5::dataspace& memspace,const hdf5::dataspace& filespace,
-     T* data)
+     C& container)
 {
+    typedef typename C::value_type T;
+
     using lowered_type = typename remove_base_type_cv<
                             typename type_lowering_hook<T>::lowered_type
                           >::type;
 
-    const hssize_t size = memspace.select_npoints();
+    std::vector<lowered_type> lowered_data;
 
-    std::vector<lowered_type> lowered_data(size);
+    read(source,datatype,memspace,filespace,lowered_data);
 
-    read(source,datatype,memspace,filespace,lowered_data.data());
+    auto raise = std::bind(type_lowering_hook<T>::template raise_type<Source>,
+                           std::placeholders::_1,
+                           std::cref(source));
 
-    std::transform(begin(lowered_data),end(lowered_data),
-                   data,type_lowering_hook<T>::raise_type);
+    fill(container,boost::make_transform_iterator(begin(lowered_data),raise),
+                   boost::make_transform_iterator(end(lowered_data),raise));
 
     if( H5Tis_variable_str(datatype.id()) ||
         H5Tget_class(datatype.id()) == H5T_VLEN)
@@ -160,20 +134,13 @@ inline void write(Sink& sink,const T (&value) [N])
     sink.write(&decayed_array);
 }
 
-template<typename Sink>
-inline void write(Sink& sink,const object_reference& value)
-{
-    hdf5::object_reference raw_ref = value.raw_ref();
-    sink.write(&raw_ref);
-}
-
 template<typename Sink,
          typename T,
          typename std::enable_if<!is_identity_lowering_function<type_lowering_hook<T> >::value,
                                  int>::type dummy = 0>
 inline void write(Sink& sink,const T& value)
 {
-    write(sink,type_lowering_hook<T>::lower_type(value));
+    write(sink,type_lowering_hook<T>::lower_type(value,sink));
 }
 
 template<typename Source,
@@ -197,16 +164,6 @@ inline void read(Source& source,T (&value) [N])
     source.read(&decayed_array);
 }
 
-template<typename Source>
-inline void write(Source& source,object_reference& value)
-{
-    hdf5::object_reference raw_ref;
-
-    source.read(&raw_ref);
-
-    value = object_reference(raw_ref,object(source.id()));
-}
-
 template<typename Source,
          typename T,
          typename std::enable_if<!is_identity_lowering_function<type_lowering_hook<T> >::value,
@@ -221,7 +178,7 @@ inline void read(Source& source,T& value)
 
     read(source,lowered_value);
 
-    value = type_lowering_hook<T>::raise_type(lowered_value);
+    value = type_lowering_hook<T>::raise_type(lowered_value,source);
 }
 
 

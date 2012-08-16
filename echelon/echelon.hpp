@@ -13,4 +13,6 @@
 
 #include <echelon/object_reference.hpp>
 
+#include <echelon/container_adaption.hpp>
+
 #endif

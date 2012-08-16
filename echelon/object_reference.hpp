@@ -36,6 +36,25 @@ private:
     object any_valid_object_;
 };
 
+template<>
+struct type_lowering_hook<object_reference>
+{
+    typedef object_reference original_type;
+    typedef hdf5::object_reference lowered_type;
+
+    template<typename Sink>
+    static lowered_type lower_type(const original_type& value,const Sink& sink)
+    {
+        return value.raw_ref();
+    }
+
+    template<typename Source>
+    static original_type raise_type(lowered_type value,const Source& source)
+    {
+        return object_reference(value,object(source.id()));
+    }
+};
+
 }
 
 #endif

@@ -30,24 +30,20 @@ int main()
             }
         }
 
-        ds = arr;
-        arr = ds;
+        ds <<= arr;
+        arr <<= ds;
 
         auto version = ds.attributes.add<unsigned int>("version");
         auto desc = ds.attributes.add<std::string>("desc");
-        version = 2;
-        desc = "this is an attribute";
+        version <<= 2;
+        desc <<= "this is an attribute";
 
-        std::string desc_copy = desc;
+        std::string desc_copy;
+        desc_copy <<= desc;
         std::cout << desc_copy << std::endl;
 
-        auto ds2 = foo.add_dataset<float>("my_data",{ 10 , 10 });
-
-        ds2 = multi_array_adaptor<std::vector<float>>(v,{ 10 , 10 });
-        multi_array_adaptor<std::vector<float>>(v,{ 10 , 10 }) = ds2;
-
         auto time = foo.attributes.add<double>("time");
-        time = 1.0;
+        time <<= 1.0;
 
         auto ds3 = root.add_group("strings").
                         add_dataset<std::string>("my_first_strings", { 2 } );
@@ -55,25 +51,25 @@ int main()
         sa(0) = "Hello";
         sa(1) = "World";
 
-        ds3 = sa;
+        ds3 <<= sa;
 
         auto ds4 = root.add_group("references").
                         add_dataset<object_reference>("refs", { 2 } );
-        object_reference ref1 = ds2.ref();
+        object_reference ref1 = ds.ref();
         object_reference ref2 = foo.ref();
 
         std::vector<object_reference> rr = { ref1 , ref2 };
 
-        ds4 = rr;
+        ds4 <<= rr;
 
-        auto ref_attr = ds2.attributes.add<object_reference>("self");
-        ref_attr = ref1;
+        auto ref_attr = ds.attributes.add<object_reference>("self");
+        ref_attr <<= ref1;
 
-        std::vector<float> v2(10,10);
-        ds2.slice(2,_) = v2;
+        std::vector<double> v2(10,10);
+        ds.slice(2,_) <<= v2;
 
         auto my_scalar = root.add_scalar_dataset<std::string>("my_scalar");
-        my_scalar = "MyScalar";
+        my_scalar <<= "MyScalar";
 
         std::complex<double> c(1.0,2.0);
         root.add_scalar_dataset("complex_number",c);
@@ -87,7 +83,8 @@ int main()
         group bar = root["bar"];
         dataset ds = bar["my_data"];
 
-        multi_array<double> arr = ds;
+        multi_array<double> arr;
+        arr <<= ds;
 
         for (std::size_t i = 0; i < 10; ++i)
         {
@@ -102,30 +99,36 @@ int main()
         attribute version = ds.attributes["version"];
         attribute desc = ds.attributes["desc"];
 
-        unsigned int version_ = version;
-        std::string desc_ = desc;
+        unsigned int version_;
+        version_ <<= version;
+        std::string desc_;
+        desc_ <<= desc;
 
         std::cout << version_ << " " << desc_ << std::endl;
 
         group references = root["references"];
         dataset ds4 = references["refs"];
 
-        std::vector<object_reference> refs = ds4;
+        std::vector<object_reference> refs;
+        refs <<= ds4;
 
         dataset ds2 = *refs[0];
 
-        multi_array<float> ds2_ = ds2;
+        multi_array<double> ds2_;
+        ds2_ <<= ds2;
 
         std::cout << ds2_(2, 4) << std::endl;
 
         group strings = root["strings"];
         dataset ds3 = strings["my_first_strings"];
 
-        std::vector<std::string> sa = ds3;
+        std::vector<std::string> sa;
+        sa <<= ds3;
         std::cout << sa[0] << std::endl;
 
         scalar_dataset my_scalar = root["my_scalar"];
-        std::string MyScalar = my_scalar;
+        std::string MyScalar;
+        MyScalar <<= my_scalar;
 
         std::cout << MyScalar << std::endl;
     }

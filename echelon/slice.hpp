@@ -12,6 +12,18 @@
 namespace echelon
 {
 
+template<typename T>
+inline std::vector<std::size_t> dims(const std::vector<T>& container)
+{
+    return { container.size() };
+}
+
+template<typename C>
+inline std::vector<std::size_t> dims(const C& container)
+{
+    return container.dims();
+}
+
 class slice
 {
 public:
@@ -19,44 +31,24 @@ public:
           const std::vector<std::tuple<hsize_t,hsize_t>>& boundaries);
 
     template<typename T>
-    void write(const T* data,const std::vector<hsize_t>& dims)
+    void operator<<=(const T& array)
     {
-        hdf5::dataspace mem_space(dims);
+        auto current_dims = dims(array);
+
+        std::vector<hsize_t> mem_dims(begin(current_dims), end(current_dims));
+
+        hdf5::dataspace mem_space(mem_dims);
         hdf5::dataspace file_space = selected_dataspace_;
         hdf5::type datatype = sliced_dataset_.get_type();
 
-        ::echelon::write(sliced_dataset_,datatype,mem_space,file_space,data);
+        ::echelon::write(sliced_dataset_,datatype,mem_space,file_space,array);
     }
 
     template<typename T>
-    void read(T* data,const std::vector<hsize_t>& dims)const
-    {
-        hdf5::dataspace mem_space(dims);
-        hdf5::dataspace file_space = selected_dataspace_;
-        hdf5::type datatype = sliced_dataset_.get_type();
-
-        ::echelon::read(sliced_dataset_,datatype,mem_space,file_space,data);
-    }
-
-    template<typename T>
-    typename std::enable_if< dataset_write_hook<T>::is_specialized , slice& >::type
-    operator=(const T& array)
-    {
-        auto dims = dataset_write_hook<T>::dims(array);
-
-        std::vector<hsize_t> mem_dims(begin(dims), end(dims));
-
-        write(dataset_write_hook<T>::data(array),mem_dims);
-
-        return *this;
-    }
-
-    template<typename T,
-             typename std::enable_if< dataset_read_hook<T>::is_specialized , int>::type = 0 >
-    operator T()const
+    friend void operator<<=(T& array,const slice& sl)
     {
         std::vector<hdf5::hyperslab_block> hyperslab_blocks =
-                   selected_dataspace_.get_select_hyperslab_blocks();
+                   sl.selected_dataspace_.get_select_hyperslab_blocks();
 
         const std::size_t num_of_hyperslab_block = hyperslab_blocks.size();
 
@@ -66,11 +58,11 @@ public:
 
         std::vector<std::size_t> dims(begin(block_dims),end(block_dims));
 
-        T result = dataset_read_hook<T>::create(dims);
+        hdf5::dataspace mem_space(block_dims);
+        hdf5::dataspace file_space = sl.selected_dataspace_;
+        hdf5::type datatype = sl.sliced_dataset_.get_type();
 
-        read(dataset_read_hook<T>::data(result),block_dims);
-
-        return result;
+        ::echelon::read(sl.sliced_dataset_,datatype,mem_space,file_space,array);
     }
 
 private:
