@@ -73,6 +73,8 @@ int main()
 
         std::complex<double> c(1.0,2.0);
         root.create_scalar_dataset("complex_number",c);
+
+        root.attributes.create("sliteral","test");
     }
 
     {

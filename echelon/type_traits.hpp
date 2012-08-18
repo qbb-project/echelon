@@ -84,6 +84,11 @@ struct is_predefined_hdf5_type<std::string> : boost::mpl::true_
 {
 };
 
+template<std::size_t N>
+struct is_predefined_hdf5_type<char[N]> : boost::mpl::true_
+{
+};
+
 template<>
 struct is_predefined_hdf5_type<object_reference> : boost::mpl::true_
 {

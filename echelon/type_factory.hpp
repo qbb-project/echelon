@@ -158,6 +158,15 @@ struct hdf5_type_selector<std::string>
     }
 };
 
+template<std::size_t N>
+struct hdf5_type_selector<char[N]>
+{
+    static type get()
+    {
+        return type::string();
+    }
+};
+
 template<>
 struct hdf5_type_selector<object_reference>
 {
