@@ -5,14 +5,26 @@
 #include "type_traits.hpp"
 #include <utility>
 #include <string>
-#include <complex>
 
 #include <echelon/object_reference.hpp>
 
-#include "hdf5_type_oarchive.hpp"
+#include <echelon/static_type_layout.hpp>
 
 namespace echelon
 {
+
+template<typename T>
+inline typename std::enable_if<is_predefined_hdf5_type<T>::value, type>::type
+get_hdf5_type();
+
+template<typename T>
+inline typename std::enable_if<is_hdf5_type<T>::value &&
+                               !is_predefined_hdf5_type<T>::value, type>::type
+get_hdf5_type();
+
+template<typename T>
+inline typename std::enable_if<!is_hdf5_type<T>::value, type>::type
+get_hdf5_type();
 
 template<typename T>
 struct hdf5_type_selector
@@ -146,22 +158,6 @@ struct hdf5_type_selector<std::string>
     }
 };
 
-template<typename T>
-struct hdf5_type_selector<std::complex<T>>
-{
-    static type get()
-    {
-        type_layout layout(sizeof(std::complex<T>));
-
-        type scalar_type = get_hdf5_type<T>();
-
-        layout.add_element("real",scalar_type,0);
-        layout.add_element("imag",scalar_type,sizeof(T));
-
-        return type::compound_type(layout);
-    }
-};
-
 template<>
 struct hdf5_type_selector<object_reference>
 {
@@ -177,6 +173,84 @@ struct hdf5_type_selector<T const>
 {
 };
 
+
+namespace detail
+{
+
+template<typename T,std::size_t I,typename Enable = void>
+struct add_member_to_layout;
+
+template<typename T,std::size_t I>
+struct add_member_to_layout<T,I,
+             typename std::enable_if<static_type_layout<T>::category ==
+                                     static_type_layout_category::generic>::type>
+{
+    static std::size_t eval(type_layout& layout,std::size_t current_offset)
+    {
+        const id_offset_pair id_offset = static_type_layout<T>::members()[I];
+
+        typedef typename std::tuple_element<
+                             I,
+                             typename static_type_layout<T>::member_types
+                           >::type
+                member_type;
+
+        layout.add_element(id_offset.id,
+                           get_hdf5_type<member_type>(),
+                           id_offset.offset);
+
+        return id_offset.offset;
+    }
+};
+
+template<typename T,std::size_t I>
+struct add_member_to_layout<T,I,
+             typename std::enable_if<static_type_layout<T>::category ==
+                                     static_type_layout_category::packed>::type>
+{
+    static std::size_t eval(type_layout& layout,std::size_t current_offset)
+    {
+        const id_size_pair id_size = static_type_layout<T>::members()[I];
+
+        typedef typename std::tuple_element<
+                             I,
+                             typename static_type_layout<T>::member_types
+                           >::type
+                member_type;
+
+        layout.add_element(id_size.id,
+                           get_hdf5_type<member_type>(),
+                           current_offset);
+
+        return current_offset + id_size.size;
+    }
+};
+
+template<typename T,std::size_t I,std::size_t N,typename Enable = void>
+struct add_members_to_layout;
+
+template<typename T,std::size_t I,std::size_t N>
+struct add_members_to_layout<T,I,N>
+{
+    static void eval(type_layout& layout,std::size_t current_offset)
+    {
+        const std::size_t new_offset =
+           add_member_to_layout<T,I>::eval(layout,current_offset);
+
+        add_members_to_layout<T,I+1,N>::eval(layout,new_offset);
+    }
+};
+
+template<typename T,std::size_t N>
+struct add_members_to_layout<T,N,N>
+{
+    static void eval(type_layout&,std::size_t)
+    {
+    }
+};
+
+}
+
 template<typename T>
 inline typename std::enable_if<is_predefined_hdf5_type<T>::value, type>::type
 get_hdf5_type()
@@ -191,12 +265,13 @@ get_hdf5_type()
 {
     typedef typename std::remove_reference<typename std::remove_cv<T>::type>::type value_type;
 
-    value_type value;
-    hdf5_type_oarchive type_oarchive(value);
+    type_layout new_layout(static_type_layout<value_type>::size);
 
-    type_oarchive & boost::serialization::make_nvp(typeid(T).name(), value);
+    constexpr std::size_t num_members = static_type_layout<value_type>::num_members;
 
-    return type_oarchive.get_result_type();
+    detail::add_members_to_layout<value_type,0,num_members>::eval(new_layout,0);
+
+    return type::compound_type(new_layout);
 }
 
 template<typename T>

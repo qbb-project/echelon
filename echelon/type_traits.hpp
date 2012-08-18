@@ -4,7 +4,6 @@
 #include <echelon/object_reference.hpp>
 
 #include <string>
-#include <complex>
 #include <boost/mpl/bool.hpp>
 
 namespace echelon
@@ -82,11 +81,6 @@ struct is_predefined_hdf5_type<bool> : boost::mpl::true_
 
 template<>
 struct is_predefined_hdf5_type<std::string> : boost::mpl::true_
-{
-};
-
-template<typename T>
-struct is_predefined_hdf5_type<std::complex<T>> : boost::mpl::true_
 {
 };
 

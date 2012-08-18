@@ -14,5 +14,8 @@
 #include <echelon/object_reference.hpp>
 
 #include <echelon/container_adaption.hpp>
+#include <echelon/std/stl_support.hpp>
+
+#include <echelon/adapt_type.hpp>
 
 #endif
