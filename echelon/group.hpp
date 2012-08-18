@@ -42,31 +42,31 @@ class group
 public:
     friend class file;
 
-    group add_group(const std::string& name);
-    dataset add_dataset(const std::string& name, const type& datatype,
-                        const std::vector<hsize_t>& dims,
-                        int comp_level = -1);
+    group create_group(const std::string& name);
+    dataset create_dataset(const std::string& name, const type& datatype,
+                           const std::vector<hsize_t>& dims,
+                           int comp_level = -1);
 
     template<typename T>
-    dataset add_dataset(const std::string& name,
-                        const std::vector<hsize_t>& dims,
-                        int comp_level = -1)
+    dataset create_dataset(const std::string& name,
+                           const std::vector<hsize_t>& dims,
+                           int comp_level = -1)
     {
-        return add_dataset(name,get_hdf5_type<T>(),dims,comp_level);
+        return create_dataset(name,get_hdf5_type<T>(),dims,comp_level);
     }
 
-    scalar_dataset add_scalar_dataset(const std::string& name, const type& datatype);
+    scalar_dataset create_scalar_dataset(const std::string& name, const type& datatype);
 
     template<typename T>
-    scalar_dataset add_scalar_dataset(const std::string& name)
+    scalar_dataset create_scalar_dataset(const std::string& name)
     {
-        return add_scalar_dataset(name,get_hdf5_type<T>());
+        return create_scalar_dataset(name,get_hdf5_type<T>());
     }
 
     template<typename T>
-    scalar_dataset add_scalar_dataset(const std::string& name,const T& value)
+    scalar_dataset create_scalar_dataset(const std::string& name,const T& value)
     {
-        scalar_dataset ds = add_scalar_dataset<T>(name);
+        scalar_dataset ds = create_scalar_dataset<T>(name);
 
         ds <<= value;
 

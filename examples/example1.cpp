@@ -13,9 +13,9 @@ int main()
 
         auto root = my_file.root_group();
 
-        auto foo = root.add_group("test").add_group("foo");
+        auto foo = root.create_group("test").create_group("foo");
 
-        auto ds = root.add_group("bar").add_dataset<double>("my_data",{ 10, 10 });
+        auto ds = root.create_group("bar").create_dataset<double>("my_data",{ 10, 10 });
 
         multi_array<double> arr({ 10 , 10 });
 
@@ -33,8 +33,8 @@ int main()
         ds <<= arr;
         arr <<= ds;
 
-        auto version = ds.attributes.add<unsigned int>("version");
-        auto desc = ds.attributes.add<std::string>("desc");
+        auto version = ds.attributes.create<unsigned int>("version");
+        auto desc = ds.attributes.create<std::string>("desc");
         version <<= 2;
         desc <<= "this is an attribute";
 
@@ -42,19 +42,19 @@ int main()
         desc_copy <<= desc;
         std::cout << desc_copy << std::endl;
 
-        auto time = foo.attributes.add<double>("time");
+        auto time = foo.attributes.create<double>("time");
         time <<= 1.0;
 
-        auto ds3 = root.add_group("strings").
-                        add_dataset<std::string>("my_first_strings", { 2 } );
+        auto ds3 = root.create_group("strings").
+                        create_dataset<std::string>("my_first_strings", { 2 } );
         multi_array<std::string> sa({ 2 });
         sa(0) = "Hello";
         sa(1) = "World";
 
         ds3 <<= sa;
 
-        auto ds4 = root.add_group("references").
-                        add_dataset<object_reference>("refs", { 2 } );
+        auto ds4 = root.create_group("references").
+                        create_dataset<object_reference>("refs", { 2 } );
         object_reference ref1 = ds.ref();
         object_reference ref2 = foo.ref();
 
@@ -62,17 +62,17 @@ int main()
 
         ds4 <<= rr;
 
-        auto ref_attr = ds.attributes.add<object_reference>("self");
+        auto ref_attr = ds.attributes.create<object_reference>("self");
         ref_attr <<= ref1;
 
         std::vector<double> v2(10,10);
         ds.slice(2,_) <<= v2;
 
-        auto my_scalar = root.add_scalar_dataset<std::string>("my_scalar");
+        auto my_scalar = root.create_scalar_dataset<std::string>("my_scalar");
         my_scalar <<= "MyScalar";
 
         std::complex<double> c(1.0,2.0);
-        root.add_scalar_dataset("complex_number",c);
+        root.create_scalar_dataset("complex_number",c);
     }
 
     {

@@ -37,21 +37,21 @@ public:
     : parent_(&parent_)
     {}
 
-    attribute add(const std::string& name, const type& datatype)
+    attribute create(const std::string& name, const type& datatype)
     {
         return attribute(object(*parent_), name, datatype);
     }
 
     template<typename T>
-    attribute add(const std::string& name)
+    attribute create(const std::string& name)
     {
-        return add(name,get_hdf5_type<T>());
+        return create(name,get_hdf5_type<T>());
     }
 
     template<typename T>
-    attribute add(const std::string& name,const T& value)
+    attribute create(const std::string& name,const T& value)
     {
-        attribute attr = add<T>(name);
+        attribute attr = create<T>(name);
 
         attr <<= value;
 

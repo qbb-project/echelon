@@ -25,18 +25,18 @@ group::group(hdf5::group group_wrapper_)
 {
 }
 
-group group::add_group(const std::string& name)
+group group::create_group(const std::string& name)
 {
     return group(object(*this), name, creation_mode::create);
 }
 
-dataset group::add_dataset(const std::string& name, const type& datatype,
-                           const std::vector<hsize_t>& dims,int comp_level)
+dataset group::create_dataset(const std::string& name, const type& datatype,
+                              const std::vector<hsize_t>& dims,int comp_level)
 {
     return dataset(object(*this),name,datatype,dims,comp_level);
 }
 
-scalar_dataset group::add_scalar_dataset(const std::string& name, const type& datatype)
+scalar_dataset group::create_scalar_dataset(const std::string& name, const type& datatype)
 {
     return scalar_dataset(object(*this),name,datatype);
 }
