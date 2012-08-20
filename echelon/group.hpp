@@ -29,6 +29,8 @@ public:
     :what_(what_)
     {}
 
+    ~non_existing_member_exception() noexcept {}
+
     const char* what()const noexcept
     {
         return what_.c_str();

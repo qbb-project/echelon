@@ -15,6 +15,8 @@ public:
     :what_(what_)
     {}
 
+    ~wrong_object_type_exception() noexcept {}
+
     const char* what()const noexcept
     {
         return what_.c_str();

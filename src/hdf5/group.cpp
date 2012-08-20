@@ -13,7 +13,7 @@ namespace
 herr_t iterate_proxy_op(hid_t g_id, const char *name, const H5L_info_t *info,
                         void *op_data)
 {
-    using op_type = std::function<herr_t(hid_t,const char*)>;
+    typedef std::function<herr_t(hid_t,const char*)> op_type;
 
     op_type& op = *static_cast<op_type*>(op_data);
 

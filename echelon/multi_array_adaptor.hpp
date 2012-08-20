@@ -16,7 +16,7 @@ template<typename Container>
 class multi_array_adaptor
 {
 public:
-    using value_type = typename Container::value_type;
+    typedef typename Container::value_type value_type;
 
     multi_array_adaptor(Container& container_,
                         const std::vector<std::size_t>& dims_)

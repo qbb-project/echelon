@@ -52,9 +52,9 @@ struct type_lowering_hook<std::string>
 template<typename T>
 struct is_identity_lowering_function
 {
-    using original_type = typename T::original_type;
+    typedef typename T::original_type original_type;
 
-    using lowered_type = typename T::lowered_type;
+    typedef typename T::lowered_type lowered_type;
 
     static const bool value = std::is_same<
                                  original_type,

@@ -14,7 +14,7 @@ template<typename T>
 class multi_array
 {
 public:
-    using value_type = T;
+    typedef T value_type;
 
     multi_array()=default;
 

@@ -52,7 +52,7 @@ write(Sink& sink,const hdf5::type& datatype,
 {
     typedef typename C::value_type T;
 
-    using lowered_type = typename type_lowering_hook<T>::lowered_type;
+    typedef typename type_lowering_hook<T>::lowered_type lowered_type;
 
     std::vector<lowered_type> lowered_data;
 
@@ -89,9 +89,9 @@ read(const Source& source,const hdf5::type& datatype,
 {
     typedef typename C::value_type T;
 
-    using lowered_type = typename remove_base_type_cv<
-                            typename type_lowering_hook<T>::lowered_type
-                          >::type;
+    typedef typename remove_base_type_cv<
+                   typename type_lowering_hook<T>::lowered_type
+                  >::type lowered_type;
 
     std::vector<lowered_type> lowered_data;
 
@@ -170,9 +170,9 @@ template<typename Source,
                                  int>::type dummy = 0>
 inline void read(Source& source,T& value)
 {
-    using lowered_type = typename remove_base_type_cv<
-                           typename type_lowering_hook<T>::lowered_type
-                          >::type;
+    typedef typename remove_base_type_cv<
+                   typename type_lowering_hook<T>::lowered_type
+                  >::type lowered_type;
 
     lowered_type lowered_value;
 

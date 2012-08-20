@@ -21,6 +21,8 @@ public:
     {
     }
 
+    ~non_existing_attribute_exception() noexcept {}
+
     const char* what() const noexcept
     {
         return what_.c_str();
