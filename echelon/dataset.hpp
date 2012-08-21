@@ -11,6 +11,7 @@
 #include <echelon/object_reference.hpp>
 
 #include <echelon/slice.hpp>
+#include <echelon/range.hpp>
 
 #include <echelon/attribute_repository.hpp>
 #include <echelon/data_transfer_broker.hpp>
@@ -40,7 +41,7 @@ template<std::size_t I>
 struct calculate_slice_boundaries<I>
 {
     static void eval(const std::vector<hsize_t>&,
-                     std::vector<std::tuple<hsize_t,hsize_t>>&)
+                     std::vector<range>&)
     {
     }
 };
@@ -49,7 +50,7 @@ template<std::size_t I,typename Front,typename ...Tail>
 struct calculate_slice_boundaries<I,Front,Tail...>
 {
     static void eval(const std::vector<hsize_t>& dims,
-                     std::vector<std::tuple<hsize_t,hsize_t>>& boundaries,
+                     std::vector<range>& boundaries,
                      Front front,
                      Tail... tail)
     {
@@ -58,20 +59,25 @@ struct calculate_slice_boundaries<I,Front,Tail...>
         calculate_slice_boundaries<I+1,Tail...>::eval(dims,boundaries,tail...);
     }
 private:
-    static std::tuple<hsize_t,hsize_t> get_boundaries(hsize_t dim,unbound_t)
+    static range get_boundaries(hsize_t dim,unbound_t)
     {
-        return std::make_tuple(0,dim);
+        return range(0,dim);
+    }
+
+    static range get_boundaries(hsize_t,range r)
+    {
+        return r;
     }
 
     template<typename T>
-    static std::tuple<hsize_t,hsize_t> get_boundaries(hsize_t dim,T value)
+    static range get_boundaries(hsize_t dim,T value)
     {
         static_assert(std::is_integral<T>::value,
                       "only integral values are allowed in slicing expressions");
 
         assert(value < dim);
 
-        return std::make_tuple(value,value + 1);
+        return range(value,value + 1);
     }
 };
 
@@ -121,7 +127,7 @@ public:
         std::vector<hsize_t> dims =
                     dataset_wrapper_.get_space().get_simple_extent_dims();
 
-        std::vector<std::tuple<hsize_t,hsize_t>> boundaries;
+        std::vector<range> boundaries;
 
         detail::calculate_slice_boundaries<0,Args...>::eval(dims,boundaries,args...);
 

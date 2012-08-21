@@ -110,6 +110,14 @@ void dataspace::select_hyperslab(H5S_seloper_t op,
 
 void dataspace::select_hyperslab(H5S_seloper_t op,
                                  const std::vector<hsize_t>& start,
+                                 const std::vector<hsize_t>& stride,
+                                 const std::vector<hsize_t>& count)
+{
+    H5Sselect_hyperslab(id(), op, start.data(), stride.data(), count.data(),0);
+}
+
+void dataspace::select_hyperslab(H5S_seloper_t op,
+                                 const std::vector<hsize_t>& start,
                                  const std::vector<hsize_t>& count)
 {
     H5Sselect_hyperslab(id(), op, start.data(), 0, count.data(), 0);

@@ -46,6 +46,10 @@ public:
                          const std::vector<hsize_t>& count,
                          const std::vector<hsize_t>& block);
 
+    void select_hyperslab(H5S_seloper_t op, const std::vector<hsize_t>& start,
+                         const std::vector<hsize_t>& stride,
+                         const std::vector<hsize_t>& count);
+
     void select_hyperslab(H5S_seloper_t op, const std::vector<hsize_t>& start, const std::vector<hsize_t>& count);
 
     hssize_t get_select_hyperslab_nblocks()const;

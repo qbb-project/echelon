@@ -5,6 +5,8 @@
 #include <echelon/hdf5/dataset.hpp>
 #include <echelon/data_transfer_broker.hpp>
 
+#include <echelon/range.hpp>
+
 #include <cassert>
 #include <vector>
 #include <tuple>
@@ -28,7 +30,7 @@ class slice
 {
 public:
     slice(hdf5::dataset sliced_dataset_,
-          const std::vector<std::tuple<hsize_t,hsize_t>>& boundaries);
+          const std::vector<range>& ranges);
 
     template<typename T>
     void operator<<=(const T& array)

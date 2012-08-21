@@ -68,6 +68,12 @@ int main()
         std::vector<double> v2(10,10);
         ds.slice(2,_) <<= v2;
 
+        std::vector<double> v3(4,9);
+        ds.slice(3,range(1,5)) <<= v3;
+
+        std::vector<double> v4(2,8);
+        ds.slice(0,range(1,5,2)) <<= v4;
+
         auto my_scalar = root.create_scalar_dataset<std::string>("my_scalar");
         my_scalar <<= "MyScalar";
 
