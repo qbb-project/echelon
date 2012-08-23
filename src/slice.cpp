@@ -24,6 +24,13 @@ slice::slice(hdf5::dataset sliced_dataset_,
     }
 
     selected_dataspace_.select_hyperslab(H5S_SELECT_SET,offset,stride,count);
+
+    size_ = count;
+}
+
+const std::vector<hsize_t>& slice::size()const
+{
+    return size_;
 }
 
 }

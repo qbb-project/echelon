@@ -138,10 +138,10 @@ std::vector<hyperslab_block> dataspace::get_select_hyperslab_blocks()const
 
     std::vector<hyperslab_block> blocks;
 
-    for(auto iter = begin(buffer); iter != end(buffer); iter += 6)
+    for(auto iter = begin(buffer); iter != end(buffer); iter += 2*rank)
     {
-        std::vector<hsize_t> start(iter,iter + 3);
-        std::vector<hsize_t> opposite(iter + 3,iter + 6);
+        std::vector<hsize_t> start(iter,iter + rank);
+        std::vector<hsize_t> opposite(iter + rank,iter + 2*rank);
 
         blocks.push_back(hyperslab_block(start,opposite));
     }

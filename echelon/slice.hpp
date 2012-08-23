@@ -49,27 +49,23 @@ public:
     template<typename T>
     friend void operator<<=(T& array,const slice& sl)
     {
-        std::vector<hdf5::hyperslab_block> hyperslab_blocks =
-                   sl.selected_dataspace_.get_select_hyperslab_blocks();
+        std::vector<hsize_t> slice_dims = size();
 
-        const std::size_t num_of_hyperslab_block = hyperslab_blocks.size();
+        std::vector<std::size_t> dims(begin(slice_dims),end(slice_dims));
 
-        assert(num_of_hyperslab_block == 1);
-
-        std::vector<hsize_t> block_dims = hyperslab_blocks[0].dims();
-
-        std::vector<std::size_t> dims(begin(block_dims),end(block_dims));
-
-        hdf5::dataspace mem_space(block_dims);
+        hdf5::dataspace mem_space(slice_dims);
         hdf5::dataspace file_space = sl.selected_dataspace_;
         hdf5::type datatype = sl.sliced_dataset_.get_type();
 
         ::echelon::read(sl.sliced_dataset_,datatype,mem_space,file_space,array);
     }
 
+    const std::vector<hsize_t>& size()const;
 private:
     hdf5::dataset sliced_dataset_;
     hdf5::dataspace selected_dataspace_;
+
+    std::vector<hsize_t> size_;
 };
 
 };
