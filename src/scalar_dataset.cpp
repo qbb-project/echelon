@@ -30,4 +30,9 @@ hid_t scalar_dataset::id()const
     return dataset_wrapper_.id();
 }
 
+const hdf5::dataset& scalar_dataset::get_native_handle()const
+{
+    return dataset_wrapper_;
+}
+
 }

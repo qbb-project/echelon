@@ -1,7 +1,7 @@
 #ifndef ECHELON_OBJECT_HPP
 #define ECHELON_OBJECT_HPP
 
-#include <hdf5.h>
+#include <echelon/hdf5/object.hpp>
 #include <exception>
 #include <string>
 
@@ -34,26 +34,12 @@ class object_reference;
 class object
 {
 public:
-    //fast workaround!
-    //only needed for reading datasets of object_references by now;
-    //should not be used for anything different and should be
-    //deleted after we fixed this problem
-    object();
-
-    explicit object(hid_t object_id_);
-    object(hid_t loc_id_,const std::string& name);
-
+    explicit object(const hdf5::object& object_wrapper_);
     object(const object& other);
-    object(object&& other);
 
     explicit object(const group& object_);
     explicit object(const dataset& object_);
     explicit object(const scalar_dataset& object_);
-
-    ~object();
-
-    object& operator=(const object& other);
-    object& operator=(object&& other);
 
     object& operator=(const group& object_);
     object& operator=(const dataset& object_);
@@ -66,8 +52,9 @@ public:
     object_reference ref()const;
 
     hid_t id()const;
+    const hdf5::object& get_native_handle()const;
 private:
-    hid_t object_id_;
+    hdf5::object object_wrapper_;
 };
 
 

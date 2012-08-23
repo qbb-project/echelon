@@ -45,4 +45,9 @@ hid_t dataset::id()const
     return dataset_wrapper_.id();
 }
 
+const hdf5::dataset& dataset::get_native_handle()const
+{
+    return dataset_wrapper_;
+}
+
 }

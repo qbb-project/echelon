@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <vector>
 
+#include <cassert>
+
 namespace echelon
 {
 namespace hdf5
@@ -14,8 +16,17 @@ namespace hdf5
 dataset::dataset(hid_t dataset_id_)
 : dataset_id_(dataset_id_)
 {
-    if(id() > -1)
-        H5Iinc_ref(dataset_id_);
+    assert(H5Iget_type(dataset_id_) == H5I_DATASET || id() == -1);
+}
+
+dataset::dataset(const object& other)
+:dataset_id_(-1)
+{
+    if(H5Iget_type(other.id()) != H5I_DATASET)
+        throw 0;
+
+    H5Iinc_ref(other.id());
+    dataset_id_ = other.id();
 }
 
 dataset::dataset(hid_t loc_id, const std::string& name, const type& dtype,
@@ -37,7 +48,12 @@ dataset::dataset(hid_t loc_id, const std::string& name,
 dataset::~dataset()
 {
     if (id() > -1)
+    {
+        assert(H5Iis_valid(id()));
+        assert(H5Iget_type(id()) == H5I_DATASET);
+
         H5Dclose(id());
+    }
 }
 
 dataset::dataset(const dataset& other)
@@ -112,7 +128,7 @@ void dataset::set_extent(const std::vector<hsize_t>& dims)
 
 type dataset::get_type() const
 {
-    return type(H5Dget_type(id()));
+    return type(H5Dget_type(id()),true);
 }
 
 dataspace dataset::get_space() const

@@ -17,4 +17,9 @@ hid_t attribute::id()const
     return attribute_wrapper_.id();
 }
 
+const hdf5::attribute& attribute::get_native_handle()const
+{
+    return attribute_wrapper_;
+}
+
 }

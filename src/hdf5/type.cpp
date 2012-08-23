@@ -10,7 +10,6 @@ namespace hdf5
 type::type(hid_t type_id_, bool is_transient_)
 : type_id_(type_id_), is_transient_(is_transient_)
 {
-    H5Iinc_ref(type_id_);
 }
 
 type::~type()

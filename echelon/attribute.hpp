@@ -33,6 +33,7 @@ public:
     }
 
     hid_t id()const;
+    const hdf5::attribute& get_native_handle()const;
 private:
     hdf5::attribute attribute_wrapper_;
 };

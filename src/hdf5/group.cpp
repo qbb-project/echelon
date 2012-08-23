@@ -1,6 +1,7 @@
 #include <echelon/hdf5/group.hpp>
 
 #include <utility>
+#include <cassert>
 
 namespace echelon
 {
@@ -30,7 +31,16 @@ group::group()
 group::group(hid_t group_id_)
 : group_id_(group_id_)
 {
-    H5Iinc_ref(group_id_);
+}
+
+group::group(const object& other)
+:group_id_(-1)
+{
+    if(H5Iget_type(other.id()) != H5I_GROUP)
+        throw 0;
+
+    H5Iinc_ref(other.id());
+    group_id_ = other.id();
 }
 
 group::group(hid_t loc_id_, const std::string& name_, hid_t lcpl_id_,
@@ -54,11 +64,10 @@ group::~group()
 group::group(const group& other)
 :group_id_(other.group_id_)
 {
-    if(id() > -1)
-    {
-        if( H5Iinc_ref(group_id_) < 0 )
-            throw 0;
-    }
+    assert(id() > -1);
+
+    if( H5Iinc_ref(group_id_) < 0 )
+        throw 0;
 }
 
 group::group(group&& other)

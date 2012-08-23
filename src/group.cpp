@@ -43,7 +43,7 @@ scalar_dataset group::create_scalar_dataset(const std::string& name, const type&
 
 object group::operator[](const std::string& name)const
 {
-    return object(id(),name);
+    return object(hdf5::object(id(),name));
 }
 
 object_reference group::ref()const
@@ -54,6 +54,11 @@ object_reference group::ref()const
 hid_t group::id() const noexcept
 {
     return group_wrapper_.id();
+}
+
+const hdf5::group& group::get_native_handle()const
+{
+    return group_wrapper_;
 }
 
 }

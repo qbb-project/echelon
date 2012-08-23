@@ -1,6 +1,7 @@
 #include <echelon/hdf5/object_reference.hpp>
 
 #include <echelon/hdf5/dataset.hpp>
+#include <echelon/hdf5/handle.hpp>
 
 #include <vector>
 #include <type_traits>
@@ -22,9 +23,9 @@ object_reference::object_reference(hid_t obj_id_)
     std::vector<char> name(len + 1);
     H5Iget_name(obj_id_,name.data(),len + 1);
 
-    hid_t file_id = H5Iget_file_id(obj_id_);
+    hdf5::handle file_handle(H5Iget_file_id(obj_id_));
 
-    H5Rcreate(&obj_ref_, file_id, name.data(), H5R_OBJECT, -1);
+    H5Rcreate(&obj_ref_, file_handle.id(), name.data(), H5R_OBJECT, -1);
 }
 
 object_reference::object_reference(hid_t loc_id_, const std::string& name_)

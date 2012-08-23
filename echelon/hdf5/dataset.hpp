@@ -5,6 +5,8 @@
 #include "dataspace.hpp"
 #include "property_list.hpp"
 
+#include <echelon/hdf5/object.hpp>
+
 #include <hdf5.h>
 #include <string>
 
@@ -19,6 +21,7 @@ class dataset
 {
 public:
     explicit dataset(hid_t dataset_id_);
+    explicit dataset(const object& other);
     dataset(hid_t loc_id, const std::string& name, const type& dtype,
             const dataspace& space, const property_list& lcpl,
             const property_list& dcpl,

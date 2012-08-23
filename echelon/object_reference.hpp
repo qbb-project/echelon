@@ -2,6 +2,7 @@
 #define ECHELON_OBJECT_REFERENCE_HPP
 
 #include <echelon/hdf5/object_reference.hpp>
+#include <echelon/hdf5/handle.hpp>
 #include <echelon/customization_hooks.hpp>
 #include <echelon/object.hpp>
 
@@ -23,7 +24,7 @@ public:
 
     explicit object_reference(const object& referenced_object);
     explicit object_reference(const hdf5::object_reference& reference_wrapper_,
-                              object any_valid_object_);
+                              hdf5::handle any_valid_handle_);
 
     object operator*()const;
 
@@ -33,7 +34,7 @@ public:
     }
 private:
     hdf5::object_reference reference_wrapper_;
-    object any_valid_object_;
+    hdf5::handle any_valid_handle_;
 };
 
 template<>
@@ -51,7 +52,7 @@ struct type_lowering_hook<object_reference>
     template<typename Source>
     static original_type raise_type(lowered_type value,const Source& source)
     {
-        return object_reference(value,object(source.id()));
+        return object_reference(value,hdf5::handle(source));
     }
 };
 

@@ -79,7 +79,8 @@ public:
 
     object_reference ref()const;
 
-    virtual hid_t id() const noexcept;
+    hid_t id() const noexcept;
+    const hdf5::group& get_native_handle()const;
 private:
     friend class constructor_access;
     friend class object;
