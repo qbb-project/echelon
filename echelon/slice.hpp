@@ -49,7 +49,7 @@ public:
     template<typename T>
     friend void operator<<=(T& array,const slice& sl)
     {
-        std::vector<hsize_t> slice_dims = size();
+        std::vector<hsize_t> slice_dims = sl.size();
 
         std::vector<std::size_t> dims(begin(slice_dims),end(slice_dims));
 
