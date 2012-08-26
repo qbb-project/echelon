@@ -33,7 +33,7 @@ public:
     hsize_t iterate(hid_t group_id, H5_index_t index_type, H5_iter_order_t order,
                     hsize_t start_index, std::function<herr_t(hid_t,const char*)> op)const;
 
-    hid_t id()const noexcept;
+    hid_t id()const;
 private:
     hid_t group_id_;
 };

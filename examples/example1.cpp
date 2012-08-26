@@ -6,8 +6,26 @@
 
 using namespace echelon;
 
+void print_exception(const std::exception& e, int level =  0)
+{
+    std::cerr << std::string(level, ' ') << "exception: " << e.what() << '\n';
+    try
+    {
+        std::rethrow_if_nested(e);
+    }
+    catch(const std::exception& e)
+    {
+        print_exception(e, level+1);
+    }
+    catch(...)
+    {}
+}
+
 int main()
 {
+    try
+    {
+
     {
         file my_file("test.hdf5", file::create_mode::truncate);
 
@@ -139,5 +157,14 @@ int main()
         MyScalar <<= my_scalar;
 
         std::cout << MyScalar << std::endl;
+
+        root["foo"];
+    }
+
+    }
+
+    catch(const std::exception& e)
+    {
+        print_exception(e);
     }
 }

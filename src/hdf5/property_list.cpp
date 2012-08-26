@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include <echelon/hdf5/error_handling.hpp>
+
 namespace echelon
 {
 namespace hdf5
@@ -20,28 +22,43 @@ hid_t property_list_class::id() const
 property_list::property_list(hid_t property_list_id_)
 : property_list_id_(property_list_id_)
 {
+    ECHELON_ASSERT_MSG(id() == -1 || id() == H5P_DEFAULT || H5Iis_valid(id()) > 0,
+                       "invalid object ID");
 }
 
 property_list::property_list(property_list_class cls_)
 : property_list_id_(H5Pcreate(cls_.id()))
 {
+    if(id() < 0)
+        throw_on_hdf5_error();
 }
 
 property_list::~property_list()
 {
-    if (id() > -1)
-        H5Pclose(id());
+    if (id() > -1 && id() != H5P_DEFAULT)
+    {
+        ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0,"invalid object ID");
+
+        ECHELON_VERIFY_MSG(H5Pclose(id()) >= 0,"unable to close the property list");
+    }
 }
 
 property_list::property_list(const property_list& other)
-:property_list_id_(other.property_list_id_)
+:property_list_id_(other.id())
 {
-    H5Iinc_ref(property_list_id_);
+    if(id() != H5P_DEFAULT)
+    {
+        ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0,"invalid object ID");
+
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0,"unable to increment the reference count");
+    }
 }
 
 property_list::property_list(property_list&& other)
-:property_list_id_(other.property_list_id_)
+:property_list_id_(other.id())
 {
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == H5P_DEFAULT,"invalid object ID");
+
     other.property_list_id_ = -1;
 }
 
@@ -66,12 +83,18 @@ property_list& property_list::operator=(property_list&& other)
 
 void property_list::set_chunk(const std::vector<hsize_t>& dims)
 {
-    H5Pset_chunk(id(), dims.size(), dims.data());
+    herr_t error_code = H5Pset_chunk(id(), dims.size(), dims.data());
+
+    if(error_code < 0)
+        throw_on_hdf5_error();
 }
 
 void property_list::set_deflate(unsigned int level)
 {
-    H5Pset_deflate(id(), level);
+    herr_t error_code = H5Pset_deflate(id(), level);
+
+    if(error_code < 0)
+        throw_on_hdf5_error();
 }
 
 hid_t property_list::id() const

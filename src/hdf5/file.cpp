@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include <echelon/hdf5/error_handling.hpp>
+
 namespace echelon
 {
 namespace hdf5
@@ -11,27 +13,40 @@ file::file(const std::string& name_, unsigned flags_, hid_t fcpl_id_,
            hid_t fapl_id_)
 : file_id_(H5Fcreate(name_.c_str(), flags_, fcpl_id_, fapl_id_))
 {
+    if(id() < 0)
+        throw_on_hdf5_error();
 }
 
 file::file(const std::string& name_, unsigned flags_, hid_t fapl_id_)
 : file_id_(H5Fopen(name_.c_str(), flags_, fapl_id_))
 {
+    if(id() < 0)
+        throw_on_hdf5_error();
 }
 
 file::~file()
 {
-    H5Fclose(id());
+    if (id() > -1)
+    {
+        ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0,"invalid object ID");
+
+        ECHELON_VERIFY_MSG(H5Fclose(id()) >= 0,"unable to close the file");
+    }
 }
 
 file::file(const file& other)
-:file_id_(other.file_id_)
+:file_id_(other.id())
 {
-    H5Iinc_ref(file_id_);
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0,"invalid object ID");
+
+    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0,"unable to increment the reference count");
 }
 
 file::file(file&& other)
 :file_id_(other.id())
 {
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0,"invalid object ID");
+
     other.file_id_ = -1;
 }
 

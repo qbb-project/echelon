@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include <echelon/hdf5/error_handling.hpp>
+
 namespace echelon
 {
 namespace hdf5
@@ -10,23 +12,37 @@ namespace hdf5
 type::type(hid_t type_id_, bool is_transient_)
 : type_id_(type_id_), is_transient_(is_transient_)
 {
+    ECHELON_ASSERT_MSG(id() == -1 || H5Iis_valid(id()) > 0 || !is_transient_,
+                       "invalid object ID");
 }
 
 type::~type()
 {
     if (is_transient_ && id() > -1)
-        H5Tclose(id());
+    {
+        ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0,"invalid object ID");
+
+        ECHELON_VERIFY_MSG(H5Tclose(id()) >= 0,"unable to close the type");
+    }
 }
 
 type::type(const type& other)
-:type_id_(other.type_id_),is_transient_(other.is_transient_)
+:type_id_(other.id()),is_transient_(other.is_transient_)
 {
-    H5Iinc_ref(type_id_);
+    if(is_transient_)
+    {
+        ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0,"invalid object ID");
+
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0,"unable to increment the reference count");
+    }
 }
 
 type::type(type&& other)
-:type_id_(other.type_id_),is_transient_(other.is_transient_)
+:type_id_(other.id()),is_transient_(other.is_transient_)
 {
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) || !is_transient_,
+                       "invalid object ID");
+
     other.type_id_ = -1;
 }
 
@@ -52,7 +68,12 @@ type& type::operator=(type&& other)
 
 std::size_t type::size() const
 {
-    return H5Tget_size(id());
+    std::size_t size = H5Tget_size(id());
+
+    if(size == 0)
+        throw_on_hdf5_error();
+
+    return size;
 }
 
 type type::char_()
@@ -118,14 +139,26 @@ type type::double_()
 type type::string()
 {
     hid_t tid = H5Tcopy(H5T_C_S1);
-    H5Tset_size (tid, H5T_VARIABLE);
+
+    if(tid < 0)
+        throw_on_hdf5_error();
+
+    herr_t error_code = H5Tset_size(tid, H5T_VARIABLE);
+
+    if(error_code < 0)
+        throw_on_hdf5_error();
 
     return type(tid);
 }
 
 type type::empty_compound_type(std::size_t size)
 {
-    return type(H5Tcreate(H5T_COMPOUND,size));
+    hid_t tid = H5Tcreate(H5T_COMPOUND,size);
+
+    if(tid < 0)
+        throw_on_hdf5_error();
+
+    return type(tid);
 }
 
 type type::object_reference()
@@ -136,12 +169,20 @@ type type::object_reference()
 void type::insert_member(const std::string& name,
                          std::size_t offset, const type& field_type)
 {
-    H5Tinsert(id(),name.c_str(),offset,field_type.id());
+    herr_t error_code = H5Tinsert(id(),name.c_str(),offset,field_type.id());
+
+    if(error_code < 0)
+        throw_on_hdf5_error();
 }
 
 type type::clone()const
 {
-    return type(H5Tcopy(id()),is_transient_);
+    hid_t tid = H5Tcopy(id());
+
+    if(tid < 0)
+        throw_on_hdf5_error();
+
+    return type(tid,is_transient_);
 }
 
 hid_t type::id() const

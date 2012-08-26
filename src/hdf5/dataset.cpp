@@ -2,11 +2,11 @@
 
 #include <echelon/hdf5/object_reference.hpp>
 
+#include <echelon/hdf5/error_handling.hpp>
+
 #include <utility>
 #include <algorithm>
 #include <vector>
-
-#include <cassert>
 
 namespace echelon
 {
@@ -16,17 +16,21 @@ namespace hdf5
 dataset::dataset(hid_t dataset_id_)
 : dataset_id_(dataset_id_)
 {
-    assert(H5Iget_type(dataset_id_) == H5I_DATASET || id() == -1);
+    ECHELON_ASSERT_MSG(id() == -1 || H5Iget_type(id()) == H5I_DATASET,
+                       "ID does not refer to a dataset");
+    ECHELON_ASSERT_MSG(id() == -1 || H5Iis_valid(id()) > 0,
+                       "invalid object ID");
 }
 
 dataset::dataset(const object& other)
-:dataset_id_(-1)
+:dataset_id_(other.id())
 {
-    if(H5Iget_type(other.id()) != H5I_DATASET)
-        throw 0;
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0,"invalid object ID");
 
-    H5Iinc_ref(other.id());
-    dataset_id_ = other.id();
+    ECHELON_ASSERT_MSG(H5Iget_type(id()) == H5I_DATASET,
+                       "ID does not refer to a dataset");
+
+    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0,"unable to increment the reference count");
 }
 
 dataset::dataset(hid_t loc_id, const std::string& name, const type& dtype,
@@ -37,34 +41,41 @@ dataset::dataset(hid_t loc_id, const std::string& name, const type& dtype,
 dataset_id_(H5Dcreate2(loc_id, name.c_str(), dtype.id(), space.id(), lcpl.id(), dcpl.id(),
                        dapl.id()))
 {
+    if(id() < 0)
+        throw_on_hdf5_error();
 }
 
 dataset::dataset(hid_t loc_id, const std::string& name,
                  const property_list& dapl)
 : dataset_id_(H5Dopen2(loc_id, name.c_str(), dapl.id()))
 {
+    if(id() < 0)
+        throw_on_hdf5_error();
 }
 
 dataset::~dataset()
 {
     if (id() > -1)
     {
-        assert(H5Iis_valid(id()));
-        assert(H5Iget_type(id()) == H5I_DATASET);
+        ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0,"invalid object ID");
 
-        H5Dclose(id());
+        ECHELON_VERIFY_MSG(H5Dclose(id()) >= 0,"unable to close the dataset");
     }
 }
 
 dataset::dataset(const dataset& other)
-:dataset_id_(other.dataset_id_)
+:dataset_id_(other.id())
 {
-    H5Iinc_ref(dataset_id_);
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0,"invalid object ID");
+
+    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0,"unable to increment the reference count");
 }
 
 dataset::dataset(dataset&& other)
-:dataset_id_(other.dataset_id_)
+:dataset_id_(other.id())
 {
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0,"invalid object ID");
+
     other.dataset_id_ = -1;
 }
 
@@ -92,8 +103,9 @@ void dataset::write(const type& mem_type, const dataspace& mem_space,
                     const property_list& xfer_plist,
                     const void* buf)
 {
-    H5Dwrite(id(), mem_type.id(), mem_space.id(), file_space.id(),
-             xfer_plist.id(), buf);
+    if(H5Dwrite(id(), mem_type.id(), mem_space.id(), file_space.id(),
+             xfer_plist.id(), buf) < 0)
+        throw_on_hdf5_error();
 }
 
 void dataset::read(const type& mem_type, const dataspace& mem_space,
@@ -101,8 +113,9 @@ void dataset::read(const type& mem_type, const dataspace& mem_space,
                    const property_list& xfer_plist,
                    void* buf)const
 {
-    H5Dread(id(), mem_type.id(), mem_space.id(), file_space.id(),
-            xfer_plist.id(), buf);
+    if(H5Dread(id(), mem_type.id(), mem_space.id(), file_space.id(),
+            xfer_plist.id(), buf) < 0)
+        throw_on_hdf5_error();
 }
 
 void dataset::write(const void* value)
@@ -123,17 +136,28 @@ void dataset::read(void* value)const
 
 void dataset::set_extent(const std::vector<hsize_t>& dims)
 {
-    H5Dset_extent(id(), dims.data());
+    if(H5Dset_extent(id(), dims.data()) < 0)
+        throw_on_hdf5_error();
 }
 
 type dataset::get_type() const
 {
-    return type(H5Dget_type(id()),true);
+    hid_t type_id = H5Dget_type(id());
+
+    if(type_id < 0)
+        throw_on_hdf5_error();
+
+    return type(type_id,true);
 }
 
 dataspace dataset::get_space() const
 {
-    return dataspace(H5Dget_space(id()));
+    hid_t space_id = H5Dget_space(id());
+
+    if(space_id < 0)
+        throw_on_hdf5_error();
+
+    return dataspace(space_id);
 }
 
 hid_t dataset::id() const
