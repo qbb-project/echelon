@@ -19,6 +19,11 @@ namespace echelon
 namespace hdf5
 {
 
+handle::handle()
+:id_(-1)
+{
+}
+
 handle::handle(hid_t id_)
 :id_(id_)
 {

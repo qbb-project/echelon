@@ -21,6 +21,7 @@ class type;
 class handle
 {
 public:
+    handle();
     explicit handle(hid_t id_);
 
     handle(const attribute& other);
