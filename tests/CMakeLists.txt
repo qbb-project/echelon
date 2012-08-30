@@ -18,3 +18,9 @@ add_executable(string_support_test string_support.cpp)
 target_link_libraries(string_support_test echelon ${BOOST_LIBRARIES})
 
 add_test(string_support_test ${CMAKE_CURRENT_BINARY_DIR}/string_support_test)
+
+
+add_executable(error_handling error_handling.cpp) 
+target_link_libraries(error_handling echelon ${BOOST_LIBRARIES})
+
+add_test(error_handling ${CMAKE_CURRENT_BINARY_DIR}/error_handling)

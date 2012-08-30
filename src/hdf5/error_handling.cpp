@@ -19,17 +19,17 @@ template<typename E>
 struct error_translator
 {
     void operator()(const std::exception_ptr& current_exception,
-                    const H5E_error2_t* err_desc)const
+                    const H5E_error2_t* err_desc) const
     {
-        if(current_exception)
+        if (current_exception)
         {
             try
             {
                 std::rethrow_exception(current_exception);
             }
-            catch(...)
+            catch (...)
             {
-                std::throw_with_nested( E(err_desc->desc, err_desc->min_num) );
+                std::throw_with_nested(E(err_desc->desc, err_desc->min_num));
             }
         }
         else
@@ -38,6 +38,23 @@ struct error_translator
         }
     }
 };
+
+std::map<hid_t,
+         std::function<void(const std::exception_ptr&,const H5E_error2_t*)> >
+   minor_error_translation_map =
+   {
+     { H5E_NOTFOUND, error_translator<not_found_exception>() },
+     { H5E_CANTOPENOBJ, error_translator<can_not_open_object_exception>() },
+     { H5E_EXISTS, error_translator<exists_exception>() },
+     { H5E_ALREADYEXISTS, error_translator<already_exists_exception>() }
+   };
+
+std::map<std::pair<hid_t,hid_t>,
+         std::function<void(const std::exception_ptr&,const H5E_error2_t*)> >
+   overwrite_error_translation_map =
+   {
+     { { H5E_SYM, H5E_CANTINIT }, error_translator<symbol_already_exists_exception>() }
+   };
 
 std::map<hid_t,
          std::function<void(const std::exception_ptr&,const H5E_error2_t*)> >
@@ -74,19 +91,35 @@ std::map<hid_t,
      { H5E_CACHE , error_translator<metadata_cache_exception>() }
     };
 
-
 herr_t translate_error_stack(unsigned, const H5E_error2_t* err_desc,void* client_data)
 {
     std::exception_ptr& current_exception = *static_cast<std::exception_ptr*>(client_data);
 
     try
     {
-        auto iter = error_translation_map.find(err_desc->maj_num);
+        auto iter = overwrite_error_translation_map.find(std::make_pair(err_desc->maj_num,err_desc->min_num));
 
-        const bool no_valid_error_translation = iter != error_translation_map.end();
-        assert(no_valid_error_translation);
+        if(iter != end(overwrite_error_translation_map))
+        {
+            iter->second(current_exception,err_desc);
+        }
+        else
+        {
+            auto iter = minor_error_translation_map.find(err_desc->min_num);
 
-        iter->second(current_exception,err_desc);
+            if(iter != end(minor_error_translation_map))
+            {
+                iter->second(current_exception,err_desc);
+            }
+            else
+            {
+                auto iter = error_translation_map.find(err_desc->maj_num);
+
+                ECHELON_ASSERT_MSG(iter != end(error_translation_map),"no valid error translation found");
+
+                iter->second(current_exception,err_desc);
+            }
+        }
     }
     catch(...)
     {

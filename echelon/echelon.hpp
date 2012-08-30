@@ -18,4 +18,6 @@
 
 #include <echelon/adapt_type.hpp>
 
+#include <echelon/hdf5/error_handling.hpp>
+
 #endif

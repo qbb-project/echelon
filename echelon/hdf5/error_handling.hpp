@@ -27,7 +27,7 @@ namespace hdf5
 class exception : public std::exception
 {
 public:
-    exception(const std::string& what_)
+    explicit exception(const std::string& what_)
     :what_(what_)
     {
     }
@@ -395,6 +395,56 @@ public:
 
 private:
     hid_t obj_id_;
+};
+
+class not_found_exception : public symbol_table_exception
+{
+public:
+    not_found_exception(const std::string& what_,hid_t minor_num_)
+    :symbol_table_exception(what_,minor_num_)
+    {}
+
+    virtual ~not_found_exception() noexcept {};
+};
+
+class can_not_open_object_exception : public symbol_table_exception
+{
+public:
+    can_not_open_object_exception(const std::string& what_,hid_t minor_num_)
+    :symbol_table_exception(what_,minor_num_)
+    {}
+
+    virtual ~can_not_open_object_exception() noexcept {};
+};
+
+class exists_exception : public Btree_exception
+{
+public:
+    exists_exception(const std::string& what_,hid_t minor_num_)
+    :Btree_exception(what_,minor_num_)
+    {}
+
+    virtual ~exists_exception() noexcept {};
+};
+
+class already_exists_exception : public resource_exception
+{
+public:
+    already_exists_exception(const std::string& what_,hid_t minor_num_)
+    :resource_exception(what_,minor_num_)
+    {}
+
+    virtual ~already_exists_exception() noexcept {};
+};
+
+class symbol_already_exists_exception : public symbol_table_exception
+{
+public:
+    symbol_already_exists_exception(const std::string& what_,hid_t minor_num_)
+    :symbol_table_exception(what_,minor_num_)
+    {}
+
+    virtual ~symbol_already_exists_exception() noexcept {};
 };
 
 void throw_on_hdf5_error();
