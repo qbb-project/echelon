@@ -1,5 +1,7 @@
 #include <echelon/utility.hpp>
 
+#include <echelon/hdf5/dataspace.hpp>
+
 namespace echelon
 {
 
@@ -12,7 +14,9 @@ object_type get_object_type(hid_t obj_id)
         return object_type::group;
     else if (obj_info.type == H5O_TYPE_DATASET)
     {
-        if(H5Sget_simple_extent_type(H5Dget_space(obj_id)) == H5S_SCALAR)
+        hdf5::dataspace space(H5Dget_space(obj_id));
+
+        if(H5Sget_simple_extent_type(space.id()) == H5S_SCALAR)
             return object_type::scalar_dataset;
         else
             return object_type::dataset;
