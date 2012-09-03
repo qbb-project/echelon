@@ -1,0 +1,38 @@
+/** \page BasicAccess Basic file access
+
+\ingroup Tutorial
+
+\section TutorialBasicAccessTableOfContents Table of contents
+  - \ref TutorialFileCreationAndAccess
+
+\section TutorialFileCreationAndAccess File creation and access
+
+Test
+
+\code
+#include <echelon/echelon.hpp>
+#include <vector>
+
+using namespace echelon;
+
+int main()
+{
+    file hdf_file("first_file.h5", file::create_mode::truncate);
+
+    group root = hdf5_file.root_group();
+        
+    group data = root.create_group("data");
+
+    dataset ds = data.create_dataset<double>("ds", { 10 });
+
+    std::vector<double> v;
+
+    for(std::size_t i = 0;i < 10;++i)
+        v.push_back(i);
+
+    ds <<= v;
+}
+\endcode
+
+
+*/ 
