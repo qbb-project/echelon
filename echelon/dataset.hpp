@@ -109,8 +109,7 @@ public:
     template<typename T>
     friend void operator<<=(T& array,const dataset& ds)
     {
-        std::vector<hsize_t> simple_extend_dims =
-            ds.dataset_wrapper_.get_space().get_simple_extent_dims();
+        std::vector<hsize_t> simple_extend_dims = ds.size();
 
         std::vector<std::size_t> dims(begin(simple_extend_dims),end(simple_extend_dims));
 
@@ -121,11 +120,12 @@ public:
         ::echelon::read(ds.dataset_wrapper_,datatype,mem_space,file_space,array);
     }
 
+    std::vector<hsize_t> size()const;
+
     template<typename ...Args>
     slice slice(Args... args)const
     {
-        std::vector<hsize_t> dims =
-                    dataset_wrapper_.get_space().get_simple_extent_dims();
+        std::vector<hsize_t> dims = size();
 
         std::vector<range> boundaries;
 

@@ -35,6 +35,11 @@ dataset::dataset(hdf5::dataset dataset_wrapper_)
 {
 }
 
+std::vector<hsize_t> dataset::size()const
+{
+    return dataset_wrapper_.get_space().get_simple_extent_dims();
+}
+
 object_reference dataset::ref()const
 {
     return object_reference(object(*this));
