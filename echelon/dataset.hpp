@@ -136,7 +136,7 @@ public:
 
     object_reference ref()const;
 
-    virtual hid_t id()const;
+    hid_t id()const;
     const hdf5::dataset& get_native_handle()const;
 private:
     hdf5::dataset dataset_wrapper_;
