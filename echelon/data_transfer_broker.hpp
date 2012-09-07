@@ -71,10 +71,10 @@ read(const Source& source,const hdf5::type& datatype,
      const hdf5::dataspace& memspace,const hdf5::dataspace& filespace,
      C& container)
 {
-    std::vector<hsize_t> dims = memspace.get_simple_extent_dims();
-    std::vector<std::size_t> dims_(begin(dims),end(dims));
+    std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
+    std::vector<std::size_t> mem_shape_(begin(mem_shape),end(mem_shape));
 
-    require_dimensions(container,dims_);
+    reshape(container,mem_shape_);
 
     source.read(datatype,memspace,filespace,
                 hdf5::default_property_list,data(container));

@@ -79,12 +79,12 @@ public:
         return shape_;
     }
 
-    void resize(const std::vector<std::size_t>& dims_)
+    void reshape(const std::vector<std::size_t>& new_shape)
     {
-        data_.resize(std::accumulate(std::begin(dims_),std::end(dims_),
+        data_.resize(std::accumulate(std::begin(new_shape),std::end(new_shape),
                                      std::size_t(1),std::multiplies<std::size_t>()));
 
-        this->shape_ = dims_;
+        this->shape_ = new_shape;
     }
 private:
     std::vector<T> data_;
@@ -92,10 +92,10 @@ private:
 };
 
 template<typename T>
-inline void require_dimensions(multi_array<T>& container,
-                               const std::vector<std::size_t>& dims)
+inline void reshape(multi_array<T>& container,
+                    const std::vector<std::size_t>& new_shape)
 {
-    container.resize(dims);
+    container.reshape(new_shape);
 }
 
 }
