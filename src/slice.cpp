@@ -34,7 +34,7 @@ slice::slice(hdf5::dataset sliced_dataset_,
     }
 }
 
-const std::vector<hsize_t>& slice::size()const
+const std::vector<hsize_t>& slice::shape()const
 {
     return size_;
 }

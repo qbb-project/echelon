@@ -35,7 +35,7 @@ dataset::dataset(hdf5::dataset dataset_wrapper_)
 {
 }
 
-std::vector<hsize_t> dataset::size()const
+std::vector<hsize_t> dataset::shape()const
 {
     return dataset_wrapper_.get_space().get_simple_extent_dims();
 }

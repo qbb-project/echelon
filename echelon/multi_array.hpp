@@ -18,10 +18,10 @@ public:
 
     multi_array()=default;
 
-    explicit multi_array(const std::vector<std::size_t>& dims_)
-    :data_(std::accumulate(std::begin(dims_),std::end(dims_),
+    explicit multi_array(const std::vector<std::size_t>& shape_)
+    :data_(std::accumulate(std::begin(shape_),std::end(shape_),
                            std::size_t(1),std::multiplies<std::size_t>())),
-     dims_(dims_)
+     shape_(shape_)
     {}
 
     const T& operator()(std::size_t i)const
@@ -36,12 +36,12 @@ public:
 
     const T& operator()(std::size_t i,std::size_t j)const
     {
-        return data_[dims_[1]*i + j];
+        return data_[shape_[1]*i + j];
     }
 
     T& operator()(std::size_t i,std::size_t j)
     {
-        return data_[dims_[1]*i + j];
+        return data_[shape_[1]*i + j];
     }
 
     const T* data()const
@@ -74,9 +74,9 @@ public:
         return data_.end();
     }
 
-    const std::vector<std::size_t>& dims()const
+    const std::vector<std::size_t>& shape()const
     {
-        return dims_;
+        return shape_;
     }
 
     void resize(const std::vector<std::size_t>& dims_)
@@ -84,11 +84,11 @@ public:
         data_.resize(std::accumulate(std::begin(dims_),std::end(dims_),
                                      std::size_t(1),std::multiplies<std::size_t>()));
 
-        this->dims_ = dims_;
+        this->shape_ = dims_;
     }
 private:
     std::vector<T> data_;
-    std::vector<std::size_t> dims_;
+    std::vector<std::size_t> shape_;
 };
 
 template<typename T>

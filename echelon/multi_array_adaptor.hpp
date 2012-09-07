@@ -19,18 +19,18 @@ public:
     typedef typename Container::value_type value_type;
 
     multi_array_adaptor(Container& container_,
-                        const std::vector<std::size_t>& dims_)
-    :container_(container_),dims_(dims_)
+                        const std::vector<std::size_t>& shape_)
+    :container_(container_),shape_(shape_)
     {}
 
     const value_type& operator()(std::size_t i,std::size_t j)const
     {
-        return container_[dims_[1]*i + j];
+        return container_[shape_[1]*i + j];
     }
 
     value_type& operator()(std::size_t i,std::size_t j)
     {
-        return container_[dims_[1]*i + j];
+        return container_[shape_[1]*i + j];
     }
 
     typename Container::iterator begin()
@@ -67,13 +67,13 @@ public:
         return data(container_);
     }
 
-    const std::vector<std::size_t>& dims()const
+    const std::vector<std::size_t>& shape()const
     {
-        return dims_;
+        return shape_;
     }
 private:
     Container& container_;
-    std::vector<std::size_t> dims_;
+    std::vector<std::size_t> shape_;
 };
 
 }

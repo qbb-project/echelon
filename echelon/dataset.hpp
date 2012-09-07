@@ -49,19 +49,19 @@ struct calculate_slice_boundaries<I>
 template<std::size_t I,typename Front,typename ...Tail>
 struct calculate_slice_boundaries<I,Front,Tail...>
 {
-    static void eval(const std::vector<hsize_t>& dims,
+    static void eval(const std::vector<hsize_t>& current_shape,
                      std::vector<range>& boundaries,
                      Front front,
                      Tail... tail)
     {
-        boundaries.push_back(get_boundaries(dims[I],front));
+        boundaries.push_back(get_boundaries(current_shape[I],front));
 
-        calculate_slice_boundaries<I+1,Tail...>::eval(dims,boundaries,tail...);
+        calculate_slice_boundaries<I+1,Tail...>::eval(current_shape,boundaries,tail...);
     }
 private:
-    static range get_boundaries(hsize_t dim,unbound_t)
+    static range get_boundaries(hsize_t extend,unbound_t)
     {
-        return range(0,dim);
+        return range(0,extend);
     }
 
     static range get_boundaries(hsize_t,range r)
@@ -70,12 +70,12 @@ private:
     }
 
     template<typename T>
-    static range get_boundaries(hsize_t dim,T value)
+    static range get_boundaries(hsize_t extend,T value)
     {
         static_assert(std::is_integral<T>::value,
                       "only integral values are allowed in slicing expressions");
 
-        assert(value < dim);
+        assert(value < extend);
 
         return range(value,value + 1);
     }
@@ -95,11 +95,11 @@ public:
     template<typename T>
     friend void operator<<=(dataset& ds,const T& array)
     {
-        auto current_dims = dims(array);
+        auto current_shape = detail::shape_adl(array);
 
-        std::vector<hsize_t> mem_dims(begin(current_dims), end(current_dims));
+        std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
 
-        hdf5::dataspace mem_space(mem_dims);
+        hdf5::dataspace mem_space(mem_shape);
         hdf5::dataspace file_space = ds.dataset_wrapper_.get_space();
         hdf5::type datatype = ds.dataset_wrapper_.get_type();
 
@@ -109,27 +109,25 @@ public:
     template<typename T>
     friend void operator<<=(T& array,const dataset& ds)
     {
-        std::vector<hsize_t> simple_extend_dims = ds.size();
+        std::vector<hsize_t> file_shape = ds.shape();
 
-        std::vector<std::size_t> dims(begin(simple_extend_dims),end(simple_extend_dims));
-
-        hdf5::dataspace mem_space(simple_extend_dims);
+        hdf5::dataspace mem_space(file_shape);
         hdf5::dataspace file_space = ds.dataset_wrapper_.get_space();
         hdf5::type datatype = ds.dataset_wrapper_.get_type();
 
         ::echelon::read(ds.dataset_wrapper_,datatype,mem_space,file_space,array);
     }
 
-    std::vector<hsize_t> size()const;
+    std::vector<hsize_t> shape()const;
 
     template<typename ...Args>
     slice slice(Args... args)const
     {
-        std::vector<hsize_t> dims = size();
+        std::vector<hsize_t> current_shape = shape();
 
         std::vector<range> boundaries;
 
-        detail::calculate_slice_boundaries<0,Args...>::eval(dims,boundaries,args...);
+        detail::calculate_slice_boundaries<0,Args...>::eval(current_shape,boundaries,args...);
 
         return ::echelon::slice(dataset_wrapper_,boundaries);
     }
