@@ -1,11 +1,13 @@
 #ifndef ECHELON_MULTI_ARRAY_HPP
 #define ECHELON_MULTI_ARRAY_HPP
 
+#include <echelon/customization_hooks.hpp>
+#include <echelon/detail/map_indices.hpp>
+#include <echelon/detail/all_integral.hpp>
+
 #include <vector>
 #include <algorithm>
 #include <functional>
-
-#include <echelon/customization_hooks.hpp>
 
 namespace echelon
 {
@@ -24,24 +26,22 @@ public:
      shape_(shape_)
     {}
 
-    const T& operator()(std::size_t i)const
+    template<typename... Indices>
+    const T& operator()(Indices... indices)const
     {
-        return data_[i];
+        static_assert(detail::all_integral<Indices...>::value,
+                      "All indices must be of integral type.");
+
+        return data_[detail::map_indices(shape_,indices...)];
     }
 
-    T& operator()(std::size_t i)
+    template<typename... Indices>
+    T& operator()(Indices... indices)
     {
-        return data_[i];
-    }
+        static_assert(detail::all_integral<Indices...>::value,
+                      "All indices must be of integral type.");
 
-    const T& operator()(std::size_t i,std::size_t j)const
-    {
-        return data_[shape_[1]*i + j];
-    }
-
-    T& operator()(std::size_t i,std::size_t j)
-    {
-        return data_[shape_[1]*i + j];
+        return data_[detail::map_indices(shape_,indices...)];
     }
 
     const T* data()const

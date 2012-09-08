@@ -1,13 +1,14 @@
 #ifndef ECHELON_MULTI_ARRAY_ADAPTOR_HPP
 #define ECHELON_MULTI_ARRAY_ADAPTOR_HPP
 
+#include <echelon/container_adaption.hpp>
+#include <echelon/dataset.hpp>
+#include <echelon/detail/map_indices.hpp>
+#include <echelon/detail/all_integral.hpp>
+
 #include <algorithm>
 #include <functional>
 #include <vector>
-
-#include <echelon/container_adaption.hpp>
-
-#include <echelon/dataset.hpp>
 
 namespace echelon
 {
@@ -23,14 +24,22 @@ public:
     :container_(container_),shape_(shape_)
     {}
 
-    const value_type& operator()(std::size_t i,std::size_t j)const
+    template<typename... Indices>
+    const value_type& operator()(Indices... indices)const
     {
-        return container_[shape_[1]*i + j];
+        static_assert(detail::all_integral<Indices...>::value,
+                      "All indices must be of integral type.");
+
+        return container_[detail::map_indices(shape_,indices...)];
     }
 
-    value_type& operator()(std::size_t i,std::size_t j)
+    template<typename... Indices>
+    value_type& operator()(Indices... indices)
     {
-        return container_[shape_[1]*i + j];
+        static_assert(detail::all_integral<Indices...>::value,
+                      "All indices must be of integral type.");
+
+        return container_[detail::map_indices(shape_,indices...)];
     }
 
     typename Container::iterator begin()
