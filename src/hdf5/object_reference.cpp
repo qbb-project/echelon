@@ -20,7 +20,7 @@ static_assert(sizeof(object_reference) == sizeof(hobj_ref_t),
 
 object_reference::object_reference(hid_t obj_id_)
 {
-    std::size_t expected_len = H5Iget_name(obj_id_,0,0);
+    ssize_t expected_len = H5Iget_name(obj_id_,0,0);
 
     if(expected_len == 0)
     {
