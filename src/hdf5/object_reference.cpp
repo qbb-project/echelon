@@ -13,8 +13,19 @@ namespace echelon
 namespace hdf5
 {
 
+#if defined(__clang__)
+
+static_assert(std::is_trivial<object_reference>::value &&
+              std::is_standard_layout<object_reference>::value,
+              "hdf5::object_reference should be a POD type");
+
+#else
+
 static_assert(std::is_pod<object_reference>::value,
               "hdf5::object_reference should be a POD type");
+
+#endif
+
 static_assert(sizeof(object_reference) == sizeof(hobj_ref_t),
               "hdf5::object_reference should have the same size as hobj_ref_t");
 
