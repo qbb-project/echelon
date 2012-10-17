@@ -11,7 +11,7 @@ namespace echelon
 dataset::dataset(const object& parent, const std::string& name,
         const type& datatype, const std::vector<hsize_t>& dims,
         int comp_level)
-:attributes(*this),dataset_wrapper_(-1)
+:dataset_wrapper_(-1),attributes(*this)
 {
     hdf5::property_list dataset_creation_properties(
              hdf5::property_list_class(H5P_DATASET_CREATE));
