@@ -10,7 +10,8 @@ enum class object_type
 {
     group,
     dataset,
-    scalar_dataset
+    scalar_dataset,
+    unknown
 };
 
 object_type get_object_type(hid_t obj_id);

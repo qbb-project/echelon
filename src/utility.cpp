@@ -21,6 +21,16 @@ object_type get_object_type(hid_t obj_id)
         else
             return object_type::dataset;
     }
+    else
+    {
+        //If we can't determine the type of an HDF5 object simply signal this to the user code.
+        //This might be handy, if we want to introspect HDF5 files, which were not written with echelon.
+        //For example we could use this to deal with future object types, which are not handled by echelon yet.
+        //When we have a better overview of all use cases of get_object_type, we should consider to throw an
+        //appropriate exception instead, to force the user to deal with this case. As of now I am not sure,
+        //if this is a normal or an exceptional use case.
+        return object_type::unknown;
+    }
 }
 
 }
