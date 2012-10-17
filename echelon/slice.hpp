@@ -77,6 +77,6 @@ private:
     std::vector<hsize_t> size_;
 };
 
-};
+}
 
 #endif
