@@ -44,7 +44,7 @@ struct type_lowering_hook<object_reference>
     typedef hdf5::object_reference lowered_type;
 
     template<typename Sink>
-    static lowered_type lower_type(const original_type& value,const Sink& sink)
+    static lowered_type lower_type(const original_type& value,const Sink&)
     {
         return value.raw_ref();
     }

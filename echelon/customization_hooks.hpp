@@ -18,13 +18,13 @@ struct type_lowering_hook
     typedef typename std::decay<T>::type lowered_type;
 
     template<typename Sink>
-    static lowered_type lower_type(original_type value,const Sink& sink)
+    static lowered_type lower_type(original_type value,const Sink&)
     {
         return value;
     }
 
     template<typename Source>
-    static original_type raise_type(lowered_type value,const Source& source)
+    static original_type raise_type(lowered_type value,const Source&)
     {
         return value;
     }
@@ -37,13 +37,13 @@ struct type_lowering_hook<std::string>
     typedef const char* lowered_type;
 
     template<typename Sink>
-    static lowered_type lower_type(const original_type& value,const Sink& sink)
+    static lowered_type lower_type(const original_type& value,const Sink&)
     {
         return value.c_str();
     }
 
     template<typename Source>
-    static original_type raise_type(lowered_type value,const Source& source)
+    static original_type raise_type(lowered_type value,const Source&)
     {
         return std::string(value);
     }
