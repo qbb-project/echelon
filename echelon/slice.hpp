@@ -41,7 +41,7 @@ class slice
 {
 public:
     slice(hdf5::dataset sliced_dataset_,
-          const std::vector<range>& ranges);
+          const std::vector<totally_bound_range_t>& ranges);
 
     template<typename T>
     void operator<<=(const T& array)

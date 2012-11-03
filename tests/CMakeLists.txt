@@ -24,3 +24,9 @@ add_executable(error_handling error_handling.cpp)
 target_link_libraries(error_handling echelon ${BOOST_LIBRARIES})
 
 add_test(error_handling ${CMAKE_CURRENT_BINARY_DIR}/error_handling)
+
+
+add_executable(slicing slicing.cpp) 
+target_link_libraries(slicing echelon ${BOOST_LIBRARIES})
+
+add_test(slicing ${CMAKE_CURRENT_BINARY_DIR}/slicing)

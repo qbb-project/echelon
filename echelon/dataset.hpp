@@ -41,7 +41,7 @@ template<std::size_t I>
 struct calculate_slice_boundaries<I>
 {
     static void eval(const std::vector<hsize_t>&,
-                     std::vector<range>&)
+                     std::vector<totally_bound_range_t>&)
     {
     }
 };
@@ -50,7 +50,7 @@ template<std::size_t I,typename Front,typename ...Tail>
 struct calculate_slice_boundaries<I,Front,Tail...>
 {
     static void eval(const std::vector<hsize_t>& current_shape,
-                     std::vector<range>& boundaries,
+                     std::vector<totally_bound_range_t>& boundaries,
                      Front front,
                      Tail... tail)
     {
@@ -59,18 +59,34 @@ struct calculate_slice_boundaries<I,Front,Tail...>
         calculate_slice_boundaries<I+1,Tail...>::eval(current_shape,boundaries,tail...);
     }
 private:
-    static range get_boundaries(hsize_t extend,unbound_t)
+    static totally_bound_range_t get_boundaries(hsize_t extend,unbound_t)
     {
         return range(0,extend);
     }
 
-    static range get_boundaries(hsize_t,range r)
+    template<typename Base>
+    static totally_bound_range_t get_boundaries(hsize_t extend,range_t<Base,unbound_t> r)
     {
+        return range(r.base(),extend);
+    }
+
+    template<typename Bound>
+    static totally_bound_range_t get_boundaries(hsize_t,range_t<unbound_t,Bound> r)
+    {
+        return range(0,r.bound());
+    }
+
+    template<typename Base,typename Bound>
+    static totally_bound_range_t get_boundaries(hsize_t,range_t<Base,Bound> r)
+    {
+        static_assert(std::is_integral<Base>::value && std::is_integral<Bound>::value,
+                      "only integral values are allowed in slicing expressions");
+
         return r;
     }
 
     template<typename T>
-    static range get_boundaries(hsize_t extend,T value)
+    static totally_bound_range_t get_boundaries(hsize_t extend,T value)
     {
         static_assert(std::is_integral<T>::value,
                       "only integral values are allowed in slicing expressions");
@@ -125,7 +141,7 @@ public:
     {
         std::vector<hsize_t> current_shape = shape();
 
-        std::vector<range> boundaries;
+        std::vector<totally_bound_range_t> boundaries;
 
         detail::calculate_slice_boundaries<0,Args...>::eval(current_shape,boundaries,args...);
 

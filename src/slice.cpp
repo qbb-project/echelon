@@ -5,7 +5,7 @@ namespace echelon
 {
 
 slice::slice(hdf5::dataset sliced_dataset_,
-             const std::vector<range>& ranges)
+             const std::vector<totally_bound_range_t>& ranges)
 :sliced_dataset_(sliced_dataset_),selected_dataspace_(sliced_dataset_.get_space())
 {
     std::vector<hsize_t> offset;
