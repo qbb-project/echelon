@@ -16,17 +16,15 @@ class object_reference
 public:
     friend struct type_lowering_hook<object_reference>;
 
-    //fast workaround!
-    //only needed for reading datasets of object_references by now;
-    //should not be used for anything different and should be
-    //deleted after we fixed this problem
-    object_reference() = default;
+    object_reference();
 
     explicit object_reference(const object& referenced_object);
     explicit object_reference(const hdf5::object_reference& reference_wrapper_,
                               hdf5::handle any_valid_handle_);
 
     object operator*()const;
+
+    explicit operator bool()const;
 
     const hdf5::object_reference& raw_ref()const
     {

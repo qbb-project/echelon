@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <type_traits>
+#include <cstring>
 
 namespace echelon
 {
@@ -104,6 +105,17 @@ hid_t object_reference::dereference(hid_t valid_obj_id)const
         throw_on_hdf5_error();
 
     return ref_obj_id;
+}
+
+/*
+ * warning: We use the same assumption about the representation of null references here, as in the
+ *          default constructor. You should look there for a full discussion of this matter.
+ */
+object_reference::operator bool()const
+{
+    hobj_ref_t null_ref{};
+
+    return memcmp(&obj_ref_,&null_ref,sizeof(hobj_ref_t)) != 0;
 }
 
 }
