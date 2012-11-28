@@ -100,4 +100,14 @@ const hdf5::type& type::get_native_type()const
     return type_wrapper_;
 }
 
+bool operator==(const type& lhs,const type& rhs)
+{
+    return lhs.get_native_type() == rhs.get_native_type();
+}
+
+bool operator!=(const type& lhs,const type& rhs)
+{
+    return lhs.get_native_type() != rhs.get_native_type();
+}
+
 }

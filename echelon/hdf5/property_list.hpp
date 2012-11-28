@@ -35,6 +35,8 @@ public:
     void set_chunk(const std::vector<hsize_t>& dims);
     void set_deflate(unsigned int level);
 
+    std::vector<hsize_t> get_chunk()const;
+
     hid_t id()const;
 private:
     hid_t property_list_id_;

@@ -98,5 +98,25 @@ hid_t object::id()const
     return object_id_;
 }
 
+bool exists(const object& loc,const std::string& name)
+{
+    ECHELON_ASSERT_MSG(H5Iis_valid(loc.id()) > 0,"invalid object ID");
+    
+    htri_t result = H5Lexists(loc.id(),name.c_str(),H5P_DEFAULT);
+    
+    if(result < 0)
+        throw_on_hdf5_error();
+    
+    if(result == 0)
+        return false;
+    
+    htri_t result2 = H5Oexists_by_name(loc.id(),name.c_str(),H5P_DEFAULT);
+    
+    if(result2 < 0)
+        throw_on_hdf5_error();
+
+    return result2 > 0 ? true : false;
+}
+
 }
 }

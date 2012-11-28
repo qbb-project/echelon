@@ -37,6 +37,8 @@ private:
     hid_t object_id_;
 };
 
+bool exists(const object& loc,const std::string& name);
+
 }
 
 }

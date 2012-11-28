@@ -37,6 +37,8 @@ public:
         read(attr.dataset_wrapper_,value);
     }
 
+    type datatype()const;
+
     object_reference ref()const;
 
     hid_t id()const;

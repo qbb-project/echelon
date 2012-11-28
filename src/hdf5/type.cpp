@@ -190,5 +190,20 @@ hid_t type::id() const
     return type_id_;
 }
 
+bool operator==(const type& lhs,const type& rhs)
+{
+    htri_t result = H5Tequal(lhs.id(),rhs.id());
+
+    if(result < 0)
+        throw_on_hdf5_error();
+
+    return result > 0 ? true : false;
+}
+
+bool operator!=(const type& lhs,const type& rhs)
+{
+    return !(lhs == rhs);
+}
+
 }
 }

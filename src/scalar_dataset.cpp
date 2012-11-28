@@ -20,6 +20,11 @@ scalar_dataset::scalar_dataset(hdf5::dataset dataset_wrapper_)
  attributes(*this)
 {}
 
+type scalar_dataset::datatype()const
+{
+    return type(dataset_wrapper_.datatype());
+}
+
 object_reference scalar_dataset::ref()const
 {
     return object_reference(object(*this));

@@ -97,6 +97,21 @@ void property_list::set_deflate(unsigned int level)
         throw_on_hdf5_error();
 }
 
+std::vector<hsize_t> property_list::get_chunk()const
+{
+    int chunk_rank = H5Pget_chunk(id(),0,0);
+
+    if(chunk_rank < 0)
+        throw_on_hdf5_error();
+
+    std::vector<hsize_t> chunk_dims(chunk_rank);
+
+    if(H5Pget_chunk(id(),chunk_rank,chunk_dims.data()) < 0)
+        throw_on_hdf5_error();
+
+    return chunk_dims;
+}
+
 hid_t property_list::id() const
 {
     return property_list_id_;

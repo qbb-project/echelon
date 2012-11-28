@@ -30,3 +30,15 @@ add_executable(slicing slicing.cpp)
 target_link_libraries(slicing echelon)
 
 add_test(slicing ${CMAKE_CURRENT_BINARY_DIR}/slicing)
+
+
+add_executable(type_equality type_equality.cpp) 
+target_link_libraries(type_equality echelon)
+
+add_test(type_equality ${CMAKE_CURRENT_BINARY_DIR}/type_equality)
+
+
+add_executable(require_api require_api.cpp) 
+target_link_libraries(require_api echelon)
+
+add_test(require_api ${CMAKE_CURRENT_BINARY_DIR}/require_api)

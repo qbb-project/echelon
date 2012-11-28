@@ -32,6 +32,8 @@ public:
         read(attr.attribute_wrapper_,value);
     }
 
+    type datatype()const;
+
     hid_t id()const;
     const hdf5::attribute& get_native_handle()const;
 private:

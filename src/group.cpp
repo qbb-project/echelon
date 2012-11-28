@@ -1,7 +1,6 @@
 #include <echelon/group.hpp>
 
 #include <echelon/file.hpp>
-#include <echelon/utility.hpp>
 
 #include <iostream>
 
@@ -44,6 +43,60 @@ scalar_dataset group::create_scalar_dataset(const std::string& name, const type&
 object group::operator[](const std::string& name)const
 {
     return object(hdf5::object(id(),name));
+}
+
+group group::require_group(const std::string& name)
+{
+    if(exists(object(*this),name) && get_object_type_by_name(object(*this),name) == object_type::group)
+    {
+        return group(hdf5::group(id(),name,H5P_DEFAULT));
+    }
+    else
+    {
+        return create_group(name);
+    }
+}
+
+dataset group::require_dataset(const std::string& name, const type& datatype,
+                               const std::vector<hsize_t>& dims,
+                               int comp_level)
+{
+    if(exists(object(*this),name) && get_object_type_by_name(object(*this),name) == object_type::dataset)
+    {
+        dataset ds(hdf5::dataset(id(),name,hdf5::default_property_list));
+
+        if(ds.shape() != dims)
+            throw broken_contract_exception("The required shape doesn't "
+                                            "match the shape of the dataset.");
+
+        if(ds.datatype() != datatype)
+            throw broken_contract_exception("The required datatype doesn't "
+                                            "match the datatype of the dataset.");
+
+        return ds;
+    }
+    else
+    {
+        return create_dataset(name,datatype,dims,comp_level);
+    }
+}
+
+scalar_dataset group::require_scalar_dataset(const std::string& name, const type& datatype)
+{   
+    if(exists(object(*this),name) && get_object_type_by_name(object(*this),name) == object_type::scalar_dataset)
+    {
+        scalar_dataset ds(hdf5::dataset(id(),name,hdf5::default_property_list));
+
+        if(ds.datatype() != datatype)
+            throw broken_contract_exception("The required datatype doesn't "
+                                            "match the datatype of the dataset.");
+
+        return ds;
+    }
+    else
+    {
+        return create_scalar_dataset(name,datatype);
+    }
 }
 
 object_reference group::ref()const

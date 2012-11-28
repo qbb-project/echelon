@@ -160,6 +160,16 @@ dataspace dataset::get_space() const
     return dataspace(space_id);
 }
 
+type dataset::datatype()const
+{
+    return type(H5Dget_type(id()));
+}
+
+property_list dataset::creation_property_list()const
+{
+    return property_list(H5Dget_create_plist(id()));
+}
+
 hid_t dataset::id() const
 {
     return dataset_id_;

@@ -14,6 +14,8 @@ class type_layout;
 class type
 {
 public:
+    explicit type(hdf5::type type_wrapper_);
+
     static type char_();
     static type short_();
     static type int_();
@@ -36,10 +38,11 @@ public:
 
     const hdf5::type& get_native_type()const;
 private:
-    explicit type(hdf5::type type_wrapper_);
-
     hdf5::type type_wrapper_;
 };
+
+bool operator==(const type& lhs,const type& rhs);
+bool operator!=(const type& lhs,const type& rhs);
 
 class type_layout
 {

@@ -40,6 +40,11 @@ std::vector<hsize_t> dataset::shape()const
     return dataset_wrapper_.get_space().get_simple_extent_dims();
 }
 
+type dataset::datatype()const
+{
+    return type(dataset_wrapper_.datatype());
+}
+
 object_reference dataset::ref()const
 {
     return object_reference(object(*this));

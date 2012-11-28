@@ -135,6 +135,7 @@ public:
     }
 
     std::vector<hsize_t> shape()const;
+    type datatype()const;
 
     template<typename ...Args>
     slice slice(Args... args)const

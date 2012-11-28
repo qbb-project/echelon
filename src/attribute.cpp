@@ -12,6 +12,11 @@ attribute::attribute(const object& parent, const std::string& name)
 :attribute_wrapper_(parent.id(),name)
 {}
 
+type attribute::datatype()const
+{
+    return type(attribute_wrapper_.datatype());
+}
+
 hid_t attribute::id()const
 {
     return attribute_wrapper_.id();

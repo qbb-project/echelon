@@ -54,6 +54,9 @@ private:
     bool is_transient_;
 };
 
+bool operator==(const type& lhs,const type& rhs);
+bool operator!=(const type& lhs,const type& rhs);
+
 }
 }
 

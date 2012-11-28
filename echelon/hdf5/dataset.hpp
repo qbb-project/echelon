@@ -49,6 +49,9 @@ public:
     type get_type()const;
     dataspace get_space()const;
 
+    type datatype()const;
+    property_list creation_property_list()const;
+
     hid_t id()const;
 private:
     hid_t dataset_id_;
