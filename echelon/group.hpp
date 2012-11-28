@@ -19,6 +19,7 @@
 #include <map>
 #include <memory>
 #include <exception>
+#include <functional>
 
 namespace echelon
 {
@@ -127,6 +128,8 @@ public:
             return ds;
         }
     }
+
+    void iterate(const std::function<void(const object&)>& op);
 
     object_reference ref()const;
 

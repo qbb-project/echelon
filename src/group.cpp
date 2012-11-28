@@ -99,6 +99,18 @@ scalar_dataset group::require_scalar_dataset(const std::string& name, const type
     }
 }
 
+void group::iterate(const std::function<void(const object&)>& op)
+{
+    group_wrapper_.iterate(id(),H5_INDEX_NAME,H5_ITER_NATIVE,0,
+                           [&op](hid_t loc_id, const char* name)
+                           {
+                               op(object(hdf5::object(loc_id,name)));
+
+                               return 0;
+                           }
+                          );
+}
+
 object_reference group::ref()const
 {
     return object_reference(object(*this));
