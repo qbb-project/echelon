@@ -4,6 +4,8 @@
 
 #include <echelon/hdf5/error_handling.hpp>
 
+#include <exception>
+
 namespace echelon
 {
 namespace hdf5
@@ -12,14 +14,32 @@ namespace hdf5
 namespace
 {
 
+struct iterate_proxy_data
+{
+    explicit iterate_proxy_data(std::function<herr_t(hid_t, const char*)> op)
+    : op{op}, caught_exception{}
+    {
+    }
+
+    std::function<herr_t(hid_t, const char*)> op;
+    std::exception_ptr caught_exception;
+};
+
 herr_t iterate_proxy_op(hid_t g_id, const char *name, const H5L_info_t *info,
                         void *op_data)
 {
-    typedef std::function<herr_t(hid_t,const char*)> op_type;
+    iterate_proxy_data& data = *static_cast<iterate_proxy_data*>(op_data);
 
-    op_type& op = *static_cast<op_type*>(op_data);
+    try
+    {
+        return data.op(g_id, name);
+    }
+    catch (...)
+    {
+        data.caught_exception = std::current_exception();
 
-    return op(g_id, name);
+        return 1;
+    }
 }
 
 }
@@ -116,11 +136,17 @@ hsize_t group::iterate(hid_t group_id, H5_index_t index_type,
 {
     hsize_t current_index = start_index;
 
-    herr_t error_code = H5Literate(id(), index_type, order,
-                                   &current_index, &iterate_proxy_op, &op);
+    iterate_proxy_data data(op);
 
-    if(error_code < 0)
+    herr_t error_code = H5Literate(id(), index_type, order,
+                                   &current_index,
+                                   &iterate_proxy_op, &data);
+
+    if (error_code < 0)
         throw_on_hdf5_error();
+
+    if (data.caught_exception)
+        std::rethrow_exception(data.caught_exception);
 
     return current_index;
 }
