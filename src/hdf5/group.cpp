@@ -26,7 +26,7 @@ struct iterate_proxy_data
 };
 
 herr_t iterate_proxy_op(hid_t g_id, const char *name, const H5L_info_t *info,
-                        void *op_data)
+                        void *op_data) noexcept
 {
     iterate_proxy_data& data = *static_cast<iterate_proxy_data*>(op_data);
 
