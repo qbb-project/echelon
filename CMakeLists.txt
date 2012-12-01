@@ -11,6 +11,12 @@ set(CMAKE_MODULE_PATH ${echelon_SOURCE_DIR}/cmake)
 
 include(generate_imported_library_targets)
 
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+  set(ECHELON_IS_A_SUBPROJECT 0)
+else()
+  set(ECHELON_IS_A_SUBPROJECT 1)
+endif()
+
 find_package(Boost COMPONENTS serialization unit_test_framework REQUIRED)
 find_package(HDF5 COMPONENTS C HL REQUIRED)
 
