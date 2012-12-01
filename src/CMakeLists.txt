@@ -21,13 +21,13 @@ if(NOT ECHELON_IS_A_SUBPROJECT)
 else()
 
     # mimic the behaviour of the find module, if echelon is used as an internal dependency
-    set(Echelon_DEFINITIONS )
-    set(ECHELON_FOUND 1)
-    set(Echelon_INCLUDE_DIR ${echelon_SOURCE_DIR})
-    set(Echelon_LIBRARY echelon)
+    set(Echelon_DEFINITIONS PARENT_SCOPE)
+    set(ECHELON_FOUND 1 PARENT_SCOPE)
+    set(Echelon_INCLUDE_DIR ${echelon_SOURCE_DIR} CACHE PATH "echelon's include directories")
+    set(Echelon_LIBRARY echelon CACHE STRING "echelon's libraries")
 
-    set(Echelon_LIBRARIES ${Echelon_LIBRARY})
-    set(Echelon_INCLUDE_DIRS ${Echelon_INCLUDE_DIR} ${HDF5_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+    set(Echelon_LIBRARIES ${Echelon_LIBRARY} PARENT_SCOPE)
+    set(Echelon_INCLUDE_DIRS ${Echelon_INCLUDE_DIR} ${HDF5_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} PARENT_SCOPE)
 
     mark_as_advanced(Echelon_INCLUDE_DIR Echelon_LIBRARY)
 

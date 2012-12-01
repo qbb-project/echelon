@@ -39,3 +39,12 @@ generate_imported_library_targets(HDF5_LIBRARIES hdf5_targets)
 add_subdirectory(src)
 add_subdirectory(examples)
 add_subdirectory(tests)
+
+if(ECHELON_IS_A_SUBPROJECT)
+
+    set(Echelon_DEFINITIONS PARENT_SCOPE)
+    set(ECHELON_FOUND ${ECHELON_FOUND} PARENT_SCOPE)
+    set(Echelon_LIBRARIES ${Echelon_LIBRARIES} PARENT_SCOPE)
+    set(Echelon_INCLUDE_DIRS ${Echelon_INCLUDE_DIRS} PARENT_SCOPE)
+
+endif()
