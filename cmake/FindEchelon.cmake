@@ -45,7 +45,7 @@ set(Echelon_INCLUDE_DIRS ${Echelon_INCLUDE_DIR} ${HDF5_INCLUDE_DIRS} ${Boost_INC
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set Echelon_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args(echelon DEFAULT_MSG
+find_package_handle_standard_args(Echelon DEFAULT_MSG
                                   Echelon_LIBRARY Echelon_INCLUDE_DIR)
 
 mark_as_advanced(Echelon_INCLUDE_DIR Echelon_LIBRARY) 
