@@ -8,3 +8,5 @@ include_directories(${Boost_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS})
 
 add_library(echelon_hdf5 ${echelon_hdf5_header_files} ${echelon_hdf5_source_files})
 target_link_libraries(echelon_hdf5 ${hdf5_targets})
+
+install(TARGETS echelon_hdf5 DESTINATION lib)
