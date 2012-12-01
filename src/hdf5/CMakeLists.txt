@@ -1,3 +1,7 @@
+#  Copyright (c) 2012 Christopher Hinz
+#
+#  Distributed under the Boost Software License, Version 1.0. (See accompanying
+#  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 file(GLOB echelon_hdf5_header_files ../../echelon/hdf5/*.hpp)
 file(GLOB echelon_hdf5_source_files ./*.cpp)
