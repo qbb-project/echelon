@@ -18,7 +18,7 @@ BOOST_FIXTURE_TEST_CASE( slicing_test, basic_fixture )
       using echelon::_;
       using echelon::range;
     
-      auto ds = root.create_dataset<double>("dataset",{ 10 });
+      auto ds = temp_file.create_dataset<double>("dataset",{ 10 });
       
       std::vector<double> data = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
       

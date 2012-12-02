@@ -14,11 +14,11 @@
 
 BOOST_FIXTURE_TEST_CASE( require_api, basic_fixture )
 {   
-      echelon::group g1 = root.require_group("g1");
+      echelon::group g1 = temp_file.require_group("g1");
     
-      BOOST_CHECK_NO_THROW(root["g1"]);
+      BOOST_CHECK_NO_THROW(temp_file["g1"]);
       
-      echelon::dataset ds1 = root.create_dataset<double>("ds1",{ 10 , 10 });
+      echelon::dataset ds1 = temp_file.create_dataset<double>("ds1",{ 10 , 10 });
       
-      BOOST_CHECK_THROW(ds1 = root.require_dataset<double>("ds1",{ 20 , 10 }),echelon::broken_contract_exception);
+      BOOST_CHECK_THROW(ds1 = temp_file.require_dataset<double>("ds1",{ 20 , 10 }),echelon::broken_contract_exception);
 }

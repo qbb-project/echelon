@@ -14,8 +14,8 @@
 
 BOOST_FIXTURE_TEST_CASE( error_handling_test, basic_fixture )
 {
-    BOOST_CHECK_THROW(root["bar"],echelon::hdf5::can_not_open_object_exception);
+    BOOST_CHECK_THROW(temp_file["bar"],echelon::hdf5::can_not_open_object_exception);
 
-    root.create_group("foo");
-    BOOST_CHECK_THROW(root.create_group("foo"),echelon::hdf5::symbol_already_exists_exception);
+    temp_file.create_group("foo");
+    BOOST_CHECK_THROW(temp_file.create_group("foo"),echelon::hdf5::symbol_already_exists_exception);
 }
