@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #include <echelon/hdf5/attribute.hpp>
 
 #include <utility>
@@ -83,9 +88,24 @@ void attribute::read(void* value)const
         throw_on_hdf5_error();
 }
 
+type attribute::datatype()const
+{
+    return type(H5Aget_type(id()),true);
+}
+
 hid_t attribute::id()const
 {
     return attribute_id_;
+}
+
+bool is_attribute_existing(const object& loc,const std::string& name)
+{
+    htri_t result = H5Aexists(loc.id(), name.c_str());
+
+    if(result < 0)
+        throw_on_hdf5_error();
+
+    return result > 0 ? true : false;
 }
 
 }

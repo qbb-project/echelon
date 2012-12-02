@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_ATTRIBUTE_HPP
 #define ECHELON_ATTRIBUTE_HPP
 
@@ -31,6 +36,8 @@ public:
     {
         read(attr.attribute_wrapper_,value);
     }
+
+    type datatype()const;
 
     hid_t id()const;
     const hdf5::attribute& get_native_handle()const;

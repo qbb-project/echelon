@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #include <echelon/hdf5/property_list.hpp>
 
 #include <utility>
@@ -95,6 +100,21 @@ void property_list::set_deflate(unsigned int level)
 
     if(error_code < 0)
         throw_on_hdf5_error();
+}
+
+std::vector<hsize_t> property_list::get_chunk()const
+{
+    int chunk_rank = H5Pget_chunk(id(),0,0);
+
+    if(chunk_rank < 0)
+        throw_on_hdf5_error();
+
+    std::vector<hsize_t> chunk_dims(chunk_rank);
+
+    if(H5Pget_chunk(id(),chunk_rank,chunk_dims.data()) < 0)
+        throw_on_hdf5_error();
+
+    return chunk_dims;
 }
 
 hid_t property_list::id() const

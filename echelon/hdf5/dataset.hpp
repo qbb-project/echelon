@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_RAII_DATASET_HPP
 #define ECHELON_RAII_DATASET_HPP
 
@@ -48,6 +53,9 @@ public:
 
     type get_type()const;
     dataspace get_space()const;
+
+    type datatype()const;
+    property_list creation_property_list()const;
 
     hid_t id()const;
 private:

@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_RAII_TYPE_HPP
 #define ECHELON_RAII_TYPE_HPP
 
@@ -53,6 +58,9 @@ private:
     hid_t type_id_;
     bool is_transient_;
 };
+
+bool operator==(const type& lhs,const type& rhs);
+bool operator!=(const type& lhs,const type& rhs);
 
 }
 }

@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_OBJECT_REFERENCE_HPP
 #define ECHELON_OBJECT_REFERENCE_HPP
 
@@ -16,17 +21,15 @@ class object_reference
 public:
     friend struct type_lowering_hook<object_reference>;
 
-    //fast workaround!
-    //only needed for reading datasets of object_references by now;
-    //should not be used for anything different and should be
-    //deleted after we fixed this problem
-    object_reference() = default;
+    object_reference();
 
     explicit object_reference(const object& referenced_object);
     explicit object_reference(const hdf5::object_reference& reference_wrapper_,
                               hdf5::handle any_valid_handle_);
 
     object operator*()const;
+
+    explicit operator bool()const;
 
     const hdf5::object_reference& raw_ref()const
     {
@@ -44,7 +47,7 @@ struct type_lowering_hook<object_reference>
     typedef hdf5::object_reference lowered_type;
 
     template<typename Sink>
-    static lowered_type lower_type(const original_type& value,const Sink& sink)
+    static lowered_type lower_type(const original_type& value,const Sink&)
     {
         return value.raw_ref();
     }

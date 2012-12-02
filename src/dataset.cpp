@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #include <echelon/dataset.hpp>
 
 #include <echelon/attribute.hpp>
@@ -11,7 +16,7 @@ namespace echelon
 dataset::dataset(const object& parent, const std::string& name,
         const type& datatype, const std::vector<hsize_t>& dims,
         int comp_level)
-:attributes(*this),dataset_wrapper_(-1)
+:dataset_wrapper_(-1),attributes(*this)
 {
     hdf5::property_list dataset_creation_properties(
              hdf5::property_list_class(H5P_DATASET_CREATE));
@@ -33,6 +38,16 @@ dataset::dataset(const object& parent, const std::string& name,
 dataset::dataset(hdf5::dataset dataset_wrapper_)
 :dataset_wrapper_(dataset_wrapper_),attributes(*this)
 {
+}
+
+std::vector<hsize_t> dataset::shape()const
+{
+    return dataset_wrapper_.get_space().get_simple_extent_dims();
+}
+
+type dataset::datatype()const
+{
+    return type(dataset_wrapper_.datatype());
 }
 
 object_reference dataset::ref()const

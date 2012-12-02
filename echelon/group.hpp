@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_GROUP_HPP
 #define ECHELON_GROUP_HPP
 
@@ -10,12 +15,16 @@
 #include <echelon/dataset.hpp>
 #include <echelon/scalar_dataset.hpp>
 #include <echelon/object_reference.hpp>
+#include <echelon/utility.hpp>
+
+#include <echelon/broken_contract_exception.hpp>
 
 #include <string>
 #include <vector>
 #include <map>
 #include <memory>
 #include <exception>
+#include <functional>
 
 namespace echelon
 {
@@ -45,6 +54,7 @@ public:
     friend class file;
 
     group create_group(const std::string& name);
+
     dataset create_dataset(const std::string& name, const type& datatype,
                            const std::vector<hsize_t>& dims,
                            int comp_level = -1);
@@ -76,6 +86,55 @@ public:
     }
 
     object operator[](const std::string& name)const;
+
+    group require_group(const std::string& name);
+
+    dataset require_dataset(const std::string& name, const type& datatype,
+                            const std::vector<hsize_t>& dims,
+                            int comp_level = -1);
+
+    template<typename T>
+    dataset require_dataset(const std::string& name,
+                           const std::vector<hsize_t>& dims,
+                           int comp_level = -1)
+    {
+        return require_dataset(name,get_hdf5_type<T>(),dims,comp_level);
+    }
+
+    scalar_dataset require_scalar_dataset(const std::string& name, const type& datatype);
+
+    template<typename T>
+    scalar_dataset require_scalar_dataset(const std::string& name)
+    {
+        return require_scalar_dataset(name,get_hdf5_type<T>());
+    }
+
+    template<typename T>
+    scalar_dataset require_scalar_dataset(const std::string& name,const T& value)
+    {
+        type datatype = get_hdf5_type<T>();
+
+        if(exists(object(*this),name) && get_object_type_by_name(object(*this),name) == object_type::scalar_dataset)
+        {
+            scalar_dataset ds(hdf5::dataset(id(),name,hdf5::default_property_list));
+
+            if(ds.datatype() != datatype)
+                throw broken_contract_exception("The required datatype doesn't "
+                                                "match the datatype of the dataset.");
+
+            return ds;
+        }
+        else
+        {
+            scalar_dataset ds = create_scalar_dataset(name,datatype);
+
+            ds <<= value;
+
+            return ds;
+        }
+    }
+
+    void iterate(const std::function<void(const object&)>& op);
 
     object_reference ref()const;
 

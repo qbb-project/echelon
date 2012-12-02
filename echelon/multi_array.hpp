@@ -1,11 +1,18 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_MULTI_ARRAY_HPP
 #define ECHELON_MULTI_ARRAY_HPP
+
+#include <echelon/customization_hooks.hpp>
+#include <echelon/detail/map_indices.hpp>
+#include <echelon/detail/all_integral.hpp>
 
 #include <vector>
 #include <algorithm>
 #include <functional>
-
-#include <echelon/customization_hooks.hpp>
 
 namespace echelon
 {
@@ -18,30 +25,28 @@ public:
 
     multi_array()=default;
 
-    explicit multi_array(const std::vector<std::size_t>& dims_)
-    :data_(std::accumulate(std::begin(dims_),std::end(dims_),
+    explicit multi_array(const std::vector<std::size_t>& shape_)
+    :data_(std::accumulate(std::begin(shape_),std::end(shape_),
                            std::size_t(1),std::multiplies<std::size_t>())),
-     dims_(dims_)
+     shape_(shape_)
     {}
 
-    const T& operator()(std::size_t i)const
+    template<typename... Indices>
+    const T& operator()(Indices... indices)const
     {
-        return data_[i];
+        static_assert(detail::all_integral<Indices...>::value,
+                      "All indices must be of integral type.");
+
+        return data_[detail::map_indices(shape_,indices...)];
     }
 
-    T& operator()(std::size_t i)
+    template<typename... Indices>
+    T& operator()(Indices... indices)
     {
-        return data_[i];
-    }
+        static_assert(detail::all_integral<Indices...>::value,
+                      "All indices must be of integral type.");
 
-    const T& operator()(std::size_t i,std::size_t j)const
-    {
-        return data_[dims_[1]*i + j];
-    }
-
-    T& operator()(std::size_t i,std::size_t j)
-    {
-        return data_[dims_[1]*i + j];
+        return data_[detail::map_indices(shape_,indices...)];
     }
 
     const T* data()const
@@ -74,28 +79,28 @@ public:
         return data_.end();
     }
 
-    const std::vector<std::size_t>& dims()const
+    const std::vector<std::size_t>& shape()const
     {
-        return dims_;
+        return shape_;
     }
 
-    void resize(const std::vector<std::size_t>& dims_)
+    void reshape(const std::vector<std::size_t>& new_shape)
     {
-        data_.resize(std::accumulate(std::begin(dims_),std::end(dims_),
+        data_.resize(std::accumulate(std::begin(new_shape),std::end(new_shape),
                                      std::size_t(1),std::multiplies<std::size_t>()));
 
-        this->dims_ = dims_;
+        this->shape_ = new_shape;
     }
 private:
     std::vector<T> data_;
-    std::vector<std::size_t> dims_;
+    std::vector<std::size_t> shape_;
 };
 
 template<typename T>
-inline void require_dimensions(multi_array<T>& container,
-                               const std::vector<std::size_t>& dims)
+inline void reshape(multi_array<T>& container,
+                    const std::vector<std::size_t>& new_shape)
 {
-    container.resize(dims);
+    container.reshape(new_shape);
 }
 
 }

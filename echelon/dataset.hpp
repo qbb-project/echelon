@@ -17,6 +17,11 @@
 #include <echelon/data_transfer_broker.hpp>
 
 #include <vector>
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #include <tuple>
 #include <string>
 #include <type_traits>
@@ -41,7 +46,7 @@ template<std::size_t I>
 struct calculate_slice_boundaries<I>
 {
     static void eval(const std::vector<hsize_t>&,
-                     std::vector<range>&)
+                     std::vector<totally_bound_range_t>&)
     {
     }
 };
@@ -49,33 +54,49 @@ struct calculate_slice_boundaries<I>
 template<std::size_t I,typename Front,typename ...Tail>
 struct calculate_slice_boundaries<I,Front,Tail...>
 {
-    static void eval(const std::vector<hsize_t>& dims,
-                     std::vector<range>& boundaries,
+    static void eval(const std::vector<hsize_t>& current_shape,
+                     std::vector<totally_bound_range_t>& boundaries,
                      Front front,
                      Tail... tail)
     {
-        boundaries.push_back(get_boundaries(dims[I],front));
+        boundaries.push_back(get_boundaries(current_shape[I],front));
 
-        calculate_slice_boundaries<I+1,Tail...>::eval(dims,boundaries,tail...);
+        calculate_slice_boundaries<I+1,Tail...>::eval(current_shape,boundaries,tail...);
     }
 private:
-    static range get_boundaries(hsize_t dim,unbound_t)
+    static totally_bound_range_t get_boundaries(hsize_t extend,unbound_t)
     {
-        return range(0,dim);
+        return range(0,extend);
     }
 
-    static range get_boundaries(hsize_t,range r)
+    template<typename Base>
+    static totally_bound_range_t get_boundaries(hsize_t extend,range_t<Base,unbound_t> r)
     {
+        return range(r.base(),extend);
+    }
+
+    template<typename Bound>
+    static totally_bound_range_t get_boundaries(hsize_t,range_t<unbound_t,Bound> r)
+    {
+        return range(0,r.bound());
+    }
+
+    template<typename Base,typename Bound>
+    static totally_bound_range_t get_boundaries(hsize_t,range_t<Base,Bound> r)
+    {
+        static_assert(std::is_integral<Base>::value && std::is_integral<Bound>::value,
+                      "only integral values are allowed in slicing expressions");
+
         return r;
     }
 
     template<typename T>
-    static range get_boundaries(hsize_t dim,T value)
+    static totally_bound_range_t get_boundaries(hsize_t extend,T value)
     {
         static_assert(std::is_integral<T>::value,
                       "only integral values are allowed in slicing expressions");
 
-        assert(value < dim);
+        assert(value < extend);
 
         return range(value,value + 1);
     }
@@ -95,11 +116,11 @@ public:
     template<typename T>
     friend void operator<<=(dataset& ds,const T& array)
     {
-        auto current_dims = dims(array);
+        auto current_shape = detail::shape_adl(array);
 
-        std::vector<hsize_t> mem_dims(begin(current_dims), end(current_dims));
+        std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
 
-        hdf5::dataspace mem_space(mem_dims);
+        hdf5::dataspace mem_space(mem_shape);
         hdf5::dataspace file_space = ds.dataset_wrapper_.get_space();
         hdf5::type datatype = ds.dataset_wrapper_.get_type();
 
@@ -109,34 +130,33 @@ public:
     template<typename T>
     friend void operator<<=(T& array,const dataset& ds)
     {
-        std::vector<hsize_t> simple_extend_dims =
-            ds.dataset_wrapper_.get_space().get_simple_extent_dims();
+        std::vector<hsize_t> file_shape = ds.shape();
 
-        std::vector<std::size_t> dims(begin(simple_extend_dims),end(simple_extend_dims));
-
-        hdf5::dataspace mem_space(simple_extend_dims);
+        hdf5::dataspace mem_space(file_shape);
         hdf5::dataspace file_space = ds.dataset_wrapper_.get_space();
         hdf5::type datatype = ds.dataset_wrapper_.get_type();
 
         ::echelon::read(ds.dataset_wrapper_,datatype,mem_space,file_space,array);
     }
 
+    std::vector<hsize_t> shape()const;
+    type datatype()const;
+
     template<typename ...Args>
     slice slice(Args... args)const
     {
-        std::vector<hsize_t> dims =
-                    dataset_wrapper_.get_space().get_simple_extent_dims();
+        std::vector<hsize_t> current_shape = shape();
 
-        std::vector<range> boundaries;
+        std::vector<totally_bound_range_t> boundaries;
 
-        detail::calculate_slice_boundaries<0,Args...>::eval(dims,boundaries,args...);
+        detail::calculate_slice_boundaries<0,Args...>::eval(current_shape,boundaries,args...);
 
         return ::echelon::slice(dataset_wrapper_,boundaries);
     }
 
     object_reference ref()const;
 
-    virtual hid_t id()const;
+    hid_t id()const;
     const hdf5::dataset& get_native_handle()const;
 private:
     hdf5::dataset dataset_wrapper_;

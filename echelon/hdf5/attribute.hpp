@@ -1,7 +1,13 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_RAII_ATTRIBUTE_HPP
 #define ECHELON_RAII_ATTRIBUTE_HPP
 
 #include <echelon/hdf5/object_reference.hpp>
+#include <echelon/hdf5/object.hpp>
 
 #include <hdf5.h>
 #include <string>
@@ -31,10 +37,14 @@ public:
     void write(const void* value);
     void read(void* value)const;
 
+    type datatype()const;
+
     hid_t id()const;
 private:
     hid_t attribute_id_;
 };
+
+bool is_attribute_existing(const object& loc,const std::string& name);
 
 }
 }

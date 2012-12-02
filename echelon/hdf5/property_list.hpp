@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_RAII_PROPERTY_LIST_HPP
 #define ECHELON_RAII_PROPERTY_LIST_HPP
 
@@ -34,6 +39,8 @@ public:
 
     void set_chunk(const std::vector<hsize_t>& dims);
     void set_deflate(unsigned int level);
+
+    std::vector<hsize_t> get_chunk()const;
 
     hid_t id()const;
 private:

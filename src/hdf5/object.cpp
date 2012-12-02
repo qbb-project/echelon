@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #include <echelon/hdf5/object.hpp>
 
 #include <echelon/hdf5/dataset.hpp>
@@ -96,6 +101,26 @@ object& object::operator=(object&& other)
 hid_t object::id()const
 {
     return object_id_;
+}
+
+bool exists(const object& loc,const std::string& name)
+{
+    ECHELON_ASSERT_MSG(H5Iis_valid(loc.id()) > 0,"invalid object ID");
+    
+    htri_t result = H5Lexists(loc.id(),name.c_str(),H5P_DEFAULT);
+    
+    if(result < 0)
+        throw_on_hdf5_error();
+    
+    if(result == 0)
+        return false;
+    
+    htri_t result2 = H5Oexists_by_name(loc.id(),name.c_str(),H5P_DEFAULT);
+    
+    if(result2 < 0)
+        throw_on_hdf5_error();
+
+    return result2 > 0 ? true : false;
 }
 
 }

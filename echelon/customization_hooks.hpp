@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_CUSTOMIZATION_HOOKS_HPP
 #define ECHELON_CUSTOMIZATION_HOOKS_HPP
 
@@ -18,13 +23,13 @@ struct type_lowering_hook
     typedef typename std::decay<T>::type lowered_type;
 
     template<typename Sink>
-    static lowered_type lower_type(original_type value,const Sink& sink)
+    static lowered_type lower_type(original_type value,const Sink&)
     {
         return value;
     }
 
     template<typename Source>
-    static original_type raise_type(lowered_type value,const Source& source)
+    static original_type raise_type(lowered_type value,const Source&)
     {
         return value;
     }
@@ -37,13 +42,13 @@ struct type_lowering_hook<std::string>
     typedef const char* lowered_type;
 
     template<typename Sink>
-    static lowered_type lower_type(const original_type& value,const Sink& sink)
+    static lowered_type lower_type(const original_type& value,const Sink&)
     {
         return value.c_str();
     }
 
     template<typename Source>
-    static original_type raise_type(lowered_type value,const Source& source)
+    static original_type raise_type(lowered_type value,const Source&)
     {
         return std::string(value);
     }

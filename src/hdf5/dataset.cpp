@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #include <echelon/hdf5/dataset.hpp>
 
 #include <echelon/hdf5/object_reference.hpp>
@@ -158,6 +163,16 @@ dataspace dataset::get_space() const
         throw_on_hdf5_error();
 
     return dataspace(space_id);
+}
+
+type dataset::datatype()const
+{
+    return type(H5Dget_type(id()));
+}
+
+property_list dataset::creation_property_list()const
+{
+    return property_list(H5Dget_create_plist(id()));
 }
 
 hid_t dataset::id() const

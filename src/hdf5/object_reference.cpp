@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #include <echelon/hdf5/object_reference.hpp>
 
 #include <echelon/hdf5/dataset.hpp>
@@ -7,20 +12,32 @@
 
 #include <vector>
 #include <type_traits>
+#include <cstring>
 
 namespace echelon
 {
 namespace hdf5
 {
 
+#if defined(__clang__)
+
+static_assert(std::is_trivial<object_reference>::value &&
+              std::is_standard_layout<object_reference>::value,
+              "hdf5::object_reference should be a POD type");
+
+#else
+
 static_assert(std::is_pod<object_reference>::value,
               "hdf5::object_reference should be a POD type");
+
+#endif
+
 static_assert(sizeof(object_reference) == sizeof(hobj_ref_t),
               "hdf5::object_reference should have the same size as hobj_ref_t");
 
 object_reference::object_reference(hid_t obj_id_)
 {
-    std::size_t expected_len = H5Iget_name(obj_id_,0,0);
+    ssize_t expected_len = H5Iget_name(obj_id_,0,0);
 
     if(expected_len == 0)
     {
@@ -93,6 +110,17 @@ hid_t object_reference::dereference(hid_t valid_obj_id)const
         throw_on_hdf5_error();
 
     return ref_obj_id;
+}
+
+/*
+ * warning: We use the same assumption about the representation of null references here, as in the
+ *          default constructor. You should look there for a full discussion of this matter.
+ */
+object_reference::operator bool()const
+{
+    hobj_ref_t null_ref{};
+
+    return memcmp(&obj_ref_,&null_ref,sizeof(hobj_ref_t)) != 0;
 }
 
 }

@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #include <echelon/hdf5/type.hpp>
 
 #include <utility>
@@ -188,6 +193,21 @@ type type::clone()const
 hid_t type::id() const
 {
     return type_id_;
+}
+
+bool operator==(const type& lhs,const type& rhs)
+{
+    htri_t result = H5Tequal(lhs.id(),rhs.id());
+
+    if(result < 0)
+        throw_on_hdf5_error();
+
+    return result > 0 ? true : false;
+}
+
+bool operator!=(const type& lhs,const type& rhs)
+{
+    return !(lhs == rhs);
 }
 
 }

@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #include <echelon/type.hpp>
 
 namespace echelon
@@ -98,6 +103,16 @@ type type::clone()const
 const hdf5::type& type::get_native_type()const
 {
     return type_wrapper_;
+}
+
+bool operator==(const type& lhs,const type& rhs)
+{
+    return lhs.get_native_type() == rhs.get_native_type();
+}
+
+bool operator!=(const type& lhs,const type& rhs)
+{
+    return lhs.get_native_type() != rhs.get_native_type();
 }
 
 }

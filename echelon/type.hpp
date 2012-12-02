@@ -1,3 +1,7 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  
 #ifndef ECHELON_TYPE_HPP
 #define ECHELON_TYPE_HPP
@@ -14,6 +18,8 @@ class type_layout;
 class type
 {
 public:
+    explicit type(hdf5::type type_wrapper_);
+
     static type char_();
     static type short_();
     static type int_();
@@ -36,10 +42,11 @@ public:
 
     const hdf5::type& get_native_type()const;
 private:
-    explicit type(hdf5::type type_wrapper_);
-
     hdf5::type type_wrapper_;
 };
+
+bool operator==(const type& lhs,const type& rhs);
+bool operator!=(const type& lhs,const type& rhs);
 
 class type_layout
 {

@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_TYPE_FACTORY_HPP
 #define ECHELON_TYPE_FACTORY_HPP
 
@@ -194,7 +199,7 @@ struct add_member_to_layout<T,I,
              typename std::enable_if<static_type_layout<T>::category ==
                                      static_type_layout_category::generic>::type>
 {
-    static std::size_t eval(type_layout& layout,std::size_t current_offset)
+    static std::size_t eval(type_layout& layout,std::size_t)
     {
         const id_offset_pair id_offset = static_type_layout<T>::members()[I];
 

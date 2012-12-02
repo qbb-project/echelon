@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #include <echelon/echelon.hpp>
 
 #include <complex>
@@ -29,11 +34,9 @@ int main()
     {
         file my_file("test.hdf5", file::create_mode::truncate);
 
-        auto root = my_file.root_group();
+        auto foo = my_file.create_group("test").create_group("foo");
 
-        auto foo = root.create_group("test").create_group("foo");
-
-        auto ds = root.create_group("bar").create_dataset<double>("my_data",{ 10, 10 });
+        auto ds = my_file.create_group("bar").create_dataset<double>("my_data",{ 10, 10 });
 
         multi_array<double> arr({ 10 , 10 });
 
@@ -63,16 +66,16 @@ int main()
         auto time = foo.attributes.create<double>("time");
         time <<= 1.0;
 
-        auto ds3 = root.create_group("strings").
-                        create_dataset<std::string>("my_first_strings", { 2 } );
+        auto ds3 = my_file.create_group("strings").
+                           create_dataset<std::string>("my_first_strings", { 2 } );
         multi_array<std::string> sa({ 2 });
         sa(0) = "Hello";
         sa(1) = "World";
 
         ds3 <<= sa;
 
-        auto ds4 = root.create_group("references").
-                        create_dataset<object_reference>("refs", { 2 } );
+        auto ds4 = my_file.create_group("references").
+                           create_dataset<object_reference>("refs", { 2 } );
         object_reference ref1 = ds.ref();
         object_reference ref2 = foo.ref();
 
@@ -92,21 +95,19 @@ int main()
         std::vector<double> v4(2,8);
         ds.slice(0,range(1,5,2)) <<= v4;
 
-        auto my_scalar = root.create_scalar_dataset<std::string>("my_scalar");
+        auto my_scalar = my_file.create_scalar_dataset<std::string>("my_scalar");
         my_scalar <<= "MyScalar";
 
         std::complex<double> c(1.0,2.0);
-        root.create_scalar_dataset("complex_number",c);
+        my_file.create_scalar_dataset("complex_number",c);
 
-        root.attributes.create("sliteral","test");
+        my_file.attributes.create("sliteral","test");
     }
 
     {
         file my_file("test.hdf5", file::open_mode::read_only);
 
-        auto root = my_file.root_group();
-
-        group bar = root["bar"];
+        group bar = my_file["bar"];
         dataset ds = bar["my_data"];
 
         multi_array<double> arr;
@@ -132,7 +133,7 @@ int main()
 
         std::cout << version_ << " " << desc_ << std::endl;
 
-        group references = root["references"];
+        group references = my_file["references"];
         dataset ds4 = references["refs"];
 
         std::vector<object_reference> refs;
@@ -145,20 +146,20 @@ int main()
 
         std::cout << ds2_(2, 4) << std::endl;
 
-        group strings = root["strings"];
+        group strings = my_file["strings"];
         dataset ds3 = strings["my_first_strings"];
 
         std::vector<std::string> sa;
         sa <<= ds3;
         std::cout << sa[0] << std::endl;
 
-        scalar_dataset my_scalar = root["my_scalar"];
+        scalar_dataset my_scalar = my_file["my_scalar"];
         std::string MyScalar;
         MyScalar <<= my_scalar;
 
         std::cout << MyScalar << std::endl;
 
-        root["foo"];
+        my_file["foo"];
     }
 
     }

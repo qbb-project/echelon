@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_SLICE_HPP
 #define ECHELON_SLICE_HPP
 
@@ -15,31 +20,42 @@ namespace echelon
 {
 
 template<typename T>
-inline std::vector<std::size_t> dims(const std::vector<T>& container)
+inline std::vector<std::size_t> shape(const std::vector<T>& container)
 {
     return { container.size() };
 }
 
 template<typename C>
-inline std::vector<std::size_t> dims(const C& container)
+inline std::vector<std::size_t> shape(const C& container)
 {
-    return container.dims();
+    return container.shape();
+}
+
+namespace detail
+{
+    //Function template which simply forwards its arguments to an overload of shape.
+    //Its sole purpose is to ensure that the correct overload can be found by ADL.
+    template<typename C>
+    inline std::vector<std::size_t> shape_adl(const C& container)
+    {
+        return shape(container);
+    }
 }
 
 class slice
 {
 public:
     slice(hdf5::dataset sliced_dataset_,
-          const std::vector<range>& ranges);
+          const std::vector<totally_bound_range_t>& ranges);
 
     template<typename T>
     void operator<<=(const T& array)
     {
-        auto current_dims = dims(array);
+        auto current_shape = detail::shape_adl(array);
 
-        std::vector<hsize_t> mem_dims(begin(current_dims), end(current_dims));
+        std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
 
-        hdf5::dataspace mem_space(mem_dims);
+        hdf5::dataspace mem_space(mem_shape);
         hdf5::dataspace file_space = selected_dataspace_;
         hdf5::type datatype = sliced_dataset_.get_type();
 
@@ -49,18 +65,16 @@ public:
     template<typename T>
     friend void operator<<=(T& array,const slice& sl)
     {
-        std::vector<hsize_t> slice_dims = sl.size();
+        std::vector<hsize_t> slice_shape = sl.shape();
 
-        std::vector<std::size_t> dims(begin(slice_dims),end(slice_dims));
-
-        hdf5::dataspace mem_space(slice_dims);
+        hdf5::dataspace mem_space(slice_shape);
         hdf5::dataspace file_space = sl.selected_dataspace_;
         hdf5::type datatype = sl.sliced_dataset_.get_type();
 
         ::echelon::read(sl.sliced_dataset_,datatype,mem_space,file_space,array);
     }
 
-    const std::vector<hsize_t>& size()const;
+    const std::vector<hsize_t>& shape()const;
 private:
     hdf5::dataset sliced_dataset_;
     hdf5::dataspace selected_dataspace_;
@@ -68,6 +82,6 @@ private:
     std::vector<hsize_t> size_;
 };
 
-};
+}
 
 #endif

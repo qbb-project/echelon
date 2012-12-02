@@ -1,13 +1,19 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_MULTI_ARRAY_ADAPTOR_HPP
 #define ECHELON_MULTI_ARRAY_ADAPTOR_HPP
+
+#include <echelon/container_adaption.hpp>
+#include <echelon/dataset.hpp>
+#include <echelon/detail/map_indices.hpp>
+#include <echelon/detail/all_integral.hpp>
 
 #include <algorithm>
 #include <functional>
 #include <vector>
-
-#include <echelon/container_adaption.hpp>
-
-#include <echelon/dataset.hpp>
 
 namespace echelon
 {
@@ -19,18 +25,26 @@ public:
     typedef typename Container::value_type value_type;
 
     multi_array_adaptor(Container& container_,
-                        const std::vector<std::size_t>& dims_)
-    :container_(container_),dims_(dims_)
+                        const std::vector<std::size_t>& shape_)
+    :container_(container_),shape_(shape_)
     {}
 
-    const value_type& operator()(std::size_t i,std::size_t j)const
+    template<typename... Indices>
+    const value_type& operator()(Indices... indices)const
     {
-        return container_[dims_[1]*i + j];
+        static_assert(detail::all_integral<Indices...>::value,
+                      "All indices must be of integral type.");
+
+        return container_[detail::map_indices(shape_,indices...)];
     }
 
-    value_type& operator()(std::size_t i,std::size_t j)
+    template<typename... Indices>
+    value_type& operator()(Indices... indices)
     {
-        return container_[dims_[1]*i + j];
+        static_assert(detail::all_integral<Indices...>::value,
+                      "All indices must be of integral type.");
+
+        return container_[detail::map_indices(shape_,indices...)];
     }
 
     typename Container::iterator begin()
@@ -67,13 +81,13 @@ public:
         return data(container_);
     }
 
-    const std::vector<std::size_t>& dims()const
+    const std::vector<std::size_t>& shape()const
     {
-        return dims_;
+        return shape_;
     }
 private:
     Container& container_;
-    std::vector<std::size_t> dims_;
+    std::vector<std::size_t> shape_;
 };
 
 }
