@@ -1,3 +1,8 @@
+//  Copyright (c) 2012 Christopher Hinz
+//
+//  Distributed under the Boost Software License, Version 1.0. (See accompanying
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef ECHELON_GROUP_HPP
 #define ECHELON_GROUP_HPP
 
@@ -10,11 +15,6 @@
 #include <echelon/dataset.hpp>
 #include <echelon/scalar_dataset.hpp>
 #include <echelon/object_reference.hpp>
-//  Copyright (c) 2012 Christopher Hinz
-//
-//  Distributed under the Boost Software License, Version 1.0. (See accompanying
-//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-
 #include <echelon/utility.hpp>
 
 #include <echelon/broken_contract_exception.hpp>
