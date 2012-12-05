@@ -150,12 +150,41 @@ public:
      */
     object operator[](const std::string& name)const;
 
+    /** Returns the requested group, if it already exists, otherwise a new group is created.
+     *
+     *  \param name name of the requested group
+     *
+     *  \return the requested group, if it is already existing, or a new group otherwise
+     */
     group require_group(const std::string& name);
 
+    /** Returns the requested dataset, if it already exists, otherwise a new dataset is created.
+     *
+     *  The new dataset is created using the given parameters.
+     *
+     *  \param name name of the requested dataset
+     *  \param datatype value type of the new dataset
+     *  \param dims shape of the new dataset
+     *  \param comp_level compression level, which is applied to the new dataset
+     *
+     *  \return the requested dataset, if it is already existing, or a new dataset otherwise
+     */
     dataset require_dataset(const std::string& name, const type& datatype,
                             const std::vector<hsize_t>& dims,
                             int comp_level = -1);
 
+    /** Returns the requested dataset, if it already exists, otherwise a new dataset is created.
+     *
+     *  The new dataset is created using the given parameters.
+     *
+     *  \param name name of the requested dataset
+     *  \param dims shape of the new dataset
+     *  \param comp_level compression level, which is applied to the new dataset
+     *
+     *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *
+     *  \return the requested dataset, if it is already existing, or a new dataset otherwise
+     */
     template<typename T>
     dataset require_dataset(const std::string& name,
                            const std::vector<hsize_t>& dims,
@@ -164,14 +193,44 @@ public:
         return root_group_.require_dataset<T>(name,dims,comp_level);
     }
 
+    /** Returns the requested scalar dataset, if it already exists, otherwise a new scalar dataset is created.
+     *
+     *  The new dataset is created using the given parameters.
+     *
+     *  \param name name of the requested dataset
+     *  \param datatype value type of the new dataset
+     *
+     *  \return the requested scalar dataset, if it is already existing, or a new scalar dataset otherwise
+     */
     scalar_dataset require_scalar_dataset(const std::string& name, const type& datatype);
 
+    /** Returns the requested scalar dataset, if it already exists, otherwise the scalar dataset is created.
+     *
+     *  The new dataset is created using the given parameters.
+     *
+     *  \param name name of the requested dataset
+     *
+     *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *
+     *  \return the requested scalar dataset, if it is already existing, or a new scalar dataset otherwise
+     */
     template<typename T>
     scalar_dataset require_scalar_dataset(const std::string& name)
     {
         return root_group_.require_scalar_dataset<T>(name);
     }
 
+    /** Returns the requested scalar dataset, if it already exists, otherwise a new scalar dataset is created.
+     *
+     *  The new dataset is created using the given parameters.
+     *
+     *  \param name name of the requested dataset
+     *  \param value value, which should be used to intialize the dataset
+     *
+     *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *
+     *  \return the requested scalar dataset, if it is already existing, or a new scalar dataset otherwise
+     */
     template<typename T>
     scalar_dataset require_scalar_dataset(const std::string& name,const T& value)
     {
