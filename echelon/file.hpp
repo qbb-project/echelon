@@ -222,7 +222,7 @@ public:
 
     /** Returns the requested scalar dataset, if it already exists, otherwise a new scalar dataset is created.
      *
-     *  The new dataset is created using the given parameters.
+     *  The new dataset is created using the given parameters and is initialized with the given value.
      *
      *  \param name name of the requested dataset
      *  \param value value, which should be used to intialize the dataset
@@ -239,7 +239,7 @@ public:
 
     /** Iterates over every object within the root group.
      *
-     *  \param op function, which should be applied to every object
+     *  \param op function, which is applied to every object
      *
      */
     void iterate(const std::function<void(const object&)>& op);

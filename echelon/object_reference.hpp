@@ -16,21 +16,43 @@
 namespace echelon
 {
 
+/** A reference to an HDF5 object.
+ *
+ * \note Note that the concept of a HDF5 reference has nothing to do with C++ references.
+ *       Since a HDF5 reference has a null state, it resembles a C++ pointer without pointer arithmetic
+ *       and it correspondingly has a similar interface.
+ */
 class object_reference
 {
 public:
     friend struct type_lowering_hook<object_reference>;
 
+    /** Creates a null reference.
+     */
     object_reference();
 
+    /** Creates a reference to a given object.
+     *
+     *  \param referenced_object referenced object
+     */
     explicit object_reference(const object& referenced_object);
     explicit object_reference(const hdf5::object_reference& reference_wrapper_,
                               hdf5::handle any_valid_handle_);
 
+    /** Dereferences this reference.
+     *
+     *  \return handle to the referenced object
+     */
     object operator*()const;
 
+    /** Tests, if the reference is non-null.
+     *
+     *  \return true, if the reference is non-null and false otherwise
+     */
     explicit operator bool()const;
 
+    /** The underlying low-level reference.
+     */
     const hdf5::object_reference& raw_ref()const
     {
         return reference_wrapper_;
