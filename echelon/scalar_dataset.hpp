@@ -33,8 +33,6 @@ public:
 
     /** \brief Writes the content of a variable into the scalar dataset.
      *
-     *  The shape of the data source must match the shape of the dataset.
-     *
      *  \tparam T Type of the written value.
      *
      *  \param sink  the scalar dataset, which is used as a sink
@@ -47,8 +45,6 @@ public:
     }
 
     /** \brief Reads the content of the scalar dataset into a variable.
-     *
-     *  The shape of the data source must match the shape of the dataset.
      *
      *  \tparam T Type of the read value.
      *

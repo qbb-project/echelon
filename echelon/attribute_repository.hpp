@@ -38,6 +38,10 @@ private:
     std::string what_;
 };
 
+/** \brief Attribute manager, which should be embedded into a parent object, which supports attributes.
+ *
+ * \tparam Parent Type of the object into which the attribute repository is embedded.
+ */
 template<typename Parent>
 class attribute_repository
 {
@@ -46,19 +50,43 @@ public:
     : parent_(&parent_)
     {}
 
+    /** \brief Creates a new attribute.
+     *
+     *  \param name name of the new attribute
+     *  \param datatype value type of the new attribute
+     *
+     *  \return a handle to the new attribute
+     */
     attribute create(const std::string& name, const type& datatype)
     {
         return attribute(object(*parent_), name, datatype);
     }
 
+    /** \brief Creates a new attribute.
+     *
+     *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *
+     *  \param name name of the new attribute
+     *
+     *  \return a handle to the new attribute
+     */
     template<typename T>
     attribute create(const std::string& name)
     {
         return create(name,get_hdf5_type<T>());
     }
 
+    /** \brief Creates a new attribute and initializes it with a given value.
+     *
+     *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *
+     *  \param name name of the new attribute
+     *  \param value value, which is used to initialize the attribute
+     *
+     *  \return a handle to the new attribute
+     */
     template<typename T>
-    attribute create(const std::string& name,const T& value)
+    attribute create(const std::string& name, const T& value)
     {
         attribute attr = create<T>(name);
 
@@ -67,16 +95,37 @@ public:
         return attr;
     }
 
+    /** \brief Accessor function for this attribute repository.
+     *
+     *  \param name name of the requested attribute
+     *
+     *  \return a handle to the requested attribute
+     */
     attribute operator[](const std::string& name)const
     {
         return attribute(object(*parent_),name);
     }
 
+    /** \brief Tests, if an attribute exists.
+     *
+     *  \param name name of the requested attribute
+     *
+     *  \return true, if the requested attribute exists, false otherwise
+     */
     bool exists(const std::string& name)const
     {
         return hdf5::is_attribute_existing(hdf5::object(parent_->id()),name);
     }
 
+    /** \brief Returns the requested attribute, if it already exists, otherwise a new attribute is created.
+     *
+     *  The new attribute is created using the given parameters.
+     *
+     *  \param name name of the requested attribute
+     *  \param datatype value type of the new attribute
+     *
+     *  \return the requested attribute, if it is already existing, or a new attribute otherwise
+     */
     attribute require(const std::string& name, const type& datatype)
     {
         if(exists(name))
@@ -95,14 +144,35 @@ public:
         }
     }
 
+    /** \brief Returns the requested attribute, if it already exists, otherwise the attribute is created.
+     *
+     *  The new attribute is created using the given parameters.
+     *
+     *  \param name name of the requested attribute
+     *
+     *  \tparam T C++ type, which should be used to determine the attribute's value type
+     *
+     *  \return the requested attribute, if it is already existing, or a new attribute otherwise
+     */
     template<typename T>
     attribute require(const std::string& name)
     {
         return require(name,get_hdf5_type<T>());
     }
 
+    /** \brief Returns the requested attribute, if it already exists, otherwise a new attribute is created.
+     *
+     *  The new attribute is created using the given parameters and is initialized with the given value.
+     *
+     *  \param name name of the requested attribute
+     *  \param value value, which should be used to intialize the attribute
+     *
+     *  \tparam T C++ type, which should be used to determine the attribute's value type
+     *
+     *  \return the requested attribute, if it is already existing, or a new attribute otherwise
+     */
     template<typename T>
-    attribute require(const std::string& name,const T& value)
+    attribute require(const std::string& name, const T& value)
     {
         type datatype = get_hdf5_type<T>();
 
