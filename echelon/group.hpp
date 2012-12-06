@@ -31,12 +31,12 @@ namespace echelon
 
 class file;
 
-/** Exception, which is thrown, if a requested object does not exist.
+/** \brief Exception, which is thrown, if a requested object does not exist.
  */
 class non_existing_member_exception : public std::exception
 {
 public:
-    /** Creates a new exception with a given error description.
+    /** \brief Creates a new exception with a given error description.
      *
      * \param what_ error description
      */
@@ -44,11 +44,11 @@ public:
     :what_(what_)
     {}
 
-    /** The destructor
+    /** \brief The destructor
      */
     ~non_existing_member_exception() noexcept {}
 
-    /** An associated error description.
+    /** \brief An associated error description.
      */
     const char* what()const noexcept
     {
@@ -58,7 +58,7 @@ private:
     std::string what_;
 };
 
-/** A handle to an HDF5 group object.
+/** \brief A handle to an HDF5 group object.
  *
  */
 class group
@@ -66,14 +66,14 @@ class group
 public:
     friend class file;
 
-    /** Creates a new HDF5 group within this group.
+    /** \brief Creates a new HDF5 group within this group.
      *
      *  \param name name of the new group
      *  \return a handle to the new group
      */
     group create_group(const std::string& name);
 
-    /** Creates a new HDF5 dataset within this group.
+    /** \brief Creates a new HDF5 dataset within this group.
      *
      *  \param name name of the new dataset
      *  \param datatype value type of the new dataset
@@ -86,7 +86,7 @@ public:
                            const std::vector<hsize_t>& dims,
                            int comp_level = -1);
 
-    /** Creates a new HDF5 dataset within this group.
+    /** \brief Creates a new HDF5 dataset within this group.
      *
      *  \param name name of the new dataset
      *  \param dims shape of the new dataset
@@ -104,7 +104,7 @@ public:
         return create_dataset(name,get_hdf5_type<T>(),dims,comp_level);
     }
 
-    /** Creates a new HDF5 scalar dataset within this group.
+    /** \brief Creates a new HDF5 scalar dataset within this group.
      *
      *  \param name name of the new dataset
      *  \param datatype value type of the new dataset
@@ -113,7 +113,7 @@ public:
      */
     scalar_dataset create_scalar_dataset(const std::string& name, const type& datatype);
 
-    /** Creates a new HDF5 scalar dataset within this group.
+    /** \brief Creates a new HDF5 scalar dataset within this group.
      *
      *  \param name name of the new dataset
      *
@@ -127,7 +127,7 @@ public:
         return create_scalar_dataset(name,get_hdf5_type<T>());
     }
 
-    /** Creates a new HDF5 scalar dataset within this group and initializes it with a given value.
+    /** \brief Creates a new HDF5 scalar dataset within this group and initializes it with a given value.
      *
      *  \param name name of the new dataset
      *  \param value value, which should be used to intialize the dataset
@@ -146,7 +146,7 @@ public:
         return ds;
     }
 
-    /** Accessor function for this group.
+    /** \brief Accessor function for this group.
      *
      *  \param name name of the requested object
      *
@@ -154,7 +154,7 @@ public:
      */
     object operator[](const std::string& name)const;
 
-    /** Returns the requested group, if it already exists, otherwise a new group is created.
+    /** \brief Returns the requested group, if it already exists, otherwise a new group is created.
      *
      *  \param name name of the requested group
      *
@@ -162,7 +162,7 @@ public:
      */
     group require_group(const std::string& name);
 
-    /** Returns the requested dataset, if it already exists, otherwise a new dataset is created.
+    /** \brief Returns the requested dataset, if it already exists, otherwise a new dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
@@ -177,7 +177,7 @@ public:
                             const std::vector<hsize_t>& dims,
                             int comp_level = -1);
 
-    /** Returns the requested dataset, if it already exists, otherwise a new dataset is created.
+    /** \brief Returns the requested dataset, if it already exists, otherwise a new dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
@@ -197,7 +197,7 @@ public:
         return require_dataset(name,get_hdf5_type<T>(),dims,comp_level);
     }
 
-    /** Returns the requested scalar dataset, if it already exists, otherwise a new scalar dataset is created.
+    /** \brief Returns the requested scalar dataset, if it already exists, otherwise a new scalar dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
@@ -208,7 +208,7 @@ public:
      */
     scalar_dataset require_scalar_dataset(const std::string& name, const type& datatype);
 
-    /** Returns the requested scalar dataset, if it already exists, otherwise the scalar dataset is created.
+    /** \brief Returns the requested scalar dataset, if it already exists, otherwise the scalar dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
@@ -224,7 +224,7 @@ public:
         return require_scalar_dataset(name,get_hdf5_type<T>());
     }
 
-    /** Returns the requested scalar dataset, if it already exists, otherwise a new scalar dataset is created.
+    /** \brief Returns the requested scalar dataset, if it already exists, otherwise a new scalar dataset is created.
      *
      *  The new dataset is created using the given parameters and is initialized with the given value.
      *
@@ -260,22 +260,22 @@ public:
         }
     }
 
-    /** Iterates over every object within this group.
+    /** \brief Iterates over every object within this group.
      *
      *  \param op function, which is applied to every object
      *
      */
     void iterate(const std::function<void(const object&)>& op);
 
-    /** A HDF5 object reference to this group.
+    /** \brief A HDF5 object reference to this group.
      */
     object_reference ref()const;
 
-    /** The ID, which corresponds to the underlying HDF5 object.
+    /** \brief The ID, which corresponds to the underlying HDF5 object.
      */
     hid_t id() const noexcept;
 
-    /** The underlying HDF5 low-level handle.
+    /** \brief The underlying HDF5 low-level handle.
      */
     const hdf5::group& get_native_handle()const;
 private:
@@ -289,7 +289,7 @@ private:
     hdf5::group group_wrapper_;
 
 public:
-    /** The attributes, which are attached to the group.
+    /** \brief The attributes, which are attached to the group.
      */
     attribute_repository<group> attributes;
 };
