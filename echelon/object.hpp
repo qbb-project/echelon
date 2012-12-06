@@ -40,7 +40,6 @@ class object
 {
 public:
     explicit object(const hdf5::object& object_wrapper_);
-    object(const object& other);
 
     explicit object(const group& object_);
     explicit object(const dataset& object_);

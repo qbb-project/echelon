@@ -23,11 +23,6 @@ object::object(const hdf5::object& object_wrapper_)
 {
 }
 
-object::object(const object& other)
-:object_wrapper_(other.object_wrapper_)
-{
-}
-
 object::object(const group& object_)
 :object_wrapper_(object_.get_native_handle())
 {
