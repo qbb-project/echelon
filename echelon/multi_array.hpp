@@ -25,9 +25,10 @@ public:
 
     multi_array()=default;
 
-    explicit multi_array(const std::vector<std::size_t>& shape_)
+    explicit multi_array(const std::vector<std::size_t>& shape_, const T& value_ = T())
     :data_(std::accumulate(std::begin(shape_),std::end(shape_),
-                           std::size_t(1),std::multiplies<std::size_t>())),
+                           std::size_t(1),std::multiplies<std::size_t>()),
+           value_),
      shape_(shape_)
     {}
 
