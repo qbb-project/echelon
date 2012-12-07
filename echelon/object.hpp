@@ -76,19 +76,19 @@ public:
 
     /** \brief Changes the object, which is referenced by the handle.
      *
-     *  \param a handle to the shared object
+     *  \param object_ a handle to the shared object
      */
     object& operator=(const group& object_);
 
     /** \brief Changes the object, which is referenced by the handle.
      *
-     *  \param a handle to the shared object
+     *  \param object_ a handle to the shared object
      */
     object& operator=(const dataset& object_);
 
     /** \brief Changes the object, which is referenced by the handle.
      *
-     *  \param a handle to the shared object
+     *  \param object_ a handle to the shared object
      */
     object& operator=(const scalar_dataset& object_);
 
