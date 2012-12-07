@@ -167,8 +167,10 @@ public:
 
     /** \brief Slices the dataset.
      *
-     *  The boundaries of the slice within the dataset are specified by index ranges.
-     *  Currently the following index range specifiers are supported (N,M and step are non-negative integral values):
+     *  The boundaries of the slice within the dataset are specified by index ranges, which can be
+     *  constructed using echelon::range.
+     *  Currently the following index range specifiers are supported (N and M are non-negative integral values
+     *  and step is a positive integral value):
      *
      *  index range     | semantic
      *  ----------------|-------------------------------------------------------------------------------------------
@@ -202,6 +204,8 @@ public:
      *  It should be noted, that only the sliced portion of the dataset is loaded into the main memory.
      *  Therefore slicing is an efficient way to work on large datasets and even allows us to deal with datasets
      *  , which do not fit into the main memory.
+     *
+     *  At the time of writing, \ref slice does support most operations, which are valid on a dataset.
      *
      *  \tparam Args types of the index range specifiers
      *
