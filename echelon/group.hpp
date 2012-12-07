@@ -166,10 +166,19 @@ public:
      *
      *  The new dataset is created using the given parameters.
      *
+     *  This method allows the user to make a contract with the library,
+     *  that an object with certain properties exists after the method has terminated.
+     *
+     *  If the dataset already exists and its shape or datatype differ
+     *  from their requested value and an exception is thrown,
+     *  since the contract can't be fulfilled.
+     *
      *  \param name name of the requested dataset
      *  \param datatype value type of the new dataset
      *  \param dims shape of the new dataset
      *  \param comp_level compression level, which is applied to the new dataset
+     *
+     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
      *
      *  \return the requested dataset, if it is already existing, or a new dataset otherwise
      */
@@ -181,11 +190,20 @@ public:
      *
      *  The new dataset is created using the given parameters.
      *
+     *  This method allows the user to make a contract with the library,
+     *  that an object with certain properties exists after the method has terminated.
+     *
+     *  If the dataset already exists and its shape or datatype differ
+     *  from their requested value and an exception is thrown,
+     *  since the contract can't be fulfilled.
+     *
      *  \param name name of the requested dataset
      *  \param dims shape of the new dataset
      *  \param comp_level compression level, which is applied to the new dataset
      *
      *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *
+     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
      *
      *  \return the requested dataset, if it is already existing, or a new dataset otherwise
      */
@@ -201,8 +219,17 @@ public:
      *
      *  The new dataset is created using the given parameters.
      *
+     *  This method allows the user to make a contract with the library,
+     *  that an object with certain properties exists after the method has terminated.
+     *
+     *  If the scalar dataset already exists and its datatype differs
+     *  from its requested value and an exception is thrown,
+     *  since the contract can't be fulfilled.
+     *
      *  \param name name of the requested dataset
      *  \param datatype value type of the new dataset
+     *
+     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
      *
      *  \return the requested scalar dataset, if it is already existing, or a new scalar dataset otherwise
      */
@@ -212,9 +239,18 @@ public:
      *
      *  The new dataset is created using the given parameters.
      *
+     *  This method allows the user to make a contract with the library,
+     *  that an object with certain properties exists after the method has terminated.
+     *
+     *  If the scalar dataset already exists and its datatype differs
+     *  from its requested value and an exception is thrown,
+     *  since the contract can't be fulfilled.
+     *
      *  \param name name of the requested dataset
      *
      *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *
+     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
      *
      *  \return the requested scalar dataset, if it is already existing, or a new scalar dataset otherwise
      */
@@ -228,10 +264,19 @@ public:
      *
      *  The new dataset is created using the given parameters and is initialized with the given value.
      *
+     *  This method allows the user to make a contract with the library,
+     *  that an object with certain properties exists after the method has terminated.
+     *
+     *  If the scalar dataset already exists and its datatype differs
+     *  from its requested value and an exception is thrown,
+     *  since the contract can't be fulfilled.
+     *
      *  \param name name of the requested dataset
      *  \param value value, which should be used to intialize the dataset
      *
      *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *
+     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
      *
      *  \return the requested scalar dataset, if it is already existing, or a new scalar dataset otherwise
      */

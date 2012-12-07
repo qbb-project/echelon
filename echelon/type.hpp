@@ -146,7 +146,7 @@ class type_layout
 {
 public:
     /** \brief Tuple containing a name, a type and an offset, which are used to
-     *         describe a single element of compound type.
+     *         describe a single element of a compound type.
      */
     struct element
     {

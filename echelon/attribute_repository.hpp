@@ -121,8 +121,17 @@ public:
      *
      *  The new attribute is created using the given parameters.
      *
+     *  This method allows the user to make a contract with the library,
+     *  that an object with certain properties exists after the method has terminated.
+     *
+     *  If the attribute already exists and its datatype differs
+     *  from its requested value and an exception is thrown,
+     *  since the contract can't be fulfilled.
+     *
      *  \param name name of the requested attribute
      *  \param datatype value type of the new attribute
+     *
+     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
      *
      *  \return the requested attribute, if it is already existing, or a new attribute otherwise
      */
@@ -148,9 +157,18 @@ public:
      *
      *  The new attribute is created using the given parameters.
      *
+     *  This method allows the user to make a contract with the library,
+     *  that an object with certain properties exists after the method has terminated.
+     *
+     *  If the attribute already exists and its datatype differs
+     *  from its requested value and an exception is thrown,
+     *  since the contract can't be fulfilled.
+     *
      *  \param name name of the requested attribute
      *
      *  \tparam T C++ type, which should be used to determine the attribute's value type
+     *
+     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
      *
      *  \return the requested attribute, if it is already existing, or a new attribute otherwise
      */
@@ -164,10 +182,19 @@ public:
      *
      *  The new attribute is created using the given parameters and is initialized with the given value.
      *
+     *  This method allows the user to make a contract with the library,
+     *  that an object with certain properties exists after the method has terminated.
+     *
+     *  If the attribute already exists and its datatype differs
+     *  from its requested value and an exception is thrown,
+     *  since the contract can't be fulfilled.
+     *
      *  \param name name of the requested attribute
      *  \param value value, which should be used to intialize the attribute
      *
      *  \tparam T C++ type, which should be used to determine the attribute's value type
+     *
+     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
      *
      *  \return the requested attribute, if it is already existing, or a new attribute otherwise
      */
