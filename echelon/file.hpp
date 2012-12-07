@@ -26,7 +26,7 @@ class file
 public:
     /** Enum containing possible creation modes for a file handle.
      */
-    enum class create_mode
+    enum /*class*/ create_mode
     {
         truncate, ///< Truncate any pre-existing file.
         exclusive ///< Raise an error, if the file already exists.
@@ -34,7 +34,7 @@ public:
 
     /** Enum containing possible open modes for a file handle.
      */
-    enum class open_mode
+    enum /*class*/ open_mode
     {
         read_only, ///< Open the file in the read-only mode.
         read_write ///< Open the file in the read-write mode.
