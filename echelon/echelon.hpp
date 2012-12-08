@@ -6,6 +6,10 @@
 #ifndef ECHELON_HPP
 #define ECHELON_HPP
 
+/** \namespace echelon
+ *  \brief echelon's core namespace
+ */
+
 #include <echelon/object.hpp>
 #include <echelon/file.hpp>
 #include <echelon/group.hpp>

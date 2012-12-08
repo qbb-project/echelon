@@ -48,6 +48,12 @@ private:
     hsize_t stride_;
 };
 
+/** \brief Constructs an index range.
+ *
+ *  \param base base index (or lower bound)
+ *  \param bound upper bound
+ *  \param stride difference between two consecutive indices
+ */
 template<typename Base,typename Bound>
 inline range_t<Base,Bound> range(Base base,Bound bound,hsize_t stride = 1)
 {
