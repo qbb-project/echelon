@@ -14,6 +14,11 @@ endif()
 
 set(CMAKE_MODULE_PATH ${echelon_SOURCE_DIR}/cmake)
 
+if (NOT CMAKE_BUILD_TYPE)
+    message(STATUS "No build type selected, default to Release")
+    set(CMAKE_BUILD_TYPE "Release")
+endif()
+
 include(generate_imported_library_targets)
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
