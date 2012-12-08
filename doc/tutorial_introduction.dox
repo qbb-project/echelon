@@ -116,7 +116,7 @@ using the same syntax and to load the data into the std::vector<double> containe
 \code{.cpp}
 v <<= ds;
 \endcode
-While the container is automatically resize to hold the data if necessary, the value type of the dataset and
+While the container is automatically resized to hold the data if necessary, the value type of the dataset and
 the value type of the container must match again. Otherwise an exception is thrown.
 
 The following code summarizes the second example and prints the content of the container
