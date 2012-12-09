@@ -12,6 +12,8 @@
 #  Echelon_LIBRARIES - The libraries needed to use Echelon
 #  Echelon_DEFINITIONS - Compiler switches required for using Echelon
 
+include(TestCXXAcceptsFlag)
+
 if(Echelon_FIND_QUIETLY AND NOT Echelon_FIND_REQUIRED)
   find_package(HDF5 COMPONENTS C HL QUIET)
 elseif(NOT Echelon_FIND_QUIETLY AND Echelon_FIND_REQUIRED)
@@ -32,7 +34,21 @@ else()
   find_package(Boost COMPONENTS serialization unit_test_framework)
 endif()
 
-set(Echelon_DEFINITIONS )
+CHECK_CXX_ACCEPTS_FLAG("-std=c++11" COMPILER_ACCEPTS_GCC_CPP11_FLAG)
+
+if(COMPILER_ACCEPTS_GCC_CPP11_FLAG)
+    set(Echelon_DEFINITIONS "-std=c++11")
+else(COMPILER_ACCEPTS_GCC_CPP11_FLAG)
+
+    CHECK_CXX_ACCEPTS_FLAG("-std=c++0x" COMPILER_ACCEPTS_GCC_CPP0X_FLAG)
+
+    if(COMPILER_ACCEPTS_GCC_CPP0X_FLAG)
+        set(Echelon_DEFINITIONS "-std=c++0x")
+    else(COMPILER_ACCEPTS_GCC_CPP0X_FLAG)
+        set(Echelon_DEFINITIONS )
+    endif(COMPILER_ACCEPTS_GCC_CPP0X_FLAG)
+
+endif(COMPILER_ACCEPTS_GCC_CPP11_FLAG)
 
 find_path(Echelon_INCLUDE_DIR echelon/file.hpp
           HINTS ENV Echelon_ROOT
