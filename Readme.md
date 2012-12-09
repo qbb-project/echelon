@@ -23,7 +23,7 @@ Getting started
 
 ### Installing echelon on Linux
 
-To install echelon on Linux simply change into echelon's root directory
+To install echelon on Linux, simply change into echelon's root directory
 and create a build directory (for example build/).
 Afterwards change into your build directory and configure the build system
 using
