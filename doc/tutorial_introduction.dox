@@ -31,7 +31,7 @@ group data = hdf5_file.create_group("data");
 we create a new group 'data' within the root group and save the \ref echelon::group "group" handle in data.
 
 Now we will store some test data in our file. To do this, we have to create a new dataset.
-A dataset is a rectangular, homogeneous collection of elements and are the primary facilities for
+A dataset is a rectangular, homogeneous collection of elements and is the primary facility for
 data storage in HDF5. A dataset can distribute its elements over an arbitrary number of dimensions.
 This is convenient, since many object in science, for example matrices and tensors, extend along several
 dimensions and we can map our data structures naturally onto our file structure.
@@ -89,7 +89,7 @@ we specify an open mode and not a creation mode. Since we only want to read data
 in this example, we use the read-only mode.
 
 You may remember, that we stored our dataset within a group during the previous example.
-To access the dataset, we have to aquire a handle to the group first.
+To access the dataset, we have to acquire a handle to the group first.
 For this purpose \ref echelon::group "group" overloads the square bracket operator,
 which takes the name of the object and returns a handle, if the object exists. Otherwise
 an exception is thrown.
@@ -97,7 +97,7 @@ In our case we use
 \code{.cpp}
 group data = hdf5_file["data"];
 \endcode
-to aquire a \ref echelon::group "group" handle to the previously created group 'data'.
+to acquire a \ref echelon::group "group" handle to the previously created group 'data'.
 
 The semantic of the above statement is much more complicated then one might expect at first glance.
 Since groups can store objects of many different types and the structure of the file is not available at compile-time,
@@ -108,7 +108,7 @@ and assign the object handle to it. echelon then checks at runtime, if our guess
 we guessed wrong. One consequence of this is, that you can't use the auto keyword in this case, since the object handle would not
 be converted to any meaningful type.
 
-It is now straightforward to aquire a handle to the dataset
+It is now straightforward to acquire a handle to the dataset
 \code{.cpp}
 dataset ds = data["ds"];
 \endcode
