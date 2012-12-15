@@ -18,12 +18,17 @@ namespace hdf5
 class dataset;
 class group;
 
+struct share_ownership_t{};
+
+static share_ownership_t share_ownership = {};
+
 class object
 {
 public:
     object();
 
     explicit object(hid_t object_id_);
+    object(hid_t object_id_,share_ownership_t);
     object(hid_t loc_id_,const std::string& name);
 
     explicit object(const dataset& other);
@@ -43,6 +48,7 @@ private:
 };
 
 bool exists(const object& loc,const std::string& name);
+std::string get_name(const object& loc);
 
 }
 

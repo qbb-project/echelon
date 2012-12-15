@@ -36,7 +36,8 @@ public:
     group& operator=(group&& other);
 
     hsize_t iterate(H5_index_t index_type, H5_iter_order_t order,
-                    hsize_t start_index, std::function<herr_t(hid_t,const char*)> op)const;
+                    hsize_t start_index, std::function<herr_t(hid_t,const char*)> op,
+                    bool ignore_internal_groups = true)const;
 
     hid_t id()const;
 private:

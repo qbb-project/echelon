@@ -307,10 +307,12 @@ public:
 
     /** \brief Iterates over every object within this group.
      *
-     *  \param op function, which is applied to every object
+     *  \param op                      function, which is applied to every object
+     *  \param ignore_internal_groups  if true, all groups, which are reserved for internal usage,
+     *                                 are omitted during the iteration
      *
      */
-    void iterate(const std::function<void(const object&)>& op);
+    void iterate(const std::function<void(const object&)>& op, bool ignore_internal_groups = true);
 
     /** \brief A HDF5 object reference to this group.
      */

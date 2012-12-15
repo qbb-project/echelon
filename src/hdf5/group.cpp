@@ -21,12 +21,14 @@ namespace
 
 struct iterate_proxy_data
 {
-    explicit iterate_proxy_data(std::function<herr_t(hid_t, const char*)> op)
-    : op{op}, caught_exception{}
+    explicit iterate_proxy_data(std::function<herr_t(hid_t, const char*)> op,
+                                bool ignore_internal_groups)
+    : op{op}, caught_exception{}, ignore_internal_groups{ignore_internal_groups}
     {
     }
 
     std::function<herr_t(hid_t, const char*)> op;
+    bool ignore_internal_groups;
     std::exception_ptr caught_exception;
 };
 
@@ -37,6 +39,10 @@ herr_t iterate_proxy_op(hid_t g_id, const char *name, const H5L_info_t *info,
 
     try
     {
+        if(data.ignore_internal_groups && std::string(name).compare("echelon") == 0 &&
+           get_name(object(g_id,share_ownership)) == "/")
+            return 0;
+
         return data.op(g_id, name);
     }
     catch (...)
@@ -137,11 +143,12 @@ group& group::operator=(group&& other)
 hsize_t group::iterate(H5_index_t index_type,
                        H5_iter_order_t order,
                        hsize_t start_index,
-                       std::function<herr_t(hid_t, const char*)> op) const
+                       std::function<herr_t(hid_t, const char*)> op,
+                       bool ignore_internal_groups) const
 {
     hsize_t current_index = start_index;
 
-    iterate_proxy_data data(op);
+    iterate_proxy_data data(op,ignore_internal_groups);
 
     herr_t error_code = H5Literate(id(), index_type, order,
                                    &current_index,

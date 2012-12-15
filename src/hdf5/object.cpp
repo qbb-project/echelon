@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <utility>
+#include <vector>
 
 #include <echelon/hdf5/error_handling.hpp>
 
@@ -28,6 +29,14 @@ object::object(hid_t object_id_)
 {
     ECHELON_ASSERT_MSG(id() == -1 || H5Iget_type(id()) == H5I_DATASET,
                        "ID does not refer to a dataset");
+}
+
+object::object(hid_t object_id_,share_ownership_t)
+:object_id_(object_id_)
+{
+    ECHELON_ASSERT_MSG(id() == -1,"invalid object ID");
+
+    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0,"unable to increment the reference count");
 }
 
 object::object(hid_t loc_id_,const std::string& name)
@@ -121,6 +130,17 @@ bool exists(const object& loc,const std::string& name)
         throw_on_hdf5_error();
 
     return result2 > 0 ? true : false;
+}
+
+std::string get_name(const object& loc)
+{
+    ssize_t len = H5Iget_name(loc.id(),0,0);
+
+    std::vector<char> name(len + 1);
+
+    H5Iget_name(loc.id(),name.data(),len + 1);
+
+    return std::string(name.data());
 }
 
 }
