@@ -27,14 +27,15 @@ object::object()
 object::object(hid_t object_id_)
 :object_id_(object_id_)
 {
-    ECHELON_ASSERT_MSG(id() == -1 || H5Iget_type(id()) == H5I_DATASET,
-                       "ID does not refer to a dataset");
+    ECHELON_ASSERT_MSG(id() == -1 || H5Iis_valid(id()) > 0,
+                       "invalid object ID");
 }
 
 object::object(hid_t object_id_,share_ownership_t)
 :object_id_(object_id_)
 {
-    ECHELON_ASSERT_MSG(id() == -1,"invalid object ID");
+    ECHELON_ASSERT_MSG(id() == -1 || H5Iis_valid(id()) > 0,
+                       "invalid object ID");
 
     ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0,"unable to increment the reference count");
 }
