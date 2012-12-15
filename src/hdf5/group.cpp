@@ -134,7 +134,7 @@ group& group::operator=(group&& other)
     return *this;
 }
 
-hsize_t group::iterate(hid_t group_id, H5_index_t index_type,
+hsize_t group::iterate(H5_index_t index_type,
                        H5_iter_order_t order,
                        hsize_t start_index,
                        std::function<herr_t(hid_t, const char*)> op) const
