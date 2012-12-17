@@ -17,6 +17,7 @@ namespace hdf5
 class file
 {
 public:
+    explicit file(hid_t file_id_);
     file(const std::string& name_, unsigned flags_, hid_t fcpl_id_,
          hid_t fapl_id_);
     file(const std::string& name_, unsigned flags_, hid_t fapl_id_);

@@ -11,6 +11,7 @@
 #include "property_list.hpp"
 
 #include <echelon/hdf5/object.hpp>
+#include <echelon/hdf5/file.hpp>
 
 #include <hdf5.h>
 #include <string>
@@ -56,6 +57,12 @@ public:
 
     type datatype()const;
     property_list creation_property_list()const;
+
+    std::string name()const;
+    file associated_file()const;
+
+    std::string label(unsigned int index)const;
+    void relabel(unsigned int index,const std::string& new_label);
 
     hid_t id()const;
 private:

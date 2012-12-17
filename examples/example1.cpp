@@ -54,6 +54,11 @@ int main()
         ds <<= arr;
         arr <<= ds;
 
+        ds.dimensions[0].relabel("x");
+
+        ds.dimensions[0].attach_dimension_scale<double>("x");
+        ds.dimensions[1].attach_dimension_scale<double>("y");
+
         auto version = ds.attributes.create<unsigned int>("version");
         auto desc = ds.attributes.create<std::string>("desc");
         version <<= 2;
