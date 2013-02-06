@@ -20,7 +20,7 @@ class group;
 
 struct share_ownership_t{};
 
-static share_ownership_t share_ownership = {};
+static constexpr share_ownership_t share_ownership = {};
 
 class object
 {
