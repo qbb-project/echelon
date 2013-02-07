@@ -11,7 +11,7 @@ Prerequisites
 - HDF5 1.8.0 or above
 - Boost 1.50.0 or above
 - A C++11 - compatible compiler (tested with gcc 4.7 and clang 3.1)
-- Doxygen 1.8.2 or above (optional)
+- Doxygen 1.8.3.1 or above (optional)
 
 *Warning: echelon does not compile with gcc 4.6 or older versions due to a compiler bug.*
 
