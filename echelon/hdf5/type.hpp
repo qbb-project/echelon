@@ -1,10 +1,10 @@
-//  Copyright (c) 2012 Christopher Hinz
+//  Copyright (c) 2012-2013 Christopher Hinz
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef ECHELON_RAII_TYPE_HPP
-#define ECHELON_RAII_TYPE_HPP
+#ifndef ECHELON_HDF5_TYPE_HPP
+#define ECHELON_HDF5_TYPE_HPP
 
 #include <hdf5.h>
 #include <cstdint>
