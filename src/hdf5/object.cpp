@@ -1,4 +1,4 @@
-//  Copyright (c) 2012 Christopher Hinz
+//  Copyright (c) 2012-2013 Christopher Hinz
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -7,12 +7,11 @@
 
 #include <echelon/hdf5/dataset.hpp>
 #include <echelon/hdf5/group.hpp>
+#include <echelon/hdf5/error_handling.hpp>
 
 #include <cassert>
 #include <utility>
 #include <vector>
-
-#include <echelon/hdf5/error_handling.hpp>
 
 namespace echelon
 {

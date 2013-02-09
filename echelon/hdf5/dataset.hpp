@@ -6,10 +6,9 @@
 #ifndef ECHELON_HDF5_DATASET_HPP
 #define ECHELON_HDF5_DATASET_HPP
 
-#include "type.hpp"
-#include "dataspace.hpp"
-#include "property_list.hpp"
-
+#include <echelon/hdf5/type.hpp>
+#include <echelon/hdf5/dataspace.hpp>
+#include <echelon/hdf5/property_list.hpp>
 #include <echelon/hdf5/object.hpp>
 
 #include <hdf5.h>

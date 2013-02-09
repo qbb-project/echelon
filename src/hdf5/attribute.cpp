@@ -4,10 +4,9 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <echelon/hdf5/attribute.hpp>
+#include <echelon/hdf5/error_handling.hpp>
 
 #include <utility>
-
-#include <echelon/hdf5/error_handling.hpp>
 
 namespace echelon
 {

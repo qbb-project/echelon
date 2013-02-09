@@ -9,14 +9,13 @@
 #include <echelon/hdf5/object_reference.hpp>
 #include <echelon/hdf5/object.hpp>
 #include <echelon/hdf5/property_list.hpp>
+#include <echelon/hdf5/type.hpp>
+#include <echelon/hdf5/dataspace.hpp>
+#include <echelon/hdf5/property_list.hpp>
 
 #include <hdf5.h>
 #include <string>
 #include <type_traits>
-
-#include "type.hpp"
-#include "dataspace.hpp"
-#include "property_list.hpp"
 
 namespace echelon
 {
