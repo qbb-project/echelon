@@ -14,11 +14,22 @@ namespace echelon
 namespace hdf5
 {
 
+attribute::attribute(hid_t attribute_id_)
+: attribute_id_(attribute_id_)
+{
+    ECHELON_ASSERT_MSG(id() == -1 || H5Iget_type(id()) == H5I_ATTR,
+                       "ID does not refer to a attribute");
+    ECHELON_ASSERT_MSG(id() == -1 || H5Iis_valid(id()) > 0,
+                       "invalid object ID");
+}
+
 attribute::attribute(hid_t loc_id_, const std::string& name_,
-                     const type& attr_type_)
+                     const type& attr_type_,
+                     const property_list& acpl,
+                     const property_list& aapl)
 :
 attribute_id_(H5Acreate2(loc_id_, name_.c_str(), attr_type_.id(), dataspace().id(),
-                         H5P_DEFAULT, H5P_DEFAULT))
+                         acpl.id(), aapl.id()))
 {
     if(id() < 0)
         throw_on_hdf5_error();

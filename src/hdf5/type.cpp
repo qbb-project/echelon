@@ -148,9 +148,10 @@ type type::string()
     if(tid < 0)
         throw_on_hdf5_error();
 
-    herr_t error_code = H5Tset_size(tid, H5T_VARIABLE);
+    if(H5Tset_cset(tid, H5T_CSET_UTF8) < 0)
+        throw_on_hdf5_error();
 
-    if(error_code < 0)
+    if(H5Tset_size(tid, H5T_VARIABLE) < 0)
         throw_on_hdf5_error();
 
     return type(tid);

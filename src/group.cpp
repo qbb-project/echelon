@@ -13,16 +13,29 @@ namespace echelon
 {
 
 group::group(const file& loc, const std::string& name)
-:group_wrapper_(loc.id(), name, H5P_DEFAULT),attributes(*this)
+:group_wrapper_(loc.id(), name, hdf5::default_property_list),attributes(*this)
 {}
 
 group::group(const object& parent, const std::string& name, creation_mode mode)
-:group_wrapper_(mode == creation_mode::create ? hdf5::group(parent.id(), name, H5P_DEFAULT, H5P_DEFAULT,
-                                                            H5P_DEFAULT)
-                                              : hdf5::group(parent.id(), name, H5P_DEFAULT)
-                  ),
+:group_wrapper_(-1),
  attributes(*this)
-{}
+{
+    if(mode == creation_mode::create)
+    {
+        hdf5::property_list link_creation_properties(hdf5::property_list_class(H5P_LINK_CREATE));
+        link_creation_properties.set_char_encoding(H5T_CSET_UTF8);
+
+        group_wrapper_ = hdf5::group(parent.id(), name,
+                                     link_creation_properties,
+                                     hdf5::default_property_list,
+                                     hdf5::default_property_list);
+    }
+    else
+    {
+        group_wrapper_ = hdf5::group(parent.id(), name,
+                                     hdf5::default_property_list);
+    }
+}
 
 group::group(hdf5::group group_wrapper_)
 :group_wrapper_(std::move(group_wrapper_)),attributes(*this)
@@ -54,7 +67,7 @@ group group::require_group(const std::string& name)
 {
     if(exists(object(*this),name) && get_object_type_by_name(object(*this),name) == object_type::group)
     {
-        return group(hdf5::group(id(),name,H5P_DEFAULT));
+        return group(hdf5::group(id(),name,hdf5::default_property_list));
     }
     else
     {

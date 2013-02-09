@@ -40,6 +40,10 @@ public:
     void set_chunk(const std::vector<hsize_t>& dims);
     void set_deflate(unsigned int level);
 
+    void set_char_encoding(H5T_cset_t encoding);
+    H5T_cset_t get_char_encoding();
+
+
     std::vector<hsize_t> get_chunk()const;
 
     hid_t id()const;
