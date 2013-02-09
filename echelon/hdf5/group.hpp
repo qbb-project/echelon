@@ -7,6 +7,7 @@
 #define ECHELON_HDF5_GROUP_HPP
 
 #include <echelon/hdf5/object.hpp>
+#include <echelon/hdf5/property_list.hpp>
 
 #include <string>
 #include <hdf5.h>
@@ -23,9 +24,9 @@ public:
     group();
     explicit group(hid_t group_id_);
     explicit group(const object& other);
-    group(hid_t loc_id_, const std::string& name_, hid_t lcpl_id_,
-          hid_t gcpl_id_, hid_t gapl_id_);
-    group(hid_t loc_id_, const std::string& name_, hid_t gapl_id_);
+    group(hid_t loc_id_, const std::string& name_, const property_list& lcpl_,
+          const property_list& gcpl_, const property_list& gapl_);
+    group(hid_t loc_id_, const std::string& name_, const property_list& gapl_);
 
     ~group();
 

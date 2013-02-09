@@ -29,9 +29,11 @@ dataset::dataset(const object& parent, const std::string& name,
         dataset_creation_properties.set_deflate(comp_level);
     }
 
+    hdf5::property_list link_creation_properties(hdf5::property_list_class(H5P_LINK_CREATE));
+    link_creation_properties.set_char_encoding(H5T_CSET_UTF8);
 
     dataset_wrapper_ = hdf5::dataset(parent.id(),name,datatype.get_native_type(),
-                        hdf5::dataspace(dims),hdf5::default_property_list,
+                        hdf5::dataspace(dims),link_creation_properties,
                         dataset_creation_properties,hdf5::default_property_list);
 }
 

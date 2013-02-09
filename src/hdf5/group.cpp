@@ -79,16 +79,16 @@ group::group(const object& other)
     ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0,"unable to increment the reference count");
 }
 
-group::group(hid_t loc_id_, const std::string& name_, hid_t lcpl_id_,
-             hid_t gcpl_id_, hid_t gapl_id_)
-: group_id_(H5Gcreate2(loc_id_, name_.c_str(), lcpl_id_, gcpl_id_, gapl_id_))
+group::group(hid_t loc_id_, const std::string& name_, const property_list& lcpl_,
+             const property_list& gcpl_, const property_list& gapl_)
+: group_id_(H5Gcreate2(loc_id_, name_.c_str(), lcpl_.id(), gcpl_.id(), gapl_.id()))
 {
     if(id() < 0)
         throw_on_hdf5_error();
 }
 
-group::group(hid_t loc_id_, const std::string& name_, hid_t gapl_id_)
-: group_id_(H5Gopen2(loc_id_, name_.c_str(), gapl_id_))
+group::group(hid_t loc_id_, const std::string& name_, const property_list& gapl_)
+: group_id_(H5Gopen2(loc_id_, name_.c_str(), gapl_.id()))
 {
     if(id() < 0)
         throw_on_hdf5_error();

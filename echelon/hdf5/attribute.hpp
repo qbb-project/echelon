@@ -8,6 +8,7 @@
 
 #include <echelon/hdf5/object_reference.hpp>
 #include <echelon/hdf5/object.hpp>
+#include <echelon/hdf5/property_list.hpp>
 
 #include <hdf5.h>
 #include <string>
@@ -25,7 +26,9 @@ namespace hdf5
 class attribute
 {
 public:
-    attribute(hid_t loc_id_, const std::string& name_, const type& attr_type_);
+    explicit attribute(hid_t attribute_id_);
+    attribute(hid_t loc_id_, const std::string& name_, const type& attr_type_,
+              const property_list& acpl,const property_list& aapl);
     attribute(hid_t loc_id_, const std::string& name_);
     ~attribute();
     attribute(const attribute& other);

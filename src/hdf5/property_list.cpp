@@ -117,6 +117,22 @@ std::vector<hsize_t> property_list::get_chunk()const
     return chunk_dims;
 }
 
+void property_list::set_char_encoding(H5T_cset_t encoding)
+{
+    if(H5Pset_char_encoding(id(),encoding) < 0)
+        throw_on_hdf5_error();
+}
+
+H5T_cset_t property_list::get_char_encoding()
+{
+    H5T_cset_t encoding;
+
+    if(H5Pget_char_encoding(id(),&encoding) < 0)
+        throw_on_hdf5_error();
+
+    return encoding;
+}
+
 hid_t property_list::id() const
 {
     return property_list_id_;
