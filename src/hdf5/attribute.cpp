@@ -100,7 +100,12 @@ void attribute::read(void* value)const
 
 type attribute::datatype()const
 {
-    return type(H5Aget_type(id()),true);
+    hid_t type_id = H5Aget_type(id());
+
+    if(type_id < 0)
+        throw_on_hdf5_error();
+
+    return type(type_id,true);
 }
 
 hid_t attribute::id()const

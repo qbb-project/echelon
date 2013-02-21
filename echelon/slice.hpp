@@ -67,7 +67,7 @@ public:
 
         hdf5::dataspace mem_space(mem_shape);
         hdf5::dataspace file_space = selected_dataspace_;
-        hdf5::type datatype = sliced_dataset_.get_type();
+        hdf5::type datatype = sliced_dataset_.datatype();
 
         ::echelon::write(sliced_dataset_,datatype,mem_space,file_space,source);
     }
@@ -86,7 +86,7 @@ public:
 
         hdf5::dataspace mem_space(slice_shape);
         hdf5::dataspace file_space = source.selected_dataspace_;
-        hdf5::type datatype = source.sliced_dataset_.get_type();
+        hdf5::type datatype = source.sliced_dataset_.datatype();
 
         ::echelon::read(source.sliced_dataset_,datatype,mem_space,file_space,sink);
     }

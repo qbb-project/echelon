@@ -50,7 +50,6 @@ public:
 
     void set_extent(const std::vector<hsize_t>& dims);
 
-    type get_type()const;
     dataspace get_space()const;
 
     type datatype()const;

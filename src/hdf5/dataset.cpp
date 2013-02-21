@@ -123,7 +123,7 @@ void dataset::read(const type& mem_type, const dataspace& mem_space,
 
 void dataset::write(const void* value)
 {
-    type datatype = get_type();
+    type datatype = this->datatype();
     dataspace space = get_space();
 
     write(datatype,space,space,default_property_list,value);
@@ -131,7 +131,7 @@ void dataset::write(const void* value)
 
 void dataset::read(void* value)const
 {
-    type datatype = get_type();
+    type datatype = this->datatype();
     dataspace space = get_space();
 
     read(datatype,space,space,default_property_list,value);
@@ -141,16 +141,6 @@ void dataset::set_extent(const std::vector<hsize_t>& dims)
 {
     if(H5Dset_extent(id(), dims.data()) < 0)
         throw_on_hdf5_error();
-}
-
-type dataset::get_type() const
-{
-    hid_t type_id = H5Dget_type(id());
-
-    if(type_id < 0)
-        throw_on_hdf5_error();
-
-    return type(type_id,true);
 }
 
 dataspace dataset::get_space() const
@@ -165,7 +155,12 @@ dataspace dataset::get_space() const
 
 type dataset::datatype()const
 {
-    return type(H5Dget_type(id()));
+    hid_t type_id = H5Dget_type(id());
+
+    if(type_id < 0)
+        throw_on_hdf5_error();
+
+    return type(type_id,true);
 }
 
 property_list dataset::creation_property_list()const

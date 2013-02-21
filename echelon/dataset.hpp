@@ -133,7 +133,7 @@ public:
 
         hdf5::dataspace mem_space(mem_shape);
         hdf5::dataspace file_space = sink.dataset_wrapper_.get_space();
-        hdf5::type datatype = sink.dataset_wrapper_.get_type();
+        hdf5::type datatype = sink.dataset_wrapper_.datatype();
 
         ::echelon::write(sink.dataset_wrapper_,datatype,mem_space,file_space,source);
     }
@@ -152,7 +152,7 @@ public:
 
         hdf5::dataspace mem_space(file_shape);
         hdf5::dataspace file_space = source.dataset_wrapper_.get_space();
-        hdf5::type datatype = source.dataset_wrapper_.get_type();
+        hdf5::type datatype = source.dataset_wrapper_.datatype();
 
         ::echelon::read(source.dataset_wrapper_,datatype,mem_space,file_space,sink);
     }
