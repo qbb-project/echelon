@@ -184,6 +184,16 @@ inline void read(Source& source,T& value)
     read(source,lowered_value);
 
     value = type_lowering_hook<T>::raise_type(lowered_value,source);
+
+    auto datatype = source.datatype();
+
+    if( H5Tis_variable_str(datatype.id()) ||
+        H5Tget_class(datatype.id()) == H5T_VLEN)
+    {
+
+        H5Dvlen_reclaim(datatype.id(),hdf5::dataspace().id(),
+                        H5P_DEFAULT,&lowered_value);
+    }
 }
 
 
