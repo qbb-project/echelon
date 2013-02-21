@@ -47,8 +47,13 @@ generate_imported_library_targets(Boost_LIBRARIES boost_targets)
 generate_imported_library_targets(HDF5_LIBRARIES hdf5_targets)
 
 add_subdirectory(src)
-add_subdirectory(examples)
-add_subdirectory(tests)
+
+if(NOT ECHELON_IS_A_SUBPROJECT)
+
+    add_subdirectory(examples)
+    add_subdirectory(tests)
+
+endif()
 
 if(ECHELON_IS_A_SUBPROJECT)
 
