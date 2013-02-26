@@ -48,9 +48,10 @@ group group::create_group(const std::string& name)
 }
 
 dataset group::create_dataset(const std::string& name, const type& datatype,
-                              const std::vector<hsize_t>& dims,int comp_level)
+                              const std::vector<hsize_t>& dims,int comp_level,
+                              const std::vector<hsize_t> chunk_shape)
 {
-    return dataset(object(*this),name,datatype,dims,comp_level);
+    return dataset(object(*this),name,datatype,dims,comp_level,chunk_shape);
 }
 
 scalar_dataset group::create_scalar_dataset(const std::string& name, const type& datatype)
@@ -77,7 +78,8 @@ group group::require_group(const std::string& name)
 
 dataset group::require_dataset(const std::string& name, const type& datatype,
                                const std::vector<hsize_t>& dims,
-                               int comp_level)
+                               int comp_level,
+                               const std::vector<hsize_t> chunk_shape)
 {
     if(exists(object(*this),name) && get_object_type_by_name(object(*this),name) == object_type::dataset)
     {
@@ -95,7 +97,7 @@ dataset group::require_dataset(const std::string& name, const type& datatype,
     }
     else
     {
-        return create_dataset(name,datatype,dims,comp_level);
+        return create_dataset(name,datatype,dims,comp_level,chunk_shape);
     }
 }
 

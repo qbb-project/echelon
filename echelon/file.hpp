@@ -9,6 +9,8 @@
 #include <echelon/group.hpp>
 #include <echelon/hdf5/file.hpp>
 
+#include <echelon/keywords.hpp>
+
 #include <string>
 #include <memory>
 
@@ -77,30 +79,45 @@ public:
      *  \param name name of the new dataset
      *  \param datatype value type of the new dataset
      *  \param dims shape of the new dataset
-     *  \param comp_level compression level, which is applied to the new dataset
+     *  \param options additional dataset creation options
+     *         keyword             |          semantic
+     *         --------------------|-----------------------------------------
+     *         _compression_level  | level of the deflate compression (0 - 9)
+     *         _chunk_shape        | shape of a dataset chunk
+     *
+     *  \tparam Options options type list
      *
      *  \return a handle to the new dataset
      */
+    template<typename... Options>
     dataset create_dataset(const std::string& name, const type& datatype,
                            const std::vector<hsize_t>& dims,
-                           int comp_level = -1);
+                           Options... options)
+    {
+        return root_group_.create_dataset(name,datatype,dims,options...);
+    }
 
     /** \brief Creates a new HDF5 dataset within the root group.
      *
      *  \param name name of the new dataset
      *  \param dims shape of the new dataset
-     *  \param comp_level compression level, which is applied to the new dataset
+     *  \param options additional dataset creation options
+     *         keyword             |          semantic
+     *         --------------------|-----------------------------------------
+     *         _compression_level  | level of the deflate compression (0 - 9)
+     *         _chunk_shape        | shape of a dataset chunk
      *
      *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *  \tparam Options options type list
      *
      *  \return a handle to the new dataset
      */
-    template<typename T>
+    template<typename T,typename... Options>
     dataset create_dataset(const std::string& name,
                            const std::vector<hsize_t>& dims,
-                           int comp_level = -1)
+                           Options... options)
     {
-        return root_group_.create_dataset<T>(name,dims,comp_level);
+        return root_group_.create_dataset<T>(name,dims,options...);
     }
 
     /** \brief Creates a new HDF5 scalar dataset within the root group.
@@ -172,15 +189,25 @@ public:
      *  \param name name of the requested dataset
      *  \param datatype value type of the new dataset
      *  \param dims shape of the new dataset
-     *  \param comp_level compression level, which is applied to the new dataset
+     *  \param options additional dataset creation options
+     *         keyword             |          semantic
+     *         --------------------|-----------------------------------------
+     *         _compression_level  | level of the deflate compression (0 - 9)
+     *         _chunk_shape        | shape of a dataset chunk
+     *
+     *  \tparam Options options type list
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
      *
      *  \return the requested dataset, if it is already existing, or a new dataset otherwise
      */
+    template<typename... Options>
     dataset require_dataset(const std::string& name, const type& datatype,
                             const std::vector<hsize_t>& dims,
-                            int comp_level = -1);
+                            Options... options)
+    {
+        return root_group_.require_dataset(name,datatype,dims,options...);
+    }
 
     /** \brief Returns the requested dataset, if it already exists, otherwise a new dataset is created.
      *
@@ -195,20 +222,25 @@ public:
      *
      *  \param name name of the requested dataset
      *  \param dims shape of the new dataset
-     *  \param comp_level compression level, which is applied to the new dataset
+     *  \param options additional dataset creation options
+     *         keyword             |          semantic
+     *         --------------------|-----------------------------------------
+     *         _compression_level  | level of the deflate compression (0 - 9)
+     *         _chunk_shape        | shape of a dataset chunk
      *
      *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *  \tparam Options options type list
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
      *
      *  \return the requested dataset, if it is already existing, or a new dataset otherwise
      */
-    template<typename T>
+    template<typename T,typename... Options>
     dataset require_dataset(const std::string& name,
                            const std::vector<hsize_t>& dims,
-                           int comp_level = -1)
+                           Options... options)
     {
-        return root_group_.require_dataset<T>(name,dims,comp_level);
+        return root_group_.require_dataset<T>(name,dims,options...);
     }
 
     /** \brief Returns the requested scalar dataset, if it already exists, otherwise a new scalar dataset is created.

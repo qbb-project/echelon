@@ -111,7 +111,7 @@ class dataset
 public:
     dataset(const object& parent, const std::string& name,
             const type& datatype, const std::vector<hsize_t>& dims,
-            int comp_level = -1);
+            int comp_level,const std::vector<hsize_t> chunk_shape);
 
     explicit dataset(hdf5::dataset dataset_wrapper_);
 
