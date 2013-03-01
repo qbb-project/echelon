@@ -20,6 +20,11 @@ namespace echelon
 namespace hdf5
 {
 
+dataset::dataset()
+: dataset_id_(-1)
+{
+}
+
 dataset::dataset(hid_t dataset_id_)
 : dataset_id_(dataset_id_)
 {

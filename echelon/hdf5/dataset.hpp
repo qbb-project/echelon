@@ -26,6 +26,7 @@ class object_reference;
 class dataset
 {
 public:
+    dataset();
     explicit dataset(hid_t dataset_id_);
     explicit dataset(const object& other);
     dataset(hid_t loc_id, const std::string& name, const type& dtype,

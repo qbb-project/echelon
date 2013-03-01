@@ -1,11 +1,7 @@
 #include <echelon/dataset_dimensions.hpp>
+#include <cassert>
 
 #include <echelon/dataset.hpp>
-#include <echelon/hdf5/dimension_scale.hpp>
-#include <echelon/file.hpp>
-#include <echelon/uuid.hpp>
-
-#include <cassert>
 
 namespace echelon
 {
@@ -15,24 +11,17 @@ dimension::dimension(dataset& associated_dataset_,std::size_t index_)
 {
 }
 
-void dimension::attach_dimension_scale(const std::string& name,const type& datatype)
+dimension_scale dimension::attach_dimension_scale(const std::string& name,const type& datatype)
 {
-    file associated_file(associated_dataset_->get_native_handle().associated_file());
-
-    auto echelon_group = associated_file.require_group("echelon");
-    auto dimension_scales_group = echelon_group.require_group("dimension_scales");
-
-    std::string unique_id = generate_unique_identifier(associated_dataset_->get_native_handle().name());
-
-    auto this_datasets_dimension_scales = dimension_scales_group.require_group(unique_id);
-
     std::vector<hsize_t> extent = { extend() };
-    hdf5::dataspace space(extent);
 
-    hdf5::dimension_scale dim_scale(this_datasets_dimension_scales.id(),"dim" + std::to_string(index_),
-                                    datatype.get_native_type(),space,name);
+    std::string dataset_name = "dim" + std::to_string(index_);
 
-    hdf5::attach_dimension_scale(dim_scale,associated_dataset_->get_native_handle(),index_);
+    dimension_scale dim_scale(*associated_dataset_,dataset_name,datatype,extent,name);
+
+    hdf5::attach_dimension_scale(dim_scale.get_native_handle(),associated_dataset_->get_native_handle(),index_);
+
+    return dim_scale;
 }
 
 std::string dimension::label()const

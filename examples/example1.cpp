@@ -56,7 +56,16 @@ int main()
 
         ds.dimensions[0].relabel("x");
 
-        ds.dimensions[0].attach_dimension_scale<double>("x");
+        multi_array<double> x_scale_data({ 10 });
+
+        for(std::size_t i = 0;i < 10;++i)
+        {
+            x_scale_data(i) = static_cast<double>(i);
+        }
+
+        auto x_scale = ds.dimensions[0].attach_dimension_scale<double>("x");
+        x_scale <<= x_scale_data;
+
         ds.dimensions[1].attach_dimension_scale<double>("y");
 
         auto version = ds.attributes.create<unsigned int>("version");

@@ -7,26 +7,26 @@
 #include <hdf5.h> // hsize_t
 
 #include <vector>
+#include <echelon/dimension_scale.hpp>
+
 #include <string>
 #include <cstddef>
 
 namespace echelon
 {
 
-class dataset;
-
 class dimension
 {
 public:
     dimension(dataset& associated_dataset_,std::size_t index_);
 
-    void attach_dimension_scale(const std::string& name,
-                                const type& datatype);
+    dimension_scale attach_dimension_scale(const std::string& name,
+                                           const type& datatype);
 
     template<typename T>
-    void attach_dimension_scale(const std::string& name)
+    dimension_scale attach_dimension_scale(const std::string& name)
     {
-        attach_dimension_scale(name,get_hdf5_type<T>());
+        return attach_dimension_scale(name,get_hdf5_type<T>());
     }
 
     std::string label()const;
