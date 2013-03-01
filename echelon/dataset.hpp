@@ -14,6 +14,7 @@
 #include <echelon/range.hpp>
 
 #include <echelon/attribute_repository.hpp>
+#include <echelon/dataset_dimensions.hpp>
 #include <echelon/data_transfer_broker.hpp>
 
 #include <vector>
@@ -110,7 +111,7 @@ class dataset
 {
 public:
     dataset(const object& parent, const std::string& name,
-            const type& datatype, const std::vector<hsize_t>& dims,
+            const type& datatype, const std::vector<hsize_t>& shape,
             int comp_level,const std::vector<hsize_t> chunk_shape);
 
     explicit dataset(hdf5::dataset dataset_wrapper_);
@@ -160,6 +161,10 @@ public:
     /** \brief The shape of the dataset.
      */
     std::vector<hsize_t> shape()const;
+
+    /** \brief The rank of the dataset.
+     */
+    std::size_t rank()const;
 
     /** \brief The value type of the dataset.
      */
@@ -234,6 +239,10 @@ public:
     /** \brief The underlying HDF5 low-level handle.
      */
     const hdf5::dataset& get_native_handle()const;
+
+    /** \brief The underlying HDF5 low-level handle.
+     */
+    hdf5::dataset& get_native_handle();
 private:
     hdf5::dataset dataset_wrapper_;
 
@@ -241,6 +250,10 @@ public:
     /** \brief The attributes, which are attached to the dataset.
      */
     attribute_repository<dataset> attributes;
+
+    /** \brief The dimensions of the dataset
+     */
+    dataset_dimensions dimensions;
 };
 
 

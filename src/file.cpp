@@ -26,6 +26,13 @@ file::file(const std::string& path, open_mode mode)
 {
 }
 
+file::file(hdf5::file file_wrapper_)
+:file_wrapper_(std::move(file_wrapper_)),
+ root_group_(*this),
+ attributes(root_group_)
+{
+}
+
 group& file::root_group()
 {
     return root_group_;

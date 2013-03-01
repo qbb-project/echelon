@@ -14,6 +14,15 @@ namespace echelon
 namespace hdf5
 {
 
+file::file(hid_t file_id_)
+: file_id_(file_id_)
+{
+    ECHELON_ASSERT_MSG(id() == -1 || H5Iget_type(id()) == H5I_FILE,
+                       "ID does not refer to a file");
+    ECHELON_ASSERT_MSG(id() == -1 || H5Iis_valid(id()) > 0,
+                       "invalid object ID");
+}
+
 file::file(const std::string& name_, unsigned flags_, hid_t fcpl_id_,
            hid_t fapl_id_)
 : file_id_(H5Fcreate(name_.c_str(), flags_, fcpl_id_, fapl_id_))

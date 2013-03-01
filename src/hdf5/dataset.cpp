@@ -11,10 +11,17 @@
 #include <algorithm>
 #include <vector>
 
+#include <hdf5_hl.h>
+
 namespace echelon
 {
 namespace hdf5
 {
+
+dataset::dataset()
+: dataset_id_(-1)
+{
+}
 
 dataset::dataset(hid_t dataset_id_)
 : dataset_id_(dataset_id_)
@@ -166,6 +173,44 @@ type dataset::datatype()const
 property_list dataset::creation_property_list()const
 {
     return property_list(H5Dget_create_plist(id()));
+}
+
+std::string dataset::name()const
+{
+    return get_name(object(id(),share_ownership));
+}
+
+file dataset::associated_file()const
+{
+    hid_t file_id = H5Iget_file_id(id());
+
+    if(file_id < 0)
+        throw_on_hdf5_error();
+
+    return file(file_id);
+}
+
+std::string dataset::label(unsigned int index)const
+{
+    ssize_t label_size = H5DSget_label(id(),index,0,0);
+
+    if(label_size < 0)
+        throw_on_hdf5_error();
+
+    std::vector<char> label(label_size);
+
+    ssize_t result = H5DSget_label(id(),index,label.data(),label.size());
+
+    if(result < 0)
+        throw_on_hdf5_error();
+
+    return std::string(label.data());
+}
+
+void dataset::relabel(unsigned int index,const std::string& new_label)
+{
+    if(H5DSset_label(id(),index,new_label.c_str()) < 0)
+        throw_on_hdf5_error();
 }
 
 hid_t dataset::id() const

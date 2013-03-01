@@ -206,10 +206,7 @@ std::vector<hyperslab_block> dataspace::get_select_hyperslab_blocks()const
 
 std::vector<hsize_t> dataspace::get_simple_extent_dims() const
 {
-    auto ndims = H5Sget_simple_extent_ndims(id());
-
-    if(ndims < 0)
-        throw_on_hdf5_error();
+    auto ndims = get_simple_extent_ndims();
 
     std::vector<hsize_t> dims(ndims);
 
@@ -217,6 +214,16 @@ std::vector<hsize_t> dataspace::get_simple_extent_dims() const
         throw_on_hdf5_error();
 
     return dims;
+}
+
+std::size_t dataspace::get_simple_extent_ndims()const
+{
+    auto ndims = H5Sget_simple_extent_ndims(id());
+
+    if(ndims < 0)
+        throw_on_hdf5_error();
+
+    return ndims;
 }
 
 hid_t dataspace::id() const

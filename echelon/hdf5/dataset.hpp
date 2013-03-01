@@ -10,6 +10,7 @@
 #include <echelon/hdf5/dataspace.hpp>
 #include <echelon/hdf5/property_list.hpp>
 #include <echelon/hdf5/object.hpp>
+#include <echelon/hdf5/file.hpp>
 
 #include <hdf5.h>
 #include <string>
@@ -24,6 +25,7 @@ class object_reference;
 class dataset
 {
 public:
+    dataset();
     explicit dataset(hid_t dataset_id_);
     explicit dataset(const object& other);
     dataset(hid_t loc_id, const std::string& name, const type& dtype,
@@ -54,6 +56,12 @@ public:
 
     type datatype()const;
     property_list creation_property_list()const;
+
+    std::string name()const;
+    file associated_file()const;
+
+    std::string label(unsigned int index)const;
+    void relabel(unsigned int index,const std::string& new_label);
 
     hid_t id()const;
 private:

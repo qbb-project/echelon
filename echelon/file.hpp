@@ -58,6 +58,8 @@ public:
      */
     file(const std::string& path, open_mode mode);
 
+    explicit file(hdf5::file file_wrapper_);
+
     /** \brief Returns the root group corresponding to this file.
      *
      *  \deprecated This function is deprecated in favor to file's group interface

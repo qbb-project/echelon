@@ -61,6 +61,7 @@ public:
     std::vector<hyperslab_block> get_select_hyperslab_blocks()const;
 
     std::vector<hsize_t> get_simple_extent_dims()const;
+    std::size_t get_simple_extent_ndims()const;
 
     hid_t id()const;
 private:
