@@ -3,7 +3,7 @@
 #  Distributed under the Boost Software License, Version 1.0. (See accompanying
 #  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8)
 enable_testing()
 
 project (echelon)
@@ -27,7 +27,7 @@ else()
   set(ECHELON_IS_A_SUBPROJECT 1)
 endif()
 
-find_package(Boost COMPONENTS serialization unit_test_framework REQUIRED)
+find_package(Boost 1.50.0 COMPONENTS serialization unit_test_framework REQUIRED)
 find_package(HDF5 COMPONENTS C HL REQUIRED)
 
 ################################################################################################################################
