@@ -33,11 +33,6 @@ file::file(hdf5::file file_wrapper_)
 {
 }
 
-group& file::root_group()
-{
-    return root_group_;
-}
-
 group file::create_group(const std::string& name)
 {
     return root_group_.create_group(name);

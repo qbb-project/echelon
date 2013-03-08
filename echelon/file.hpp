@@ -60,13 +60,6 @@ public:
 
     explicit file(hdf5::file file_wrapper_);
 
-    /** \brief Returns the root group corresponding to this file.
-     *
-     *  \deprecated This function is deprecated in favor to file's group interface
-     *              and will be removed in the near future.
-     */
-    group& root_group();
-
     //group interface
 
     /** \brief Creates a new HDF5 group within the root group.
