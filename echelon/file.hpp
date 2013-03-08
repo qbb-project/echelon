@@ -332,6 +332,10 @@ public:
     /** \brief The ID, which corresponds to the underlying HDF5 object.
      */
     hid_t id() const noexcept;
+
+    /** \brief The underlying HDF5 low-level handle.
+     */
+    const hdf5::file& get_native_handle()const;
 private:
     hdf5::file file_wrapper_;
     group root_group_;
@@ -340,6 +344,36 @@ public:
      */
     attribute_repository<group> attributes;
 };
+
+/** \brief Mounts a file at a specified location.
+ *
+ *  \param mounted_file file to be mounted
+ *  \param mount_point  location at which the file is mounted
+ *
+ *  \return a handle to the mount point
+ *
+ *  \relates echelon::file
+ */
+group mount(const file& mounted_file,const group& mount_point);
+
+/** \brief Mounts a file at a specified location.
+ *
+ *  \param mounted_file file to be mounted
+ *  \param mount_point  location at which the file is mounted
+ *
+ *  \return a handle to the mount point
+ *
+ *  \relates echelon::file
+ */
+group mount(const file& mounted_file,const file& mount_point);
+
+/** \brief Unmounts a previously mounted file
+ *
+ *  \param mount_point mount point of the file to be unmounted
+ *
+ *  \relates echelon::file
+ */
+void unmount(const group& mount_point);
 
 }
 

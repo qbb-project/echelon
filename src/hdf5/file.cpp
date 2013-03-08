@@ -4,6 +4,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <echelon/hdf5/file.hpp>
+#include <echelon/hdf5/property_list.hpp>
 #include <echelon/hdf5/error_handling.hpp>
 
 #include <utility>
@@ -86,6 +87,28 @@ file& file::operator=(file&& other)
 hid_t file::id() const noexcept
 {
     return file_id_;
+}
+
+group mount(const file& mounted_file,const group& mount_point)
+{
+    if(H5Fmount(mount_point.id(),".",mounted_file.id(),H5P_DEFAULT) < 0)
+        throw_on_hdf5_error();
+
+    return mount_point;
+}
+
+group mount(const file& mounted_file,const file& mount_point)
+{
+    if(H5Fmount(mount_point.id(),".",mounted_file.id(),H5P_DEFAULT) < 0)
+        throw_on_hdf5_error();
+
+    return group(mount_point.id(),"/",default_property_list);
+}
+
+void unmount(const group& mount_point)
+{
+    if(H5Funmount(mount_point.id(),".") < 0)
+        throw_on_hdf5_error();
 }
 
 }

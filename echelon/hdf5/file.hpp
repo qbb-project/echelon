@@ -6,6 +6,8 @@
 #ifndef ECHELON_HDF5_FILE_HPP
 #define ECHELON_HDF5_FILE_HPP
 
+#include <echelon/hdf5/group.hpp>
+
 #include <string>
 #include <hdf5.h>
 
@@ -34,6 +36,11 @@ public:
 private:
     hid_t file_id_;
 };
+
+group mount(const file& mounted_file,const group& mount_point);
+group mount(const file& mounted_file,const file& mount_point);
+
+void unmount(const group& mount_point);
 
 }
 }

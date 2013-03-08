@@ -77,4 +77,25 @@ hid_t file::id() const noexcept
 {
     return file_wrapper_.id();
 }
+
+const hdf5::file& file::get_native_handle()const
+{
+    return file_wrapper_;
+}
+
+group mount(const file& mounted_file,const group& mount_point)
+{
+    return group(hdf5::mount(mounted_file.get_native_handle(),mount_point.get_native_handle()));
+}
+
+group mount(const file& mounted_file,const file& mount_point)
+{
+    return group(hdf5::mount(mounted_file.get_native_handle(),mount_point.get_native_handle()));
+}
+
+void unmount(const group& mount_point)
+{
+    hdf5::unmount(mount_point.get_native_handle());
+}
+
 }

@@ -67,6 +67,8 @@ class group
 public:
     friend class file;
 
+    explicit group(hdf5::group group_wrapper_);
+
     /** \brief Creates a new HDF5 group within this group.
      *
      *  \param name name of the new group
@@ -379,7 +381,6 @@ private:
 
     explicit group(const file& loc, const std::string& name = "/");
     group(const object& parent, const std::string& name, creation_mode mode);
-    explicit group(hdf5::group group_wrapper_);
 
     dataset create_dataset(const std::string& name, const type& datatype,
                            const std::vector<hsize_t>& dims,
