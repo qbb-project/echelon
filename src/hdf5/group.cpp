@@ -19,14 +19,12 @@ namespace
 
 struct iterate_proxy_data
 {
-    explicit iterate_proxy_data(std::function<herr_t(hid_t, const char*)> op,
-                                bool ignore_internal_groups)
-    : op{op}, caught_exception{}, ignore_internal_groups{ignore_internal_groups}
+    explicit iterate_proxy_data(std::function<herr_t(hid_t, const char*)> op)
+    : op{op}, caught_exception{}
     {
     }
 
     std::function<herr_t(hid_t, const char*)> op;
-    bool ignore_internal_groups;
     std::exception_ptr caught_exception;
 };
 
@@ -37,10 +35,35 @@ herr_t iterate_proxy_op(hid_t g_id, const char *name, const H5L_info_t *info,
 
     try
     {
-        if(data.ignore_internal_groups && std::string(name).compare("echelon") == 0 &&
-           get_name(object(g_id,share_ownership)) == "/")
-            return 0;
+        return data.op(g_id, name);
+    }
+    catch (...)
+    {
+        data.caught_exception = std::current_exception();
 
+        return 1;
+    }
+}
+
+
+struct visit_objects_proxy_data
+{
+    explicit visit_objects_proxy_data(std::function<herr_t(hid_t, const char*)> op)
+    : op{op}, caught_exception{}
+    {
+    }
+
+    std::function<herr_t(hid_t, const char*)> op;
+    std::exception_ptr caught_exception;
+};
+
+herr_t visit_objects_proxy_op(hid_t g_id, const char *name, const H5O_info_t *info,
+                              void *op_data) noexcept
+{
+    visit_objects_proxy_data& data = *static_cast<visit_objects_proxy_data*>(op_data);
+
+    try
+    {
         return data.op(g_id, name);
     }
     catch (...)
@@ -138,15 +161,14 @@ group& group::operator=(group&& other)
     return *this;
 }
 
-hsize_t group::iterate(H5_index_t index_type,
-                       H5_iter_order_t order,
-                       hsize_t start_index,
-                       std::function<herr_t(hid_t, const char*)> op,
-                       bool ignore_internal_groups) const
+hsize_t group::iterate_links(H5_index_t index_type,
+                             H5_iter_order_t order,
+                             hsize_t start_index,
+                             std::function<herr_t(hid_t, const char*)> op) const
 {
     hsize_t current_index = start_index;
 
-    iterate_proxy_data data(op,ignore_internal_groups);
+    iterate_proxy_data data(op);
 
     herr_t error_code = H5Literate(id(), index_type, order,
                                    &current_index,
@@ -159,6 +181,36 @@ hsize_t group::iterate(H5_index_t index_type,
         std::rethrow_exception(data.caught_exception);
 
     return current_index;
+}
+
+void group::visit_links(H5_index_t index_type, H5_iter_order_t order,
+                        std::function<herr_t(hid_t,const char*)> visitor)const
+{
+    iterate_proxy_data data(visitor);
+
+    herr_t error_code = H5Lvisit(id(), index_type, order,
+                                 &iterate_proxy_op, &data);
+
+    if (error_code < 0)
+        throw_on_hdf5_error();
+
+    if (data.caught_exception)
+        std::rethrow_exception(data.caught_exception);
+}
+
+void group::visit_objects(H5_index_t index_type, H5_iter_order_t order,
+                          std::function<herr_t(hid_t,const char*)> visitor)const
+{
+    visit_objects_proxy_data data(visitor);
+
+    herr_t error_code = H5Ovisit(id(), index_type, order,
+                                 &visit_objects_proxy_op, &data);
+
+    if (error_code < 0)
+        throw_on_hdf5_error();
+
+    if (data.caught_exception)
+        std::rethrow_exception(data.caught_exception);
 }
 
 hid_t group::id() const

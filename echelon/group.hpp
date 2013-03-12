@@ -17,6 +17,7 @@
 #include <echelon/object_reference.hpp>
 #include <echelon/utility.hpp>
 #include <echelon/keywords.hpp>
+#include <echelon/link.hpp>
 
 #include <echelon/broken_contract_exception.hpp>
 
@@ -355,14 +356,27 @@ public:
         }
     }
 
-    /** \brief Iterates over every object within this group.
+    /** \brief Iterates over every link within this group.
      *
-     *  \param op                      function, which is applied to every object
-     *  \param ignore_internal_groups  if true, all groups, which are reserved for internal usage,
-     *                                 are omitted during the iteration
+     *  \param op function, which is applied to every link
      *
      */
-    void iterate(const std::function<void(const object&)>& op, bool ignore_internal_groups = true);
+    void iterate_links(const std::function<void(const link&)>& op)const;
+
+    /** \brief Visits every link, which is reachable from this group
+     *
+     *  \param op visitor, which is applied to every visited link
+     *
+     */
+    void visit_links(const std::function<void(const link&)>& visitor)const;
+
+    /** \brief Visits every object, which is reachable from this group
+     *         (including this group)
+     *
+     *  \param op visitor, which is applied to every visited object
+     *
+     */
+    void visit_objects(const std::function<void(const object&)>& visitor)const;
 
     /** \brief A HDF5 object reference to this group.
      */

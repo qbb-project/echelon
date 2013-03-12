@@ -7,6 +7,7 @@
 #define ECHELON_FILE_HPP
 
 #include <echelon/group.hpp>
+#include <echelon/link.hpp>
 #include <echelon/hdf5/file.hpp>
 
 #include <echelon/keywords.hpp>
@@ -309,12 +310,27 @@ public:
         return root_group_.require_scalar_dataset(name,value);
     }
 
-    /** \brief Iterates over every object within the root group.
+    /** \brief Iterates over every link within the root group.
      *
-     *  \param op function, which is applied to every object
+     *  \param op function, which is applied to every link
      *
      */
-    void iterate(const std::function<void(const object&)>& op);
+    void iterate_links(const std::function<void(const link&)>& op)const;
+
+    /** \brief Visits every link, which is reachable from the root group
+     *
+     *  \param op visitor, which is applied to every visited link
+     *
+     */
+    void visit_links(const std::function<void(const link&)>& visitor)const;
+
+    /** \brief Visits every object, which is reachable from the root group
+     *         (including the root group)
+     *
+     *  \param op visitor, which is applied to every visited object
+     *
+     */
+    void visit_objects(const std::function<void(const object&)>& visitor)const;
 
     /** \brief A HDF5 object reference to the root group.
      */

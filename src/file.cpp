@@ -58,9 +58,19 @@ scalar_dataset file::require_scalar_dataset(const std::string& name, const type&
     return root_group_.require_scalar_dataset(name,datatype);
 }
 
-void file::iterate(const std::function<void(const object&)>& op)
+void file::iterate_links(const std::function<void(const link&)>& op)const
 {
-    root_group_.iterate(op);
+    root_group_.iterate_links(op);
+}
+
+void file::visit_links(const std::function<void(const link&)>& visitor)const
+{
+    root_group_.visit_links(visitor);
+}
+
+void file::visit_objects(const std::function<void(const object&)>& visitor)const
+{
+    root_group_.visit_objects(visitor);
 }
 
 object_reference file::ref()const

@@ -1,0 +1,40 @@
+#ifndef ECHELON_LINK_HPP
+#define ECHELON_LINK_HPP
+
+#include <echelon/object.hpp>
+#include <string>
+
+namespace echelon
+{
+
+/** \brief A link (directed edge) between two HDF5 objects.
+ */
+class link
+{
+public:
+    link(object origin_,std::string name_);
+
+    /** \brief Returns the destination of the link.
+     *
+     *  The function will open the corresponding object if necessary
+     *  and will perform any other operation, which is associated with the link.
+     *
+     *  \return the destination of the link.
+     */
+    object destination()const;
+
+    /** \brief The object, which acts as the origin of the link.
+     */
+    object origin()const;
+
+    /** \brief The name of the link.
+     */
+    const std::string& name()const;
+private:
+    object origin_;
+    std::string name_;
+};
+
+}
+
+#endif
