@@ -48,6 +48,11 @@ object file::operator[](const std::string& name)const
     return root_group_[name];
 }
 
+void file::remove(const std::string& name)const
+{
+    return root_group_.remove(name);
+}
+
 group file::require_group(const std::string& name)
 {
     return root_group_.require_group(name);

@@ -64,6 +64,11 @@ object group::operator[](const std::string& name)const
     return object(hdf5::object(id(),name));
 }
 
+void group::remove(const std::string& name)const
+{
+    group_wrapper_.remove(name);
+}
+
 group group::require_group(const std::string& name)
 {
     if(exists(object(*this),name) && get_object_type_by_name(object(*this),name) == object_type::group)

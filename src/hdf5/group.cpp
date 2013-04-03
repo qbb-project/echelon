@@ -213,6 +213,12 @@ void group::visit_objects(H5_index_t index_type, H5_iter_order_t order,
         std::rethrow_exception(data.caught_exception);
 }
 
+void group::remove(const std::string& name) const
+{
+    if(H5Ldelete(id(),name.c_str(),H5P_DEFAULT) < 0)
+        throw_on_hdf5_error();
+}
+
 hid_t group::id() const
 {
     return group_id_;

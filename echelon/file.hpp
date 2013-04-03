@@ -163,6 +163,13 @@ public:
      */
     object operator[](const std::string& name)const;
 
+    /** \brief Removes the specified object from the root group.
+     *
+     *  \param name name of the removed object
+     *
+     */
+    void remove(const std::string& name)const;
+
     /** \brief Returns the requested group, if it already exists, otherwise a new group is created.
      *
      *  \param name name of the requested group

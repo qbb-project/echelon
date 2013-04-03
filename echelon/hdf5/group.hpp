@@ -45,6 +45,8 @@ public:
     void visit_objects(H5_index_t index_type, H5_iter_order_t order,
                        std::function<herr_t(hid_t,const char*)> visitor)const;
 
+    void remove(const std::string& name)const;
+
     hid_t id()const;
 private:
     hid_t group_id_;
