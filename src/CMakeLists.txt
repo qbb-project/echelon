@@ -12,8 +12,8 @@ file(GLOB echelon_source_files ./*.cpp)
 
 add_library(echelon ${echelon_header_files} ${echelon_source_files})
 
-target_include_directories(echelon PUBLIC ${Boost_INCLUDE_DIRS} echelon_hdf5 ${ECHELON_ROOT_DIR})
-target_link_libraries(echelon  echelon_hdf5 ${boost_targets})
+target_include_directories(echelon PUBLIC ${Boost_INCLUDE_DIRS} ${ECHELON_ROOT_DIR})
+target_link_libraries(echelon echelon_hdf5 ${boost_targets})
 
 set_target_properties(echelon PROPERTIES COMPILE_FLAGS "-std=c++11 -pedantic -Wall -Wextra")
 
