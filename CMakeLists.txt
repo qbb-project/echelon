@@ -89,7 +89,7 @@ if(SPHINX_FOUND)
         "${BINARY_BUILD_DIR}/conf.py"
         @ONLY)
 
-  add_custom_target(user_guide ALL
+  add_custom_target(user_guide
         ${SPHINX_EXECUTABLE}
         -q -b html
         -c "${BINARY_BUILD_DIR}"
@@ -117,7 +117,7 @@ endif(DOXYGEN_FOUND)
 message(STATUS ${ECHELON_DOC_TARGETS})
 
 if(NOT ECHELON_IS_A_SUBPROJECT)
-    add_custom_target(doc ALL DEPENDS ${ECHELON_DOC_TARGETS} COMMENT "Generating the documentation.")
+    add_custom_target(doc DEPENDS ${ECHELON_DOC_TARGETS} COMMENT "Generating the documentation.")
 else(NOT ECHELON_IS_A_SUBPROJECT)
-    add_custom_target(echelon-doc ALL DEPENDS ${ECHELON_DOC_TARGETS} COMMENT "Generating the documentation.")
+    add_custom_target(echelon-doc DEPENDS ${ECHELON_DOC_TARGETS} COMMENT "Generating the documentation.")
 endif(NOT ECHELON_IS_A_SUBPROJECT)
