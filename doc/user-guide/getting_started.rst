@@ -55,7 +55,7 @@ compiler/build system to find echelon for you.
 Using echelon as an external dependency
 =======================================
 
-After you have build and installed echelon somwhere, you can use echelon's find module
+After you have build and installed echelon somewhere, you can use echelon's find module
 to find and configure the library. Just copy FindEchelon.cmake from cmake/ to some
 directory in CMake's module path and use the standard find_package syntax.
 
