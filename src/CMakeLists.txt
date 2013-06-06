@@ -20,18 +20,15 @@ add_library(echelon ${echelon_header_files} ${echelon_source_files})
 target_link_libraries(echelon echelon_hdf5 ${boost_targets})
 
 if(NOT ECHELON_IS_A_SUBPROJECT)
-    install(TARGETS echelon DESTINATION lib)
-else()
-    install(TARGETS echelon LIBRARY DESTINATION lib)
-endif()
-
-if(NOT ECHELON_IS_A_SUBPROJECT)
 
     install(DIRECTORY ../echelon/ DESTINATION include/echelon
             FILES_MATCHING PATTERN "*.hpp")
     install(TARGETS echelon DESTINATION lib)
 
 else()
+
+    install(TARGETS echelon LIBRARY DESTINATION lib
+                            ARCHIVE DESTINATION lib)
 
     # mimic the behaviour of the find module, if echelon is used as an internal dependency
     set(ECHELON_FOUND 1 PARENT_SCOPE)
