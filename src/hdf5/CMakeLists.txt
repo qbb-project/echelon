@@ -15,4 +15,6 @@ target_link_libraries(echelon_hdf5 ${hdf5_targets})
 
 if(NOT ECHELON_IS_A_SUBPROJECT)
     install(TARGETS echelon_hdf5 DESTINATION lib)
+else()
+    install(TARGETS echelon_hdf5 LIBRARY DESTINATION lib)
 endif()

@@ -21,6 +21,10 @@ if (NOT CMAKE_BUILD_TYPE)
       FORCE)
 endif()
 
+if (NOT BUILD_SHARED_LIBS)
+    option(BUILD_SHARED_LIBS "Enable the build of shared libraries." OFF)
+endif()
+
 include(generate_imported_library_targets)
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
