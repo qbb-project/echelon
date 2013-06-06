@@ -120,8 +120,6 @@ if(DOXYGEN_FOUND)
   
 endif(DOXYGEN_FOUND)
 
-message(STATUS ${ECHELON_DOC_TARGETS})
-
 if(NOT ECHELON_IS_A_SUBPROJECT)
     add_custom_target(doc DEPENDS ${ECHELON_DOC_TARGETS} COMMENT "Generating the documentation.")
 else(NOT ECHELON_IS_A_SUBPROJECT)
