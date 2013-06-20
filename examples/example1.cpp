@@ -116,6 +116,12 @@ int main()
         my_file.create_scalar_dataset("complex_number",c);
 
         my_file.attributes.create("sliteral","test");
+        
+        grid<double> g({ {"x",{1,2}}, {"y",{3,4}} });
+        
+        auto dsg = foo.create_dataset<object_reference>("grid", { 2, 2 } );
+        
+        dsg <<= g;
     }
 
     {
