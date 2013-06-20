@@ -122,6 +122,7 @@ inline void operator<<=(dataset& sink,
     
     for(const auto& scale : source.dimension_scales())
     {
+        sink.dimensions[count].relabel(scale.name);
         auto ds = sink.dimensions[count].attach_dimension_scale<DimensionScaleValueType>(scale.name);
         ds <<= scale.values;
         ++count;
