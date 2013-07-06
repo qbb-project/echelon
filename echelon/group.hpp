@@ -10,7 +10,6 @@
 #include <echelon/type.hpp>
 #include <echelon/type_factory.hpp>
 #include <echelon/hdf5/group.hpp>
-#include <echelon/creation_mode.hpp>
 #include <echelon/attribute_repository.hpp>
 #include <echelon/dataset.hpp>
 #include <echelon/scalar_dataset.hpp>
@@ -400,6 +399,12 @@ private:
     friend class constructor_access;
     friend class object;
 
+    enum class creation_mode
+    {
+        open,
+        create
+    };
+    
     explicit group(const file& loc, const std::string& name = "/");
     group(const object& parent, const std::string& name, creation_mode mode);
 
