@@ -20,7 +20,7 @@ namespace echelon
  *
  * \note Note that the concept of a HDF5 reference has nothing to do with C++ references.
  *       Since a HDF5 reference has a null state, it resembles a C++ pointer without pointer arithmetic
- *       and it correspondingly has a similar interface.
+ *       and correspondingly it has a similar interface.
  */
 class object_reference
 {
