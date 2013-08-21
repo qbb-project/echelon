@@ -13,9 +13,8 @@ file(GLOB echelon_source_files ./*.cpp)
 add_library(echelon ${echelon_header_files} ${echelon_source_files})
 
 target_include_directories(echelon PUBLIC ${Boost_INCLUDE_DIRS} ${ECHELON_ROOT_DIR})
+target_compile_options(echelon PUBLIC -std=c++11 -pedantic -Wall -Wextra)
 target_link_libraries(echelon echelon_hdf5 ${boost_targets})
-
-set_target_properties(echelon PROPERTIES COMPILE_FLAGS "-std=c++11 -pedantic -Wall -Wextra")
 
 # CHECK_CXX_ACCEPTS_FLAG("-std=c++11" COMPILER_ACCEPTS_GCC_CPP11_FLAG)
 # 
