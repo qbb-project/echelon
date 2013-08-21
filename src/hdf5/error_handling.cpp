@@ -96,7 +96,10 @@ std::map<hid_t,
      { H5E_CACHE , error_translator<metadata_cache_exception>() }
     };
 
-herr_t translate_error_stack(unsigned, const H5E_error2_t* err_desc,void* client_data)
+extern "C"
+{
+
+static herr_t kubus_hdf5_translate_error_stack(unsigned, const H5E_error2_t* err_desc,void* client_data)
 {
     std::exception_ptr& current_exception = *static_cast<std::exception_ptr*>(client_data);
 
@@ -134,6 +137,8 @@ herr_t translate_error_stack(unsigned, const H5E_error2_t* err_desc,void* client
     return 0;
 }
 
+}
+
 struct error_handling_enabler
 {
     error_handling_enabler()
@@ -151,7 +156,7 @@ void throw_on_hdf5_error()
     std::exception_ptr nested_exception;
 
     herr_t result = H5Ewalk2(H5E_DEFAULT,H5E_WALK_UPWARD,
-                             &translate_error_stack,&nested_exception);
+                             &kubus_hdf5_translate_error_stack,&nested_exception);
 
     if(result < 0)
         throw_on_hdf5_error();

@@ -61,7 +61,7 @@ type dataset::datatype()const
 
 object_reference dataset::ref()const
 {
-    return object_reference(object(*this));
+    return object_reference(*this);
 }
 
 hid_t dataset::id()const

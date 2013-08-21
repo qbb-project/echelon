@@ -44,19 +44,19 @@ group::group(hdf5::group group_wrapper_)
 
 group group::create_group(const std::string& name)
 {
-    return group(object(*this), name, creation_mode::create);
+    return group(*this, name, creation_mode::create);
 }
 
 dataset group::create_dataset(const std::string& name, const type& datatype,
                               const std::vector<hsize_t>& dims,int comp_level,
                               const std::vector<hsize_t> chunk_shape)
 {
-    return dataset(object(*this),name,datatype,dims,comp_level,chunk_shape);
+    return dataset(*this,name,datatype,dims,comp_level,chunk_shape);
 }
 
 scalar_dataset group::create_scalar_dataset(const std::string& name, const type& datatype)
 {
-    return scalar_dataset(object(*this),name,datatype);
+    return scalar_dataset(*this,name,datatype);
 }
 
 object group::operator[](const std::string& name)const
@@ -71,7 +71,7 @@ void group::remove(const std::string& name)const
 
 group group::require_group(const std::string& name)
 {
-    if(exists(object(*this),name) && get_object_type_by_name(object(*this),name) == object_type::group)
+    if(exists(*this,name) && get_object_type_by_name(*this,name) == object_type::group)
     {
         return group(hdf5::group(id(),name,hdf5::default_property_list));
     }
@@ -86,7 +86,7 @@ dataset group::require_dataset(const std::string& name, const type& datatype,
                                int comp_level,
                                const std::vector<hsize_t> chunk_shape)
 {
-    if(exists(object(*this),name) && get_object_type_by_name(object(*this),name) == object_type::dataset)
+    if(exists(*this,name) && get_object_type_by_name(*this,name) == object_type::dataset)
     {
         dataset ds(hdf5::dataset(id(),name,hdf5::default_property_list));
 
@@ -108,7 +108,7 @@ dataset group::require_dataset(const std::string& name, const type& datatype,
 
 scalar_dataset group::require_scalar_dataset(const std::string& name, const type& datatype)
 {   
-    if(exists(object(*this),name) && get_object_type_by_name(object(*this),name) == object_type::scalar_dataset)
+    if(exists(*this,name) && get_object_type_by_name(*this,name) == object_type::scalar_dataset)
     {
         scalar_dataset ds(hdf5::dataset(id(),name,hdf5::default_property_list));
 

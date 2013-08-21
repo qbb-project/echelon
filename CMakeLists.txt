@@ -16,7 +16,13 @@ set(CMAKE_MODULE_PATH ${echelon_SOURCE_DIR}/cmake)
 
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, default to Release")
-    set(CMAKE_BUILD_TYPE "Release")
+    SET(CMAKE_BUILD_TYPE Release CACHE STRING
+      "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
+      FORCE)
+endif()
+
+if (NOT BUILD_SHARED_LIBS)
+    option(BUILD_SHARED_LIBS "Enable the build of shared libraries." OFF)
 endif()
 
 include(generate_imported_library_targets)
@@ -68,20 +74,56 @@ endif()
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
-if(DOXYGEN_FOUND)
+find_package(Sphinx)
+
+if(SPHINX_FOUND)
 
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
+ 
+  if(NOT DEFINED SPHINX_THEME)
+    set(SPHINX_THEME default)
+  endif()
+  if(NOT DEFINED SPHINX_THEME_DIR)
+    set(SPHINX_THEME_DIR)
+  endif()
 
-  if(NOT ECHELON_IS_A_SUBPROJECT)
-    add_custom_target(doc
-                      ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
-                      COMMENT "Generating API documentation with Doxygen." VERBATIM)
-  else(NOT ECHELON_IS_A_SUBPROJECT)
-    add_custom_target(echelon_doc
-                      ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
-                      COMMENT "Generating API documentation with Doxygen." VERBATIM)
-  endif(NOT ECHELON_IS_A_SUBPROJECT)
+  set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")
 
+  set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
+
+  set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
+  configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide/conf.py.in"
+        "${BINARY_BUILD_DIR}/conf.py"
+        @ONLY)
+
+  add_custom_target(user_guide
+        ${SPHINX_EXECUTABLE}
+        -q -b html
+        -c "${BINARY_BUILD_DIR}"
+        -d "${SPHINX_CACHE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide"
+        "${SPHINX_HTML_DIR}"
+        COMMENT "Building user guide with Sphinx.")
+
+  list(APPEND ECHELON_DOC_TARGETS user_guide)
+  
+endif(SPHINX_FOUND)
+        
+if(DOXYGEN_FOUND)
+        
+  add_custom_target(api_doc
+         ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
+         COMMAND 
+         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
+         COMMENT "Generating API documentation with Doxygen." VERBATIM)
+
+  list(APPEND ECHELON_DOC_TARGETS api_doc)
+  
 endif(DOXYGEN_FOUND)
+
+if(NOT ECHELON_IS_A_SUBPROJECT)
+    add_custom_target(doc DEPENDS ${ECHELON_DOC_TARGETS} COMMENT "Generating the documentation.")
+else(NOT ECHELON_IS_A_SUBPROJECT)
+    add_custom_target(echelon-doc DEPENDS ${ECHELON_DOC_TARGETS} COMMENT "Generating the documentation.")
+endif(NOT ECHELON_IS_A_SUBPROJECT)

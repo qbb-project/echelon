@@ -6,7 +6,7 @@
 #ifndef ECHELON_MULTI_ARRAY_HPP
 #define ECHELON_MULTI_ARRAY_HPP
 
-#include <echelon/customization_hooks.hpp>
+#include <echelon/container_adaption.hpp>
 #include <echelon/detail/map_indices.hpp>
 #include <echelon/detail/all_integral.hpp>
 
@@ -165,18 +165,6 @@ private:
     std::vector<T> data_;
     std::vector<std::size_t> shape_;
 };
-
-/** \brief Reshapes the array.
- *
- *  \param container container, which should be reshaped
- *  \param new_shape new shape of the container
- */
-template<typename T>
-inline void reshape(multi_array<T>& container,
-                    const std::vector<std::size_t>& new_shape)
-{
-    container.reshape(new_shape);
-}
 
 }
 

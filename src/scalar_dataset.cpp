@@ -32,7 +32,7 @@ type scalar_dataset::datatype()const
 
 object_reference scalar_dataset::ref()const
 {
-    return object_reference(object(*this));
+    return object_reference(*this);
 }
 
 hid_t scalar_dataset::id()const

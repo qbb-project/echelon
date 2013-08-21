@@ -11,7 +11,7 @@
 namespace echelon
 {
 
-constexpr char uuid[] = "{9160ef20-47c3-11e2-bcfd-0800200c9a66}";
+extern const char uuid[];
 
 std::string generate_unique_identifier(const std::string& name);
 

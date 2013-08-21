@@ -13,6 +13,8 @@
 namespace echelon
 {
 
+extern const char uuid[] = "{9160ef20-47c3-11e2-bcfd-0800200c9a66}";
+    
 std::string generate_unique_identifier(const std::string& name)
 {
     boost::uuids::string_generator sgen;

@@ -28,8 +28,11 @@ struct iterate_proxy_data
     std::exception_ptr caught_exception;
 };
 
-herr_t iterate_proxy_op(hid_t g_id, const char *name, const H5L_info_t *info,
-                        void *op_data) noexcept
+extern "C"
+{
+
+static herr_t kubus_hdf5_iterate_proxy_op(hid_t g_id, const char *name, const H5L_info_t *info,
+                                          void *op_data) noexcept
 {
     iterate_proxy_data& data = *static_cast<iterate_proxy_data*>(op_data);
 
@@ -45,6 +48,8 @@ herr_t iterate_proxy_op(hid_t g_id, const char *name, const H5L_info_t *info,
     }
 }
 
+}
+
 
 struct visit_objects_proxy_data
 {
@@ -57,8 +62,11 @@ struct visit_objects_proxy_data
     std::exception_ptr caught_exception;
 };
 
-herr_t visit_objects_proxy_op(hid_t g_id, const char *name, const H5O_info_t *info,
-                              void *op_data) noexcept
+extern "C"
+{
+
+static herr_t kubus_hdf5_visit_objects_proxy_op(hid_t g_id, const char *name, const H5O_info_t *info,
+                                                void *op_data) noexcept
 {
     visit_objects_proxy_data& data = *static_cast<visit_objects_proxy_data*>(op_data);
 
@@ -72,6 +80,8 @@ herr_t visit_objects_proxy_op(hid_t g_id, const char *name, const H5O_info_t *in
 
         return 1;
     }
+}
+
 }
 
 }
@@ -172,7 +182,7 @@ hsize_t group::iterate_links(H5_index_t index_type,
 
     herr_t error_code = H5Literate(id(), index_type, order,
                                    &current_index,
-                                   &iterate_proxy_op, &data);
+                                   &kubus_hdf5_iterate_proxy_op, &data);
 
     if (error_code < 0)
         throw_on_hdf5_error();
@@ -189,7 +199,7 @@ void group::visit_links(H5_index_t index_type, H5_iter_order_t order,
     iterate_proxy_data data(visitor);
 
     herr_t error_code = H5Lvisit(id(), index_type, order,
-                                 &iterate_proxy_op, &data);
+                                 &kubus_hdf5_iterate_proxy_op, &data);
 
     if (error_code < 0)
         throw_on_hdf5_error();
@@ -204,7 +214,7 @@ void group::visit_objects(H5_index_t index_type, H5_iter_order_t order,
     visit_objects_proxy_data data(visitor);
 
     herr_t error_code = H5Ovisit(id(), index_type, order,
-                                 &visit_objects_proxy_op, &data);
+                                 &kubus_hdf5_visit_objects_proxy_op, &data);
 
     if (error_code < 0)
         throw_on_hdf5_error();

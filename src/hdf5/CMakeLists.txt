@@ -16,4 +16,7 @@ set_target_properties(echelon_hdf5 PROPERTIES COMPILE_FLAGS "-std=c++11 -pedanti
 
 if(NOT ECHELON_IS_A_SUBPROJECT)
     install(TARGETS echelon_hdf5 DESTINATION lib)
+else()
+    install(TARGETS echelon_hdf5 LIBRARY DESTINATION lib
+                                 ARCHIVE DESTINATION lib)
 endif()

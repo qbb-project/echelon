@@ -58,19 +58,19 @@ public:
      *
      *  \param object_ a handle to the shared object
      */
-    explicit object(const group& object_);
+    object(const group& object_);
 
     /** \brief Constructs a handle from an pre-existing dataset handle.
      *
      *  \param object_ a handle to the shared object
      */
-    explicit object(const dataset& object_);
+    object(const dataset& object_);
 
     /** \brief Constructs a handle from an pre-existing scalar dataset handle.
      *
      *  \param object_ a handle to the shared object
      */
-    explicit object(const scalar_dataset& object_);
+    object(const scalar_dataset& object_);
 
 
     /** \brief Changes the object, which is referenced by the handle.
