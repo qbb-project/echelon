@@ -41,7 +41,7 @@ make install
 ~~~~~~~~~~~~~~~~~
 to install echelon in /usr/local (an other path can be specified using CMake standard methods), if you want.
 
-To generate the documentation using doxygen just type
+To generate the documentation using doxygen and sphinx just type
 ~~~~~~~~~~~~~~~~~{.bash}
 make doc
 ~~~~~~~~~~~~~~~~~
