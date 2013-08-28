@@ -15,8 +15,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   about_echelon
    getting_started
    tutorial_introduction
+   style_guide
 
 
 
