@@ -20,7 +20,7 @@ namespace
 struct iterate_proxy_data
 {
     explicit iterate_proxy_data(std::function<herr_t(hid_t, const char*)> op)
-    : op{op}, caught_exception{}
+    : op{std::move(op)}, caught_exception{}
     {
     }
 
@@ -53,7 +53,7 @@ struct visit_objects_proxy_data
 {
     explicit visit_objects_proxy_data(
         std::function<herr_t(hid_t, const char*)> op)
-    : op{op}, caught_exception{}
+    : op{std::move(op)}, caught_exception{}
     {
     }
 

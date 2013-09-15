@@ -42,9 +42,8 @@ public:
      *  \param container_ the adapted container
      *  \param shape_ the shape of the array
      */
-    multi_array_adaptor(Container& container_,
-                        const std::vector<std::size_t>& shape_)
-    : container_(container_), shape_(shape_)
+    multi_array_adaptor(Container& container_, std::vector<std::size_t> shape_)
+    : container_(container_), shape_(std::move(shape_))
     {
     }
 

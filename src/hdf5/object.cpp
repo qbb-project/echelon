@@ -132,7 +132,7 @@ bool exists(const object& loc, const std::string& name)
 
 std::string get_name(const object& loc)
 {
-    ssize_t len = H5Iget_name(loc.id(), 0, 0);
+    ssize_t len = H5Iget_name(loc.id(), nullptr, 0);
 
     std::vector<char> name(len + 1);
 

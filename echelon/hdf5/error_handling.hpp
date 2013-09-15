@@ -8,6 +8,7 @@
 
 #include <hdf5.h>
 #include <stdexcept>
+#include <utility>
 
 #include <boost/assert.hpp>
 
@@ -31,13 +32,13 @@ namespace hdf5
 class exception : public std::exception
 {
 public:
-    explicit exception(const std::string& what_) : what_(what_)
+    explicit exception(std::string what_) : what_(std::move(what_))
     {
     }
 
     virtual ~exception() noexcept {};
 
-    const char* what() const noexcept
+    const char* what() const noexcept override
     {
         return what_.c_str();
     }

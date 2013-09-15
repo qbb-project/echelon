@@ -41,7 +41,7 @@ public:
      *
      * \param what_ error description
      */
-    non_existing_member_exception(const std::string& what_) : what_(what_)
+    non_existing_member_exception(std::string what_) : what_(std::move(what_))
     {
     }
 
@@ -53,7 +53,7 @@ public:
 
     /** \brief An associated error description.
      */
-    const char* what() const noexcept
+    const char* what() const noexcept override
     {
         return what_.c_str();
     }

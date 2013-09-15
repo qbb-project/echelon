@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 namespace echelon
 {
@@ -156,8 +157,8 @@ public:
          *  \param type type of the member
          *  \param offset offset of the member within the compound type in bytes
          */
-        element(const std::string& name, const type& type, std::size_t offset)
-        : name(name), type_(type.clone()), offset(offset)
+        element(std::string name, const type& type, std::size_t offset)
+        : name(std::move(name)), type_(type.clone()), offset(offset)
         {
         }
 

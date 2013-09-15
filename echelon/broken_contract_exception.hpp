@@ -8,6 +8,7 @@
 
 #include <string>
 #include <exception>
+#include <utility>
 
 namespace echelon
 {
@@ -22,7 +23,7 @@ public:
      *
      * \param what_ error description
      */
-    broken_contract_exception(const std::string& what_) : what_(what_)
+    broken_contract_exception(std::string what_) : what_(std::move(what_))
     {
     }
 
@@ -34,7 +35,7 @@ public:
 
     /** \brief An associated error description.
      */
-    const char* what() const noexcept
+    const char* what() const noexcept override
     {
         return what_.c_str();
     }

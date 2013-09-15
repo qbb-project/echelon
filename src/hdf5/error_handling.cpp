@@ -165,7 +165,7 @@ void throw_on_hdf5_error()
 
 void enable_error_handling()
 {
-    H5Eset_auto2(H5E_DEFAULT, 0, 0);
+    H5Eset_auto2(H5E_DEFAULT, nullptr, nullptr);
 }
 }
 }

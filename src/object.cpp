@@ -18,8 +18,8 @@
 namespace echelon
 {
 
-object::object(const hdf5::object& object_wrapper_)
-: object_wrapper_(object_wrapper_)
+object::object(hdf5::object object_wrapper_)
+: object_wrapper_(std::move(object_wrapper_))
 {
 }
 

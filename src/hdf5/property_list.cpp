@@ -106,7 +106,7 @@ void property_list::set_deflate(unsigned int level)
 
 std::vector<hsize_t> property_list::get_chunk() const
 {
-    int chunk_rank = H5Pget_chunk(id(), 0, 0);
+    int chunk_rank = H5Pget_chunk(id(), 0, nullptr);
 
     if (chunk_rank < 0)
         throw_on_hdf5_error();

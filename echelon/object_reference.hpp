@@ -38,7 +38,7 @@ public:
      *  \param referenced_object referenced object
      */
     explicit object_reference(const object& referenced_object);
-    explicit object_reference(const hdf5::object_reference& reference_wrapper_,
+    explicit object_reference(hdf5::object_reference reference_wrapper_,
                               hdf5::handle any_valid_handle_);
 
     /** \brief Dereferences this reference.

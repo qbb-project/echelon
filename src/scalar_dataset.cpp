@@ -21,7 +21,7 @@ scalar_dataset::scalar_dataset(const object& parent, const std::string& name,
 }
 
 scalar_dataset::scalar_dataset(hdf5::dataset dataset_wrapper_)
-: dataset_wrapper_(dataset_wrapper_), attributes(*this)
+: dataset_wrapper_(std::move(dataset_wrapper_)), attributes(*this)
 {
 }
 

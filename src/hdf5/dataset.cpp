@@ -185,7 +185,7 @@ file dataset::associated_file() const
 
 std::string dataset::label(unsigned int index) const
 {
-    ssize_t label_size = H5DSget_label(id(), index, 0, 0);
+    ssize_t label_size = H5DSget_label(id(), index, nullptr, 0);
 
     if (label_size < 0)
         throw_on_hdf5_error();

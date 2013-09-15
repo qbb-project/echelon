@@ -22,10 +22,10 @@ object_reference::object_reference(const object& referenced_object)
 {
 }
 
-object_reference::object_reference(
-    const hdf5::object_reference& reference_wrapper_,
-    hdf5::handle any_valid_handle_)
-: reference_wrapper_(reference_wrapper_), any_valid_handle_(any_valid_handle_)
+object_reference::object_reference(hdf5::object_reference reference_wrapper_,
+                                   hdf5::handle any_valid_handle_)
+: reference_wrapper_(std::move(reference_wrapper_)),
+  any_valid_handle_(std::move(any_valid_handle_))
 {
 }
 

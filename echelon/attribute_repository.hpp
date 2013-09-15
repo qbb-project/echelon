@@ -23,7 +23,8 @@ namespace echelon
 class non_existing_attribute_exception : public std::exception
 {
 public:
-    non_existing_attribute_exception(const std::string& what_) : what_(what_)
+    non_existing_attribute_exception(std::string what_)
+    : what_(std::move(what_))
     {
     }
 
@@ -31,7 +32,7 @@ public:
     {
     }
 
-    const char* what() const noexcept
+    const char* what() const noexcept override
     {
         return what_.c_str();
     }

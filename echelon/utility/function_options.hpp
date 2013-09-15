@@ -110,7 +110,8 @@ class option_parser
 public:
     option_parser(OptionType default_value_,
                   ContinuationParser continuation_parser_)
-    : default_value_(default_value_), continuation_parser_(continuation_parser_)
+    : default_value_(std::move(default_value_)),
+      continuation_parser_(std::move(continuation_parser_))
     {
     }
 
@@ -150,7 +151,7 @@ class options_description
 {
 public:
     explicit options_description(RootParser root_parser_ = RootParser())
-    : root_parser_(root_parser_)
+    : root_parser_(std::move(root_parser_))
     {
     }
 

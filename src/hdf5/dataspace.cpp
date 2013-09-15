@@ -47,7 +47,7 @@ dataspace::dataspace(hid_t dataspace_id_) : dataspace_id_(dataspace_id_)
 }
 
 dataspace::dataspace(const std::vector<hsize_t>& dims)
-: dataspace_id_(H5Screate_simple(dims.size(), dims.data(), 0))
+: dataspace_id_(H5Screate_simple(dims.size(), dims.data(), nullptr))
 {
     if (id() < 0)
         throw_on_hdf5_error();
@@ -144,8 +144,8 @@ void dataspace::select_hyperslab(H5S_seloper_t op,
                                  const std::vector<hsize_t>& stride,
                                  const std::vector<hsize_t>& count)
 {
-    herr_t error_code = H5Sselect_hyperslab(id(), op, start.data(),
-                                            stride.data(), count.data(), 0);
+    herr_t error_code = H5Sselect_hyperslab(
+        id(), op, start.data(), stride.data(), count.data(), nullptr);
 
     if (error_code < 0)
         throw_on_hdf5_error();
@@ -155,8 +155,8 @@ void dataspace::select_hyperslab(H5S_seloper_t op,
                                  const std::vector<hsize_t>& start,
                                  const std::vector<hsize_t>& count)
 {
-    herr_t error_code =
-        H5Sselect_hyperslab(id(), op, start.data(), 0, count.data(), 0);
+    herr_t error_code = H5Sselect_hyperslab(id(), op, start.data(), nullptr,
+                                            count.data(), nullptr);
 
     if (error_code < 0)
         throw_on_hdf5_error();
@@ -208,7 +208,7 @@ std::vector<hsize_t> dataspace::get_simple_extent_dims() const
 
     std::vector<hsize_t> dims(ndims);
 
-    if (H5Sget_simple_extent_dims(id(), dims.data(), 0) < 0)
+    if (H5Sget_simple_extent_dims(id(), dims.data(), nullptr) < 0)
         throw_on_hdf5_error();
 
     return dims;

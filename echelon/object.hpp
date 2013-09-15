@@ -9,6 +9,7 @@
 #include <echelon/hdf5/object.hpp>
 #include <exception>
 #include <string>
+#include <utility>
 
 namespace echelon
 {
@@ -23,7 +24,7 @@ public:
      *
      * \param what_ error description
      */
-    wrong_object_type_exception(const std::string& what_) : what_(what_)
+    wrong_object_type_exception(std::string what_) : what_(std::move(what_))
     {
     }
 
@@ -35,7 +36,7 @@ public:
 
     /** \brief An associated error description.
      */
-    const char* what() const noexcept
+    const char* what() const noexcept override
     {
         return what_.c_str();
     }
@@ -55,7 +56,7 @@ class object_reference;
 class object
 {
 public:
-    explicit object(const hdf5::object& object_wrapper_);
+    explicit object(hdf5::object object_wrapper_);
 
     /** \brief Constructs a handle from an pre-existing group handle.
      *

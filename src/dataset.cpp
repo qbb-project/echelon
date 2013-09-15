@@ -42,7 +42,7 @@ dataset::dataset(const object& parent, const std::string& name,
 }
 
 dataset::dataset(hdf5::dataset dataset_wrapper_)
-: dataset_wrapper_(dataset_wrapper_), attributes(*this),
+: dataset_wrapper_(std::move(dataset_wrapper_)), attributes(*this),
   dimensions(*this, rank())
 {
 }
