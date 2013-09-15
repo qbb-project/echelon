@@ -9,6 +9,7 @@
 #include <complex>
 #include <echelon/adapt_type.hpp>
 
-ECHELON_ADAPT_PACKED_COMPOUND_TYPE(std::complex<double>,((double,real))((double,imag)))
+ECHELON_ADAPT_PACKED_COMPOUND_TYPE(std::complex<double>,
+                                   ((double, real))((double, imag)))
 
 #endif

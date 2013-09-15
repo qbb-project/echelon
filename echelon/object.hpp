@@ -23,20 +23,23 @@ public:
      *
      * \param what_ error description
      */
-    wrong_object_type_exception(const std::string& what_)
-    :what_(what_)
-    {}
+    wrong_object_type_exception(const std::string& what_) : what_(what_)
+    {
+    }
 
     /** \brief The destructor
      */
-    ~wrong_object_type_exception() noexcept {}
+    ~wrong_object_type_exception() noexcept
+    {
+    }
 
     /** \brief An associated error description.
      */
-    const char* what()const noexcept
+    const char* what() const noexcept
     {
         return what_.c_str();
     }
+
 private:
     std::string what_;
 };
@@ -72,7 +75,6 @@ public:
      */
     object(const scalar_dataset& object_);
 
-
     /** \brief Changes the object, which is referenced by the handle.
      *
      *  \param object_ a handle to the shared object
@@ -91,54 +93,63 @@ public:
      */
     object& operator=(const scalar_dataset& object_);
 
-
-    /** \brief Constructs a group handle, which shares ownership with this handle.
+    /** \brief Constructs a group handle, which shares ownership with this
+     *handle.
      *
-     *  The incorporated conversion might fail, if the generated handle can't reference
-     *  the object, which is referenced by this handle. An exception is thrown in this case.
+     *  The incorporated conversion might fail, if the generated handle can't
+     *reference
+     *  the object, which is referenced by this handle. An exception is thrown
+     *in this case.
      *
-     *  \throws wrong_object_type_exception is thrown, if the generated handle would be incompatible with the
+     *  \throws wrong_object_type_exception is thrown, if the generated handle
+     *would be incompatible with the
      *                                      referenced object.
      */
-    operator group()const;
+    operator group() const;
 
-    /** \brief Constructs a dataset handle, which shares ownership with this handle.
+    /** \brief Constructs a dataset handle, which shares ownership with this
+     *handle.
      *
-     *  The incorporated conversion might fail, if the generated handle can't reference
-     *  the object, which is referenced by this handle. An exception is thrown in this case.
+     *  The incorporated conversion might fail, if the generated handle can't
+     *reference
+     *  the object, which is referenced by this handle. An exception is thrown
+     *in this case.
      *
-     *  \throws wrong_object_type_exception is thrown, if the generated handle would be incompatible with the
+     *  \throws wrong_object_type_exception is thrown, if the generated handle
+     *would be incompatible with the
      *                                      referenced object.
      */
-    operator dataset()const;
+    operator dataset() const;
 
-    /** \brief Constructs a scalar dataset handle, which shares ownership with this handle.
+    /** \brief Constructs a scalar dataset handle, which shares ownership with
+     *this handle.
      *
-     *  The incorporated conversion might fail, if the generated handle can't reference
-     *  the object, which is referenced by this handle. An exception is thrown in this case.
+     *  The incorporated conversion might fail, if the generated handle can't
+     *reference
+     *  the object, which is referenced by this handle. An exception is thrown
+     *in this case.
      *
-     *  \throws wrong_object_type_exception is thrown, if the generated handle would be incompatible with the
+     *  \throws wrong_object_type_exception is thrown, if the generated handle
+     *would be incompatible with the
      *                                      referenced object.
      */
-    operator scalar_dataset()const;
+    operator scalar_dataset() const;
 
     /** \brief A HDF5 object reference to this object.
      */
-    object_reference ref()const;
+    object_reference ref() const;
 
     /** \brief The ID, which corresponds to the underlying HDF5 object.
      */
-    hid_t id()const;
+    hid_t id() const;
 
     /** \brief The underlying HDF5 low-level handle.
      */
-    const hdf5::object& get_native_handle()const;
+    const hdf5::object& get_native_handle() const;
+
 private:
     hdf5::object object_wrapper_;
 };
-
-
-
 }
 
 #endif

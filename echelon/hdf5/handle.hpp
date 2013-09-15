@@ -46,13 +46,12 @@ public:
     handle& operator=(const handle& other);
     handle& operator=(handle&& other);
 
-    hid_t id()const;
+    hid_t id() const;
+
 private:
     hid_t id_;
 };
-
 }
-
 }
 
 #endif

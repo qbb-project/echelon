@@ -15,9 +15,8 @@
 namespace echelon
 {
 
-ECHELON_DECLARE_KEYWORD(int,compression_level)
-ECHELON_DECLARE_KEYWORD(std::vector<hsize_t>,chunk_shape)
-
+ECHELON_DECLARE_KEYWORD(int, compression_level)
+ECHELON_DECLARE_KEYWORD(std::vector<hsize_t>, chunk_shape)
 }
 
 #endif

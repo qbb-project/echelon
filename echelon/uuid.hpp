@@ -14,7 +14,6 @@ namespace echelon
 extern const char uuid[];
 
 std::string generate_unique_identifier(const std::string& name);
-
 }
 
 #endif

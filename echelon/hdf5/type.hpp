@@ -27,7 +27,7 @@ public:
     type& operator=(const type& other);
     type& operator=(type&& other);
 
-    std::size_t size()const;
+    std::size_t size() const;
 
     static type char_();
     static type uchar();
@@ -48,20 +48,20 @@ public:
 
     static type object_reference();
 
-    void insert_member(const std::string& name,
-                       std::size_t offset, const type& field_type);
+    void insert_member(const std::string& name, std::size_t offset,
+                       const type& field_type);
 
-    type clone()const;
+    type clone() const;
 
-    hid_t id()const;
+    hid_t id() const;
+
 private:
     hid_t type_id_;
     bool is_transient_;
 };
 
-bool operator==(const type& lhs,const type& rhs);
-bool operator!=(const type& lhs,const type& rhs);
-
+bool operator==(const type& lhs, const type& rhs);
+bool operator!=(const type& lhs, const type& rhs);
 }
 }
 

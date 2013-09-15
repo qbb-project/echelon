@@ -32,16 +32,16 @@ public:
     file& operator=(const file& other);
     file& operator=(file&& other);
 
-    hid_t id()const noexcept;
+    hid_t id() const noexcept;
+
 private:
     hid_t file_id_;
 };
 
-group mount(const file& mounted_file,const group& mount_point);
-group mount(const file& mounted_file,const file& mount_point);
+group mount(const file& mounted_file, const group& mount_point);
+group mount(const file& mounted_file, const file& mount_point);
 
 void unmount(const group& mount_point);
-
 }
 }
 

@@ -21,7 +21,8 @@ namespace echelon
 /** \brief A handle to an HDF5 file object.
  *
  *  It can be used to access all properties of an HDF5 file.
- *  In addition it implements the same interface as group to cover the symmetry between
+ *  In addition it implements the same interface as group to cover the symmetry
+ *between
  *  a file (or more precise it's root group) and any other group.
  */
 class file
@@ -43,7 +44,7 @@ public:
         read_write ///< Open the file in the read-write mode.
     };
 
-    //file interface
+    // file interface
 
     /** \brief Creates a new HDF5 file using the given path and creation mode.
      *
@@ -52,7 +53,8 @@ public:
      */
     file(const std::string& path, create_mode mode);
 
-    /** \brief Opens a pre-existing HDF5 file using the given path and open mode.
+    /** \brief Opens a pre-existing HDF5 file using the given path and open
+     *mode.
      *
      *  \param path path of the pre-existing HDF5 file
      *  \param mode open mode, which is used to open the file
@@ -61,7 +63,7 @@ public:
 
     explicit file(hdf5::file file_wrapper_);
 
-    //group interface
+    // group interface
 
     /** \brief Creates a new HDF5 group within the root group.
      *
@@ -85,12 +87,11 @@ public:
      *
      *  \return a handle to the new dataset
      */
-    template<typename... Options>
+    template <typename... Options>
     dataset create_dataset(const std::string& name, const type& datatype,
-                           const std::vector<hsize_t>& dims,
-                           Options... options)
+                           const std::vector<hsize_t>& dims, Options... options)
     {
-        return root_group_.create_dataset(name,datatype,dims,options...);
+        return root_group_.create_dataset(name, datatype, dims, options...);
     }
 
     /** \brief Creates a new HDF5 dataset within the root group.
@@ -103,17 +104,17 @@ public:
      *         _compression_level  | level of the deflate compression (0 - 9)
      *         _chunk_shape        | shape of a dataset chunk
      *
-     *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *  \tparam T C++ type, which should be used to determine the dataset's
+     *value type
      *  \tparam Options options type list
      *
      *  \return a handle to the new dataset
      */
-    template<typename T,typename... Options>
+    template <typename T, typename... Options>
     dataset create_dataset(const std::string& name,
-                           const std::vector<hsize_t>& dims,
-                           Options... options)
+                           const std::vector<hsize_t>& dims, Options... options)
     {
-        return root_group_.create_dataset<T>(name,dims,options...);
+        return root_group_.create_dataset<T>(name, dims, options...);
     }
 
     /** \brief Creates a new HDF5 scalar dataset within the root group.
@@ -123,36 +124,40 @@ public:
      *
      *  \return a handle to the new scalar dataset
      */
-    scalar_dataset create_scalar_dataset(const std::string& name, const type& datatype);
-
+    scalar_dataset create_scalar_dataset(const std::string& name,
+                                         const type& datatype);
 
     /** \brief Creates a new HDF5 scalar dataset within the root group.
      *
      *  \param name name of the new dataset
      *
-     *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *  \tparam T C++ type, which should be used to determine the dataset's
+     *value type
      *
      *  \return a handle to the new scalar dataset
      */
-    template<typename T>
+    template <typename T>
     scalar_dataset create_scalar_dataset(const std::string& name)
     {
         return root_group_.create_scalar_dataset<T>(name);
     }
 
-    /** \brief Creates a new HDF5 scalar dataset within the root group and initializes it with a given value.
+    /** \brief Creates a new HDF5 scalar dataset within the root group and
+     *initializes it with a given value.
      *
      *  \param name name of the new dataset
      *  \param value value, which should be used to intialize the dataset
      *
-     *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *  \tparam T C++ type, which should be used to determine the dataset's
+     *value type
      *
      *  \return a handle to the new scalar dataset
      */
-    template<typename T>
-    scalar_dataset create_scalar_dataset(const std::string& name,const T& value)
+    template <typename T>
+    scalar_dataset create_scalar_dataset(const std::string& name,
+                                         const T& value)
     {
-        return root_group_.create_scalar_dataset(name,value);
+        return root_group_.create_scalar_dataset(name, value);
     }
 
     /** \brief Accessor function for the root group.
@@ -161,29 +166,33 @@ public:
      *
      *  \return a handle to the requested object
      */
-    object operator[](const std::string& name)const;
+    object operator[](const std::string& name) const;
 
     /** \brief Removes the specified object from the root group.
      *
      *  \param name name of the removed object
      *
      */
-    void remove(const std::string& name)const;
+    void remove(const std::string& name) const;
 
-    /** \brief Returns the requested group, if it already exists, otherwise a new group is created.
+    /** \brief Returns the requested group, if it already exists, otherwise a
+     *new group is created.
      *
      *  \param name name of the requested group
      *
-     *  \return the requested group, if it is already existing, or a new group otherwise
+     *  \return the requested group, if it is already existing, or a new group
+     *otherwise
      */
     group require_group(const std::string& name);
 
-    /** \brief Returns the requested dataset, if it already exists, otherwise a new dataset is created.
+    /** \brief Returns the requested dataset, if it already exists, otherwise a
+     *new dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
      *  This method allows the user to make a contract with the library,
-     *  that an object with certain properties exists after the method has terminated.
+     *  that an object with certain properties exists after the method has
+     *terminated.
      *
      *  If the dataset already exists and its shape or datatype differ
      *  from their requested value and an exception is thrown,
@@ -200,24 +209,28 @@ public:
      *
      *  \tparam Options options type list
      *
-     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
+     *  \throws broken_contract_exception is thrown, if the contract can't be
+     *fulfilled.
      *
-     *  \return the requested dataset, if it is already existing, or a new dataset otherwise
+     *  \return the requested dataset, if it is already existing, or a new
+     *dataset otherwise
      */
-    template<typename... Options>
+    template <typename... Options>
     dataset require_dataset(const std::string& name, const type& datatype,
                             const std::vector<hsize_t>& dims,
                             Options... options)
     {
-        return root_group_.require_dataset(name,datatype,dims,options...);
+        return root_group_.require_dataset(name, datatype, dims, options...);
     }
 
-    /** \brief Returns the requested dataset, if it already exists, otherwise a new dataset is created.
+    /** \brief Returns the requested dataset, if it already exists, otherwise a
+     *new dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
      *  This method allows the user to make a contract with the library,
-     *  that an object with certain properties exists after the method has terminated.
+     *  that an object with certain properties exists after the method has
+     *terminated.
      *
      *  If the dataset already exists and its shape or datatype differ
      *  from their requested value and an exception is thrown,
@@ -231,27 +244,32 @@ public:
      *         _compression_level  | level of the deflate compression (0 - 9)
      *         _chunk_shape        | shape of a dataset chunk
      *
-     *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *  \tparam T C++ type, which should be used to determine the dataset's
+     *value type
      *  \tparam Options options type list
      *
-     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
+     *  \throws broken_contract_exception is thrown, if the contract can't be
+     *fulfilled.
      *
-     *  \return the requested dataset, if it is already existing, or a new dataset otherwise
+     *  \return the requested dataset, if it is already existing, or a new
+     *dataset otherwise
      */
-    template<typename T,typename... Options>
+    template <typename T, typename... Options>
     dataset require_dataset(const std::string& name,
-                           const std::vector<hsize_t>& dims,
-                           Options... options)
+                            const std::vector<hsize_t>& dims,
+                            Options... options)
     {
-        return root_group_.require_dataset<T>(name,dims,options...);
+        return root_group_.require_dataset<T>(name, dims, options...);
     }
 
-    /** \brief Returns the requested scalar dataset, if it already exists, otherwise a new scalar dataset is created.
+    /** \brief Returns the requested scalar dataset, if it already exists,
+     *otherwise a new scalar dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
      *  This method allows the user to make a contract with the library,
-     *  that an object with certain properties exists after the method has terminated.
+     *  that an object with certain properties exists after the method has
+     *terminated.
      *
      *  If the scalar dataset already exists and its datatype differs
      *  from its requested value and an exception is thrown,
@@ -260,18 +278,23 @@ public:
      *  \param name name of the requested dataset
      *  \param datatype value type of the new dataset
      *
-     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
+     *  \throws broken_contract_exception is thrown, if the contract can't be
+     *fulfilled.
      *
-     *  \return the requested scalar dataset, if it is already existing, or a new scalar dataset otherwise
+     *  \return the requested scalar dataset, if it is already existing, or a
+     *new scalar dataset otherwise
      */
-    scalar_dataset require_scalar_dataset(const std::string& name, const type& datatype);
+    scalar_dataset require_scalar_dataset(const std::string& name,
+                                          const type& datatype);
 
-    /** \brief Returns the requested scalar dataset, if it already exists, otherwise the scalar dataset is created.
+    /** \brief Returns the requested scalar dataset, if it already exists,
+     *otherwise the scalar dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
      *  This method allows the user to make a contract with the library,
-     *  that an object with certain properties exists after the method has terminated.
+     *  that an object with certain properties exists after the method has
+     *terminated.
      *
      *  If the scalar dataset already exists and its datatype differs
      *  from its requested value and an exception is thrown,
@@ -279,24 +302,30 @@ public:
      *
      *  \param name name of the requested dataset
      *
-     *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *  \tparam T C++ type, which should be used to determine the dataset's
+     *value type
      *
-     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
+     *  \throws broken_contract_exception is thrown, if the contract can't be
+     *fulfilled.
      *
-     *  \return the requested scalar dataset, if it is already existing, or a new scalar dataset otherwise
+     *  \return the requested scalar dataset, if it is already existing, or a
+     *new scalar dataset otherwise
      */
-    template<typename T>
+    template <typename T>
     scalar_dataset require_scalar_dataset(const std::string& name)
     {
         return root_group_.require_scalar_dataset<T>(name);
     }
 
-    /** \brief Returns the requested scalar dataset, if it already exists, otherwise a new scalar dataset is created.
+    /** \brief Returns the requested scalar dataset, if it already exists,
+     *otherwise a new scalar dataset is created.
      *
-     *  The new dataset is created using the given parameters and is initialized with the given value.
+     *  The new dataset is created using the given parameters and is initialized
+     *with the given value.
      *
      *  This method allows the user to make a contract with the library,
-     *  that an object with certain properties exists after the method has terminated.
+     *  that an object with certain properties exists after the method has
+     *terminated.
      *
      *  If the scalar dataset already exists and its datatype differs
      *  from its requested value and an exception is thrown,
@@ -305,16 +334,20 @@ public:
      *  \param name name of the requested dataset
      *  \param value value, which should be used to intialize the dataset
      *
-     *  \tparam T C++ type, which should be used to determine the dataset's value type
+     *  \tparam T C++ type, which should be used to determine the dataset's
+     *value type
      *
-     *  \throws broken_contract_exception is thrown, if the contract can't be fulfilled.
+     *  \throws broken_contract_exception is thrown, if the contract can't be
+     *fulfilled.
      *
-     *  \return the requested scalar dataset, if it is already existing, or a new scalar dataset otherwise
+     *  \return the requested scalar dataset, if it is already existing, or a
+     *new scalar dataset otherwise
      */
-    template<typename T>
-    scalar_dataset require_scalar_dataset(const std::string& name,const T& value)
+    template <typename T>
+    scalar_dataset require_scalar_dataset(const std::string& name,
+                                          const T& value)
     {
-        return root_group_.require_scalar_dataset(name,value);
+        return root_group_.require_scalar_dataset(name, value);
     }
 
     /** \brief Iterates over every link within the root group.
@@ -322,14 +355,14 @@ public:
      *  \param op function, which is applied to every link
      *
      */
-    void iterate_links(const std::function<void(const link&)>& op)const;
+    void iterate_links(const std::function<void(const link&)>& op) const;
 
     /** \brief Visits every link, which is reachable from the root group
      *
      *  \param op visitor, which is applied to every visited link
      *
      */
-    void visit_links(const std::function<void(const link&)>& visitor)const;
+    void visit_links(const std::function<void(const link&)>& visitor) const;
 
     /** \brief Visits every object, which is reachable from the root group
      *         (including the root group)
@@ -337,13 +370,13 @@ public:
      *  \param op visitor, which is applied to every visited object
      *
      */
-    void visit_objects(const std::function<void(const object&)>& visitor)const;
+    void visit_objects(const std::function<void(const object&)>& visitor) const;
 
     /** \brief A HDF5 object reference to the root group.
      */
-    object_reference ref()const;
+    object_reference ref() const;
 
-    //general interface
+    // general interface
 
     /** \brief The ID, which corresponds to the underlying HDF5 object.
      */
@@ -351,10 +384,12 @@ public:
 
     /** \brief The underlying HDF5 low-level handle.
      */
-    const hdf5::file& get_native_handle()const;
+    const hdf5::file& get_native_handle() const;
+
 private:
     hdf5::file file_wrapper_;
     group root_group_;
+
 public:
     /** \brief The attributes, which are attached to the root group.
      */
@@ -370,7 +405,7 @@ public:
  *
  *  \relates echelon::file
  */
-group mount(const file& mounted_file,const group& mount_point);
+group mount(const file& mounted_file, const group& mount_point);
 
 /** \brief Mounts a file at a specified location.
  *
@@ -381,7 +416,7 @@ group mount(const file& mounted_file,const group& mount_point);
  *
  *  \relates echelon::file
  */
-group mount(const file& mounted_file,const file& mount_point);
+group mount(const file& mounted_file, const file& mount_point);
 
 /** \brief Unmounts a previously mounted file
  *
@@ -390,7 +425,6 @@ group mount(const file& mounted_file,const file& mount_point);
  *  \relates echelon::file
  */
 void unmount(const group& mount_point);
-
 }
 
 #endif

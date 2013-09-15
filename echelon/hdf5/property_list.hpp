@@ -20,7 +20,8 @@ public:
     explicit property_list_class(hid_t class_id_);
 
     hid_t id() const;
-    private:
+
+private:
     hid_t class_id_;
 };
 
@@ -43,16 +44,15 @@ public:
     void set_char_encoding(H5T_cset_t encoding);
     H5T_cset_t get_char_encoding();
 
+    std::vector<hsize_t> get_chunk() const;
 
-    std::vector<hsize_t> get_chunk()const;
+    hid_t id() const;
 
-    hid_t id()const;
 private:
     hid_t property_list_id_;
 };
 
 static const property_list default_property_list = property_list(H5P_DEFAULT);
-
 }
 }
 

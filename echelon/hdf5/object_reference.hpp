@@ -20,10 +20,14 @@ class object_reference
 {
 public:
     /*
-     *  \warning  I am not sure, if HDF5 really denotes a null reference with a zero-initialized
-     *            hobj_ref_t object, since the HDF5 documentation is (at best) very vague about such matters.
-     *            I got the idea while studying the h5py source code. Since h5py seems to be well tested, this
-     *            assumption should be valid. To be forearmed against future changes, which could break this
+     *  \warning  I am not sure, if HDF5 really denotes a null reference with a
+     * zero-initialized
+     *            hobj_ref_t object, since the HDF5 documentation is (at best)
+     * very vague about such matters.
+     *            I got the idea while studying the h5py source code. Since h5py
+     * seems to be well tested, this
+     *            assumption should be valid. To be forearmed against future
+     * changes, which could break this
      *            assumption, we should verify this behavior via unit tests.
      */
     object_reference() = default;
@@ -36,13 +40,13 @@ public:
 
     H5O_type_t get_object_type(hid_t valid_obj_id) const;
 
-    hid_t dereference(hid_t valid_obj_id)const;
+    hid_t dereference(hid_t valid_obj_id) const;
 
-    explicit operator bool()const;
+    explicit operator bool() const;
+
 private:
     hobj_ref_t obj_ref_;
 };
-
 }
 }
 

@@ -2,7 +2,7 @@
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
- 
+
 #ifndef ECHELON_SCALAR_DATASET_HPP
 #define ECHELON_SCALAR_DATASET_HPP
 
@@ -38,10 +38,10 @@ public:
      *  \param sink  the scalar dataset, which is used as a sink
      *  \param value value, which is written into the dataset
      */
-    template<typename T>
-    friend inline void operator<<=(scalar_dataset& sink,const T& value)
+    template <typename T>
+    friend inline void operator<<=(scalar_dataset& sink, const T& value)
     {
-        write(sink.dataset_wrapper_,value);
+        write(sink.dataset_wrapper_, value);
     }
 
     /** \brief Reads the content of the scalar dataset into a variable.
@@ -51,35 +51,36 @@ public:
      *  \param value value, which is read from the dataset
      *  \param source  the scalar dataset, which is used as a source
      */
-    template<typename T>
-    friend inline void operator<<=(T& value,const scalar_dataset& source)
+    template <typename T>
+    friend inline void operator<<=(T& value, const scalar_dataset& source)
     {
-        read(source.dataset_wrapper_,value);
+        read(source.dataset_wrapper_, value);
     }
 
     /** \brief The value type of the scalar dataset.
      */
-    type datatype()const;
+    type datatype() const;
 
     /** \brief A HDF5 object reference to this scalar dataset.
      */
-    object_reference ref()const;
+    object_reference ref() const;
 
     /** \brief The ID, which corresponds to the underlying HDF5 object.
      */
-    hid_t id()const;
+    hid_t id() const;
 
     /** \brief The underlying HDF5 low-level handle.
      */
-    const hdf5::dataset& get_native_handle()const;
+    const hdf5::dataset& get_native_handle() const;
+
 private:
     hdf5::dataset dataset_wrapper_;
+
 public:
     /** \brief The attributes, which are attached to the scalar dataset.
      */
     attribute_repository<scalar_dataset> attributes;
 };
-
 }
 
 #endif

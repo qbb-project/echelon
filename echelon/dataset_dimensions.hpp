@@ -23,21 +23,22 @@ namespace echelon
 class dimension
 {
 public:
-    dimension(dataset& associated_dataset_,std::size_t index_);
+    dimension(dataset& associated_dataset_, std::size_t index_);
 
     dimension_scale attach_dimension_scale(const std::string& name,
                                            const type& datatype);
 
-    template<typename T>
+    template <typename T>
     dimension_scale attach_dimension_scale(const std::string& name)
     {
-        return attach_dimension_scale(name,get_hdf5_type<T>());
+        return attach_dimension_scale(name, get_hdf5_type<T>());
     }
 
-    std::string label()const;
+    std::string label() const;
     void relabel(const std::string& new_label);
 
-    hsize_t extend()const;
+    hsize_t extend() const;
+
 private:
     dataset* associated_dataset_;
     std::size_t index_;
@@ -49,14 +50,14 @@ public:
     typedef std::vector<dimension>::iterator iterator;
     typedef std::vector<dimension>::const_iterator const_iterator;
 
-    dataset_dimensions(dataset& associated_dataset_,std::size_t rank_);
+    dataset_dimensions(dataset& associated_dataset_, std::size_t rank_);
 
     dimension& operator[](std::size_t index)
     {
         return dimensions_[index];
     }
 
-    const dimension& operator[](std::size_t index)const
+    const dimension& operator[](std::size_t index) const
     {
         return dimensions_[index];
     }
@@ -71,19 +72,19 @@ public:
         return dimensions_.end();
     }
 
-    const_iterator begin()const
+    const_iterator begin() const
     {
         return dimensions_.begin();
     }
 
-    const_iterator end()const
+    const_iterator end() const
     {
         return dimensions_.end();
     }
+
 private:
     std::vector<dimension> dimensions_;
 };
-
 }
 
 #endif

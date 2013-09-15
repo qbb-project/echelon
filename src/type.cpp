@@ -82,37 +82,36 @@ type type::compound_type(const type_layout& layout)
 {
     hdf5::type compound_type = hdf5::type::empty_compound_type(layout.size());
 
-    for(auto& element : layout)
+    for (auto& element : layout)
     {
-        compound_type.insert_member(element.name,element.offset,
+        compound_type.insert_member(element.name, element.offset,
                                     element.type_.get_native_type());
     }
 
     return type(std::move(compound_type));
 }
 
-type::type(hdf5::type type_wrapper_)
-:type_wrapper_(std::move(type_wrapper_))
-{}
+type::type(hdf5::type type_wrapper_) : type_wrapper_(std::move(type_wrapper_))
+{
+}
 
-type type::clone()const
+type type::clone() const
 {
     return type(type_wrapper_.clone());
 }
 
-const hdf5::type& type::get_native_type()const
+const hdf5::type& type::get_native_type() const
 {
     return type_wrapper_;
 }
 
-bool operator==(const type& lhs,const type& rhs)
+bool operator==(const type& lhs, const type& rhs)
 {
     return lhs.get_native_type() == rhs.get_native_type();
 }
 
-bool operator!=(const type& lhs,const type& rhs)
+bool operator!=(const type& lhs, const type& rhs)
 {
     return lhs.get_native_type() != rhs.get_native_type();
 }
-
 }

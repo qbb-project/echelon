@@ -12,7 +12,7 @@
 namespace echelon
 {
 
-template<typename T>
+template <typename T>
 inline void reshape(std::vector<T>& container,
                     const std::vector<std::size_t>& new_shape)
 {
@@ -21,17 +21,16 @@ inline void reshape(std::vector<T>& container,
     container.resize(new_shape[0]);
 }
 
-template<typename T,typename Iterator>
-inline void fill(std::vector<T>& container,Iterator first,Iterator last)
+template <typename T, typename Iterator>
+inline void fill(std::vector<T>& container, Iterator first, Iterator last)
 {
     container.clear();
 
-    for(Iterator iter = first; iter != last;++iter)
+    for (Iterator iter = first; iter != last; ++iter)
     {
         container.push_back(*iter);
     }
 }
-
 }
 
 #endif

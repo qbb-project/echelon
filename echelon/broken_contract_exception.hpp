@@ -12,23 +12,25 @@
 namespace echelon
 {
 
-/** \brief Exception, which is thrown, if a require_*-type method can't fulfill the contract.
+/** \brief Exception, which is thrown, if a require_*-type method can't fulfill
+ * the contract.
  */
-class broken_contract_exception: public std::exception
+class broken_contract_exception : public std::exception
 {
 public:
     /** \brief Creates a new exception with a given error description.
      *
      * \param what_ error description
      */
-    broken_contract_exception(const std::string& what_)
-    : what_(what_)
+    broken_contract_exception(const std::string& what_) : what_(what_)
     {
     }
 
     /** \brief The destructor
      */
-    ~broken_contract_exception() noexcept {}
+    ~broken_contract_exception() noexcept
+    {
+    }
 
     /** \brief An associated error description.
      */
@@ -36,10 +38,10 @@ public:
     {
         return what_.c_str();
     }
+
 private:
     std::string what_;
 };
-
 }
 
 #endif

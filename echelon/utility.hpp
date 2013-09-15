@@ -25,10 +25,9 @@ enum class object_type
 
 object_type get_object_type(hid_t obj_id);
 
-object_type get_object_type_by_name(const object& loc,const std::string& name);
+object_type get_object_type_by_name(const object& loc, const std::string& name);
 
-bool exists(const object& loc,const std::string& name);
-
+bool exists(const object& loc, const std::string& name);
 }
 
 #endif

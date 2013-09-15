@@ -11,18 +11,17 @@
 
 #include <boost/assert.hpp>
 
-#define ECHELON_ASSERT_MSG(expr,msg) BOOST_ASSERT_MSG(expr,msg)
+#define ECHELON_ASSERT_MSG(expr, msg) BOOST_ASSERT_MSG(expr, msg)
 
 #if defined(NDEBUG)
 
-#define ECHELON_VERIFY_MSG(expr,msg) ((void)(expr))
+#define ECHELON_VERIFY_MSG(expr, msg) ((void)(expr))
 
 #else
 
-#define ECHELON_VERIFY_MSG(expr,msg) ECHELON_ASSERT_MSG(expr,msg)
+#define ECHELON_VERIFY_MSG(expr, msg) ECHELON_ASSERT_MSG(expr, msg)
 
 #endif
-
 
 namespace echelon
 {
@@ -32,17 +31,17 @@ namespace hdf5
 class exception : public std::exception
 {
 public:
-    explicit exception(const std::string& what_)
-    :what_(what_)
+    explicit exception(const std::string& what_) : what_(what_)
     {
     }
 
     virtual ~exception() noexcept {};
 
-    const char* what()const noexcept
+    const char* what() const noexcept
     {
         return what_.c_str();
     }
+
 private:
     std::string what_;
 };
@@ -50,17 +49,18 @@ private:
 class hdf5_error : public exception
 {
 public:
-    hdf5_error(const std::string& what_,hid_t minor_num_)
-    :exception(what_),minor_num_(minor_num_)
+    hdf5_error(const std::string& what_, hid_t minor_num_)
+    : exception(what_), minor_num_(minor_num_)
     {
     }
 
     virtual ~hdf5_error() noexcept {};
 
-    hid_t minor_num()const
+    hid_t minor_num() const
     {
         return minor_num_;
     }
+
 private:
     hid_t minor_num_;
 };
@@ -68,8 +68,8 @@ private:
 class dataset_exception : public hdf5_error
 {
 public:
-    dataset_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    dataset_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -79,8 +79,8 @@ public:
 class function_entry_exit_exception : public hdf5_error
 {
 public:
-    function_entry_exit_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    function_entry_exit_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -90,8 +90,8 @@ public:
 class storage_exception : public hdf5_error
 {
 public:
-    storage_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    storage_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -101,8 +101,8 @@ public:
 class file_exception : public hdf5_error
 {
 public:
-    file_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    file_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -112,8 +112,9 @@ public:
 class shared_object_header_message_exception : public hdf5_error
 {
 public:
-    shared_object_header_message_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    shared_object_header_message_exception(const std::string& what_,
+                                           hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -123,8 +124,8 @@ public:
 class symbol_table_exception : public hdf5_error
 {
 public:
-    symbol_table_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    symbol_table_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -134,8 +135,8 @@ public:
 class virtual_file_layer_exception : public hdf5_error
 {
 public:
-    virtual_file_layer_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    virtual_file_layer_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -145,8 +146,8 @@ public:
 class internal_exception : public hdf5_error
 {
 public:
-    internal_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    internal_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -156,8 +157,8 @@ public:
 class Btree_exception : public hdf5_error
 {
 public:
-    Btree_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    Btree_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -167,8 +168,8 @@ public:
 class reference_exception : public hdf5_error
 {
 public:
-    reference_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    reference_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -178,8 +179,8 @@ public:
 class dataspace_exception : public hdf5_error
 {
 public:
-    dataspace_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    dataspace_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -189,8 +190,8 @@ public:
 class resource_exception : public hdf5_error
 {
 public:
-    resource_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    resource_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -200,8 +201,8 @@ public:
 class property_list_exception : public hdf5_error
 {
 public:
-    property_list_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    property_list_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -211,8 +212,8 @@ public:
 class link_exception : public hdf5_error
 {
 public:
-    link_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    link_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -222,8 +223,8 @@ public:
 class type_exception : public hdf5_error
 {
 public:
-    type_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    type_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -233,8 +234,9 @@ public:
 class reference_counted_string_exception : public hdf5_error
 {
 public:
-    reference_counted_string_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    reference_counted_string_exception(const std::string& what_,
+                                       hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -244,8 +246,8 @@ public:
 class heap_exception : public hdf5_error
 {
 public:
-    heap_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    heap_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -255,8 +257,8 @@ public:
 class object_header_exception : public hdf5_error
 {
 public:
-    object_header_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    object_header_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -266,8 +268,8 @@ public:
 class atom_exception : public hdf5_error
 {
 public:
-    atom_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    atom_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -277,8 +279,8 @@ public:
 class attribute_exception : public hdf5_error
 {
 public:
-    attribute_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    attribute_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -288,8 +290,8 @@ public:
 class io_exception : public hdf5_error
 {
 public:
-    io_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    io_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -299,8 +301,8 @@ public:
 class skip_list_exception : public hdf5_error
 {
 public:
-    skip_list_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    skip_list_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -310,8 +312,8 @@ public:
 class external_file_list_exception : public hdf5_error
 {
 public:
-    external_file_list_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    external_file_list_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -321,8 +323,8 @@ public:
 class ternary_search_tree_exception : public hdf5_error
 {
 public:
-    ternary_search_tree_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    ternary_search_tree_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -332,8 +334,8 @@ public:
 class invalid_argument_exception : public hdf5_error
 {
 public:
-    invalid_argument_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    invalid_argument_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -343,8 +345,8 @@ public:
 class error_exception : public hdf5_error
 {
 public:
-    error_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    error_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -354,8 +356,8 @@ public:
 class data_filter_exception : public hdf5_error
 {
 public:
-    data_filter_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    data_filter_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -365,8 +367,8 @@ public:
 class free_space_manager_exception : public hdf5_error
 {
 public:
-    free_space_manager_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    free_space_manager_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -376,8 +378,8 @@ public:
 class metadata_cache_exception : public hdf5_error
 {
 public:
-    metadata_cache_exception(const std::string& what_,hid_t minor_num_)
-    :hdf5_error(what_,minor_num_)
+    metadata_cache_exception(const std::string& what_, hid_t minor_num_)
+    : hdf5_error(what_, minor_num_)
     {
     }
 
@@ -387,11 +389,12 @@ public:
 class no_associated_name_exception : public exception
 {
 public:
-    no_associated_name_exception(const std::string& what_,hid_t obj_id_)
-    :exception(what_),obj_id_(obj_id_)
-    {}
+    no_associated_name_exception(const std::string& what_, hid_t obj_id_)
+    : exception(what_), obj_id_(obj_id_)
+    {
+    }
 
-    hid_t obj_id()const
+    hid_t obj_id() const
     {
         return obj_id_;
     }
@@ -405,9 +408,10 @@ private:
 class not_found_exception : public symbol_table_exception
 {
 public:
-    not_found_exception(const std::string& what_,hid_t minor_num_)
-    :symbol_table_exception(what_,minor_num_)
-    {}
+    not_found_exception(const std::string& what_, hid_t minor_num_)
+    : symbol_table_exception(what_, minor_num_)
+    {
+    }
 
     virtual ~not_found_exception() noexcept {};
 };
@@ -415,9 +419,10 @@ public:
 class can_not_open_object_exception : public symbol_table_exception
 {
 public:
-    can_not_open_object_exception(const std::string& what_,hid_t minor_num_)
-    :symbol_table_exception(what_,minor_num_)
-    {}
+    can_not_open_object_exception(const std::string& what_, hid_t minor_num_)
+    : symbol_table_exception(what_, minor_num_)
+    {
+    }
 
     virtual ~can_not_open_object_exception() noexcept {};
 };
@@ -425,9 +430,10 @@ public:
 class exists_exception : public Btree_exception
 {
 public:
-    exists_exception(const std::string& what_,hid_t minor_num_)
-    :Btree_exception(what_,minor_num_)
-    {}
+    exists_exception(const std::string& what_, hid_t minor_num_)
+    : Btree_exception(what_, minor_num_)
+    {
+    }
 
     virtual ~exists_exception() noexcept {};
 };
@@ -435,9 +441,10 @@ public:
 class already_exists_exception : public resource_exception
 {
 public:
-    already_exists_exception(const std::string& what_,hid_t minor_num_)
-    :resource_exception(what_,minor_num_)
-    {}
+    already_exists_exception(const std::string& what_, hid_t minor_num_)
+    : resource_exception(what_, minor_num_)
+    {
+    }
 
     virtual ~already_exists_exception() noexcept {};
 };
@@ -445,9 +452,10 @@ public:
 class symbol_already_exists_exception : public symbol_table_exception
 {
 public:
-    symbol_already_exists_exception(const std::string& what_,hid_t minor_num_)
-    :symbol_table_exception(what_,minor_num_)
-    {}
+    symbol_already_exists_exception(const std::string& what_, hid_t minor_num_)
+    : symbol_table_exception(what_, minor_num_)
+    {
+    }
 
     virtual ~symbol_already_exists_exception() noexcept {};
 };
@@ -455,7 +463,6 @@ public:
 void throw_on_hdf5_error();
 
 void enable_error_handling();
-
 }
 }
 

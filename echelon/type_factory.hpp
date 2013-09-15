@@ -18,26 +18,26 @@
 namespace echelon
 {
 
-template<typename T>
+template <typename T>
 inline typename std::enable_if<is_predefined_hdf5_type<T>::value, type>::type
 get_hdf5_type();
 
-template<typename T>
-inline typename std::enable_if<is_hdf5_type<T>::value &&
-                               !is_predefined_hdf5_type<T>::value, type>::type
+template <typename T>
+inline typename std::enable_if<
+    is_hdf5_type<T>::value && !is_predefined_hdf5_type<T>::value, type>::type
 get_hdf5_type();
 
-template<typename T>
+template <typename T>
 inline typename std::enable_if<!is_hdf5_type<T>::value, type>::type
 get_hdf5_type();
 
-template<typename T>
+template <typename T>
 struct hdf5_type_selector
 {
-    static_assert(sizeof(T) != sizeof(T),"invalid type");
+    static_assert(sizeof(T) != sizeof(T), "invalid type");
 };
 
-template<>
+template <>
 struct hdf5_type_selector<char>
 {
     static type get()
@@ -46,7 +46,7 @@ struct hdf5_type_selector<char>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<unsigned char>
 {
     static type get()
@@ -55,7 +55,7 @@ struct hdf5_type_selector<unsigned char>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<short>
 {
     static type get()
@@ -64,7 +64,7 @@ struct hdf5_type_selector<short>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<unsigned short>
 {
     static type get()
@@ -73,7 +73,7 @@ struct hdf5_type_selector<unsigned short>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<int>
 {
     static type get()
@@ -82,7 +82,7 @@ struct hdf5_type_selector<int>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<unsigned int>
 {
     static type get()
@@ -91,7 +91,7 @@ struct hdf5_type_selector<unsigned int>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<long>
 {
     static type get()
@@ -100,7 +100,7 @@ struct hdf5_type_selector<long>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<unsigned long>
 {
     static type get()
@@ -109,7 +109,7 @@ struct hdf5_type_selector<unsigned long>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<long long>
 {
     static type get()
@@ -118,7 +118,7 @@ struct hdf5_type_selector<long long>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<unsigned long long>
 {
     static type get()
@@ -127,7 +127,7 @@ struct hdf5_type_selector<unsigned long long>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<float>
 {
     static type get()
@@ -136,7 +136,7 @@ struct hdf5_type_selector<float>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<double>
 {
     static type get()
@@ -145,7 +145,7 @@ struct hdf5_type_selector<double>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<bool>
 {
     static type get()
@@ -154,7 +154,7 @@ struct hdf5_type_selector<bool>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<std::string>
 {
     static type get()
@@ -163,7 +163,7 @@ struct hdf5_type_selector<std::string>
     }
 };
 
-template<std::size_t N>
+template <std::size_t N>
 struct hdf5_type_selector<char[N]>
 {
     static type get()
@@ -172,7 +172,7 @@ struct hdf5_type_selector<char[N]>
     }
 };
 
-template<>
+template <>
 struct hdf5_type_selector<object_reference>
 {
     static type get()
@@ -181,118 +181,111 @@ struct hdf5_type_selector<object_reference>
     }
 };
 
-template<typename T>
-struct hdf5_type_selector<T const>
-: hdf5_type_selector<typename std::remove_cv<T>::type>
+template <typename T>
+struct hdf5_type_selector<T const> : hdf5_type_selector<
+    typename std::remove_cv<T>::type>
 {
 };
-
 
 namespace detail
 {
 
-template<typename T,std::size_t I,typename Enable = void>
+template <typename T, std::size_t I, typename Enable = void>
 struct add_member_to_layout;
 
-template<typename T,std::size_t I>
-struct add_member_to_layout<T,I,
-             typename std::enable_if<static_type_layout<T>::category ==
-                                     static_type_layout_category::generic>::type>
+template <typename T, std::size_t I>
+struct add_member_to_layout<
+    T, I, typename std::enable_if<static_type_layout<T>::category ==
+                                  static_type_layout_category::generic>::type>
 {
-    static std::size_t eval(type_layout& layout,std::size_t)
+    static std::size_t eval(type_layout& layout, std::size_t)
     {
         const id_offset_pair id_offset = static_type_layout<T>::members()[I];
 
         typedef typename std::tuple_element<
-                             I,
-                             typename static_type_layout<T>::member_types
-                           >::type
-                member_type;
+            I, typename static_type_layout<T>::member_types>::type member_type;
 
-        layout.add_element(id_offset.id,
-                           get_hdf5_type<member_type>(),
+        layout.add_element(id_offset.id, get_hdf5_type<member_type>(),
                            id_offset.offset);
 
         return id_offset.offset;
     }
 };
 
-template<typename T,std::size_t I>
-struct add_member_to_layout<T,I,
-             typename std::enable_if<static_type_layout<T>::category ==
-                                     static_type_layout_category::packed>::type>
+template <typename T, std::size_t I>
+struct add_member_to_layout<
+    T, I, typename std::enable_if<static_type_layout<T>::category ==
+                                  static_type_layout_category::packed>::type>
 {
-    static std::size_t eval(type_layout& layout,std::size_t current_offset)
+    static std::size_t eval(type_layout& layout, std::size_t current_offset)
     {
         const id_size_pair id_size = static_type_layout<T>::members()[I];
 
         typedef typename std::tuple_element<
-                             I,
-                             typename static_type_layout<T>::member_types
-                           >::type
-                member_type;
+            I, typename static_type_layout<T>::member_types>::type member_type;
 
-        layout.add_element(id_size.id,
-                           get_hdf5_type<member_type>(),
+        layout.add_element(id_size.id, get_hdf5_type<member_type>(),
                            current_offset);
 
         return current_offset + id_size.size;
     }
 };
 
-template<typename T,std::size_t I,std::size_t N,typename Enable = void>
+template <typename T, std::size_t I, std::size_t N, typename Enable = void>
 struct add_members_to_layout;
 
-template<typename T,std::size_t I,std::size_t N>
-struct add_members_to_layout<T,I,N>
+template <typename T, std::size_t I, std::size_t N>
+struct add_members_to_layout<T, I, N>
 {
-    static void eval(type_layout& layout,std::size_t current_offset)
+    static void eval(type_layout& layout, std::size_t current_offset)
     {
         const std::size_t new_offset =
-           add_member_to_layout<T,I>::eval(layout,current_offset);
+            add_member_to_layout<T, I>::eval(layout, current_offset);
 
-        add_members_to_layout<T,I+1,N>::eval(layout,new_offset);
+        add_members_to_layout<T, I + 1, N>::eval(layout, new_offset);
     }
 };
 
-template<typename T,std::size_t N>
-struct add_members_to_layout<T,N,N>
+template <typename T, std::size_t N>
+struct add_members_to_layout<T, N, N>
 {
-    static void eval(type_layout&,std::size_t)
+    static void eval(type_layout&, std::size_t)
     {
     }
 };
-
 }
 
-template<typename T>
+template <typename T>
 inline typename std::enable_if<is_predefined_hdf5_type<T>::value, type>::type
 get_hdf5_type()
 {
     return hdf5_type_selector<T>::get();
 }
 
-template<typename T>
-inline typename std::enable_if<is_hdf5_type<T>::value &&
-                               !is_predefined_hdf5_type<T>::value, type>::type
+template <typename T>
+inline typename std::enable_if<
+    is_hdf5_type<T>::value && !is_predefined_hdf5_type<T>::value, type>::type
 get_hdf5_type()
 {
-    typedef typename std::remove_reference<typename std::remove_cv<T>::type>::type value_type;
+    typedef typename std::remove_reference<
+        typename std::remove_cv<T>::type>::type value_type;
 
     type_layout new_layout(static_type_layout<value_type>::size);
 
-    constexpr std::size_t num_members = static_type_layout<value_type>::num_members;
+    constexpr std::size_t num_members =
+        static_type_layout<value_type>::num_members;
 
-    detail::add_members_to_layout<value_type,0,num_members>::eval(new_layout,0);
+    detail::add_members_to_layout<value_type, 0, num_members>::eval(new_layout,
+                                                                    0);
 
     return type::compound_type(new_layout);
 }
 
-template<typename T>
+template <typename T>
 inline typename std::enable_if<!is_hdf5_type<T>::value, type>::type
 get_hdf5_type()
 {
-    static_assert(is_hdf5_type<T>::value,"T must be a valid HDF5 type");
+    static_assert(is_hdf5_type<T>::value, "T must be a valid HDF5 type");
 }
 }
 

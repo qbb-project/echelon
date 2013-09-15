@@ -9,12 +9,11 @@
 namespace echelon
 {
 
-template<typename T>
+template <typename T>
 struct is_predefined_hdf5_type;
 
-template<typename T>
+template <typename T>
 struct is_hdf5_type;
-
 }
 
 #endif

@@ -17,7 +17,7 @@ namespace echelon
 class link
 {
 public:
-    link(object origin_,std::string name_);
+    link(object origin_, std::string name_);
 
     /** \brief Returns the destination of the link.
      *
@@ -26,20 +26,20 @@ public:
      *
      *  \return the destination of the link.
      */
-    object destination()const;
+    object destination() const;
 
     /** \brief The object, which acts as the origin of the link.
      */
-    object origin()const;
+    object origin() const;
 
     /** \brief The name of the link.
      */
-    const std::string& name()const;
+    const std::string& name() const;
+
 private:
     object origin_;
     std::string name_;
 };
-
 }
 
 #endif

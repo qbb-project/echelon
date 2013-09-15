@@ -27,7 +27,7 @@ class attribute
 public:
     explicit attribute(hid_t attribute_id_);
     attribute(hid_t loc_id_, const std::string& name_, const type& attr_type_,
-              const property_list& acpl,const property_list& aapl);
+              const property_list& acpl, const property_list& aapl);
     attribute(hid_t loc_id_, const std::string& name_);
     ~attribute();
     attribute(const attribute& other);
@@ -35,19 +35,19 @@ public:
 
     attribute& operator=(const attribute& other);
     attribute& operator=(attribute&& other);
-    
+
     void write(const void* value);
-    void read(void* value)const;
+    void read(void* value) const;
 
-    type datatype()const;
+    type datatype() const;
 
-    hid_t id()const;
+    hid_t id() const;
+
 private:
     hid_t attribute_id_;
 };
 
-bool is_attribute_existing(const object& loc,const std::string& name);
-
+bool is_attribute_existing(const object& loc, const std::string& name);
 }
 }
 

@@ -8,24 +8,23 @@
 namespace echelon
 {
 
-link::link(object origin_,std::string name_)
-:origin_{std::move(origin_)},name_{std::move(name_)}
+link::link(object origin_, std::string name_)
+: origin_{std::move(origin_)}, name_{std::move(name_)}
 {
 }
 
-object link::destination()const
+object link::destination() const
 {
-    return object(hdf5::object(origin_.id(),name()));
+    return object(hdf5::object(origin_.id(), name()));
 }
 
-object link::origin()const
+object link::origin() const
 {
     return origin_;
 }
 
-const std::string& link::name()const
+const std::string& link::name() const
 {
     return name_;
 }
-
 }

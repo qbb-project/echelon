@@ -13,24 +13,25 @@ namespace echelon
 namespace detail
 {
 
-template<typename... T>
+template <typename... T>
 struct and_;
 
-template<typename Front>
+template <typename Front>
 struct and_<Front> : std::integral_constant<bool, Front::value>
 {
 };
 
-template<typename Front,typename... Tail>
-struct and_<Front,Tail...> : std::integral_constant<bool, Front::value && and_<Tail...>::value>
+template <typename Front, typename... Tail>
+struct and_<Front, Tail...> : std::integral_constant<
+    bool, Front::value&& and_<Tail...>::value>
 {
 };
 
-template<typename... T>
-struct all_integral:
-    and_<std::is_integral<typename std::remove_reference<T>::type >...>
-{};
-
+template <typename... T>
+struct all_integral
+    : and_<std::is_integral<typename std::remove_reference<T>::type>...>
+{
+};
 }
 }
 

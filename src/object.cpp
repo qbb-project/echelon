@@ -19,22 +19,22 @@ namespace echelon
 {
 
 object::object(const hdf5::object& object_wrapper_)
-:object_wrapper_(object_wrapper_)
+: object_wrapper_(object_wrapper_)
 {
 }
 
 object::object(const group& object_)
-:object_wrapper_(object_.get_native_handle())
+: object_wrapper_(object_.get_native_handle())
 {
 }
 
 object::object(const dataset& object_)
-:object_wrapper_(object_.get_native_handle())
+: object_wrapper_(object_.get_native_handle())
 {
 }
 
 object::object(const scalar_dataset& object_)
-:object_wrapper_(object_.get_native_handle())
+: object_wrapper_(object_.get_native_handle())
 {
 }
 
@@ -43,7 +43,7 @@ object& object::operator=(const group& object_)
     using std::swap;
 
     object temp(object_);
-    std::swap(*this,temp);
+    std::swap(*this, temp);
 
     return *this;
 }
@@ -53,7 +53,7 @@ object& object::operator=(const dataset& object_)
     using std::swap;
 
     object temp(object_);
-    std::swap(*this,temp);
+    std::swap(*this, temp);
 
     return *this;
 }
@@ -63,48 +63,47 @@ object& object::operator=(const scalar_dataset& object_)
     using std::swap;
 
     object temp(object_);
-    std::swap(*this,temp);
+    std::swap(*this, temp);
 
     return *this;
 }
 
-object::operator group()const
+object::operator group() const
 {
-    if(get_object_type(id()) != object_type::group)
+    if (get_object_type(id()) != object_type::group)
         throw wrong_object_type_exception("wrong object type");
 
     return group(hdf5::group(object_wrapper_));
 }
 
-object::operator dataset()const
+object::operator dataset() const
 {
-    if(get_object_type(id()) != object_type::dataset)
+    if (get_object_type(id()) != object_type::dataset)
         throw wrong_object_type_exception("wrong object type");
 
     return dataset(hdf5::dataset(object_wrapper_));
 }
 
-object::operator scalar_dataset()const
+object::operator scalar_dataset() const
 {
-    if(get_object_type(id()) != object_type::scalar_dataset)
+    if (get_object_type(id()) != object_type::scalar_dataset)
         throw wrong_object_type_exception("wrong object type");
 
     return scalar_dataset(hdf5::dataset(object_wrapper_));
 }
 
-object_reference object::ref()const
+object_reference object::ref() const
 {
     return object_reference(*this);
 }
 
-hid_t object::id()const
+hid_t object::id() const
 {
     return object_wrapper_.id();
 }
 
-const hdf5::object& object::get_native_handle()const
+const hdf5::object& object::get_native_handle() const
 {
     return object_wrapper_;
 }
-
 }

@@ -21,28 +21,27 @@ scalar_dataset::scalar_dataset(const object& parent, const std::string& name,
 }
 
 scalar_dataset::scalar_dataset(hdf5::dataset dataset_wrapper_)
-:dataset_wrapper_(dataset_wrapper_),
- attributes(*this)
-{}
+: dataset_wrapper_(dataset_wrapper_), attributes(*this)
+{
+}
 
-type scalar_dataset::datatype()const
+type scalar_dataset::datatype() const
 {
     return type(dataset_wrapper_.datatype());
 }
 
-object_reference scalar_dataset::ref()const
+object_reference scalar_dataset::ref() const
 {
     return object_reference(*this);
 }
 
-hid_t scalar_dataset::id()const
+hid_t scalar_dataset::id() const
 {
     return dataset_wrapper_.id();
 }
 
-const hdf5::dataset& scalar_dataset::get_native_handle()const
+const hdf5::dataset& scalar_dataset::get_native_handle() const
 {
     return dataset_wrapper_;
 }
-
 }

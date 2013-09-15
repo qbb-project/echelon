@@ -21,7 +21,7 @@ namespace echelon
  *
  *  \tparam T value type of the array
  */
-template<typename T>
+template <typename T>
 class multi_array
 {
 public:
@@ -30,7 +30,7 @@ public:
 
     /** \brief Creates an empty array.
      */
-    multi_array()=default;
+    multi_array() = default;
 
     /** \brief Creates an array with a given shape.
      *
@@ -38,62 +38,70 @@ public:
      *  \param value_ value, which is used to initialize every element.
      *                By default this is the default constructed value.
      */
-    explicit multi_array(const std::vector<std::size_t>& shape_, const T& value_ = T())
-    :data_(std::accumulate(std::begin(shape_),std::end(shape_),
-                           std::size_t(1),std::multiplies<std::size_t>()),
-           value_),
-     shape_(shape_)
-    {}
-
-    /** \brief Accesses a specified element.
-     *
-     *  \tparam Indices Types of the indices. All indices should have integral type.
-     *
-     *  \pre Let \f$ \left(s_1,...s_{rank}\right) \f$ be the shape of the array
-     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of indices,
-     *       then \f$ rank = rank_2 \f$ and \f$ i_{i} < s_{i} \f$ for every \f$ i \in
-     *       \left\{ 0,...,rank-1 \right\} \f$ should hold.
-     *
-     *  \param indices Indices of the requested element
-     *
-     *  \return the specified element
-     */
-    template<typename... Indices>
-    const T& operator()(Indices... indices)const
+    explicit multi_array(const std::vector<std::size_t>& shape_,
+                         const T& value_ = T())
+    : data_(std::accumulate(std::begin(shape_), std::end(shape_),
+                            std::size_t(1), std::multiplies<std::size_t>()),
+            value_),
+      shape_(shape_)
     {
-        static_assert(detail::all_integral<Indices...>::value,
-                      "All indices must be of integral type.");
-
-        return data_[detail::map_indices(shape_,indices...)];
     }
 
     /** \brief Accesses a specified element.
      *
-     *  \tparam Indices Types of the indices. All indices should have integral type.
+     *  \tparam Indices Types of the indices. All indices should have integral
+     *type.
      *
      *  \pre Let \f$ \left(s_1,...s_{rank}\right) \f$ be the shape of the array
-     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of indices,
-     *       then \f$ rank = rank_2 \f$ and \f$ i_{i} < s_{i} \f$ for every \f$ i \in
+     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of
+     *indices,
+     *       then \f$ rank = rank_2 \f$ and \f$ i_{i} < s_{i} \f$ for every \f$
+     *i \in
      *       \left\{ 0,...,rank-1 \right\} \f$ should hold.
      *
      *  \param indices Indices of the requested element
      *
      *  \return the specified element
      */
-    template<typename... Indices>
+    template <typename... Indices>
+    const T& operator()(Indices... indices) const
+    {
+        static_assert(detail::all_integral<Indices...>::value,
+                      "All indices must be of integral type.");
+
+        return data_[detail::map_indices(shape_, indices...)];
+    }
+
+    /** \brief Accesses a specified element.
+     *
+     *  \tparam Indices Types of the indices. All indices should have integral
+     *type.
+     *
+     *  \pre Let \f$ \left(s_1,...s_{rank}\right) \f$ be the shape of the array
+     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of
+     *indices,
+     *       then \f$ rank = rank_2 \f$ and \f$ i_{i} < s_{i} \f$ for every \f$
+     *i \in
+     *       \left\{ 0,...,rank-1 \right\} \f$ should hold.
+     *
+     *  \param indices Indices of the requested element
+     *
+     *  \return the specified element
+     */
+    template <typename... Indices>
     T& operator()(Indices... indices)
     {
         static_assert(detail::all_integral<Indices...>::value,
                       "All indices must be of integral type.");
 
-        return data_[detail::map_indices(shape_,indices...)];
+        return data_[detail::map_indices(shape_, indices...)];
     }
 
     /** \brief Direct access to the underlying array.
      *
      *  \return a pointer to the underlying array.
      */
-    const T* data()const
+    const T* data() const
     {
         return data_.data();
     }
@@ -107,45 +115,53 @@ public:
         return data_.data();
     }
 
-    /** \brief Returns an iterator, which points to the first element of the flattened array.
+    /** \brief Returns an iterator, which points to the first element of the
+     *flattened array.
      *
-     *  \note The order, in which the elements appear in the flattened sequence, is not specified.
+     *  \note The order, in which the elements appear in the flattened sequence,
+     *is not specified.
      */
     typename std::vector<T>::iterator begin()
     {
         return data_.begin();
     }
 
-    /** \brief Returns an iterator, which points to the last element of the flattened array.
+    /** \brief Returns an iterator, which points to the last element of the
+     *flattened array.
      *
-     *  \note The order, in which the elements appear in the flattened sequence, is not specified.
+     *  \note The order, in which the elements appear in the flattened sequence,
+     *is not specified.
      */
     typename std::vector<T>::iterator end()
     {
         return data_.end();
     }
 
-    /** \brief Returns an iterator, which points to the first element of the flattened array.
+    /** \brief Returns an iterator, which points to the first element of the
+     *flattened array.
      *
-     *  \note The order, in which the elements appear in the flattened sequence, is not specified.
+     *  \note The order, in which the elements appear in the flattened sequence,
+     *is not specified.
      */
-    typename std::vector<T>::const_iterator begin()const
+    typename std::vector<T>::const_iterator begin() const
     {
         return data_.begin();
     }
 
-    /** \brief Returns an iterator, which points to the last element of the flattened array.
+    /** \brief Returns an iterator, which points to the last element of the
+     *flattened array.
      *
-     *  \note The order, in which the elements appear in the flattened sequence, is not specified.
+     *  \note The order, in which the elements appear in the flattened sequence,
+     *is not specified.
      */
-    typename std::vector<T>::const_iterator end()const
+    typename std::vector<T>::const_iterator end() const
     {
         return data_.end();
     }
 
     /** \brief The shape of the array.
      */
-    const std::vector<std::size_t>& shape()const
+    const std::vector<std::size_t>& shape() const
     {
         return shape_;
     }
@@ -156,16 +172,17 @@ public:
      */
     void reshape(const std::vector<std::size_t>& new_shape)
     {
-        data_.resize(std::accumulate(std::begin(new_shape),std::end(new_shape),
-                                     std::size_t(1),std::multiplies<std::size_t>()));
+        data_.resize(std::accumulate(std::begin(new_shape), std::end(new_shape),
+                                     std::size_t(1),
+                                     std::multiplies<std::size_t>()));
 
         this->shape_ = new_shape;
     }
+
 private:
     std::vector<T> data_;
     std::vector<std::size_t> shape_;
 };
-
 }
 
 #endif

@@ -70,7 +70,6 @@ public:
      */
     static type double_();
 
-
     /** \brief Returns a handle to the primitive type 'string'.
      */
     static type string();
@@ -78,7 +77,6 @@ public:
     /** \brief Returns a handle to the primitive type 'object reference'.
      */
     static type object_reference();
-
 
     /** \brief Creates a new compound type using a given layout.
      *
@@ -88,18 +86,18 @@ public:
      */
     static type compound_type(const type_layout& layout);
 
-
     /** \brief Clones the type.
      *
      *  \post t == t.clone()
      *
      *  \return a handle to the new type
      */
-    type clone()const;
+    type clone() const;
 
     /** \brief The underlying HDF5 low-level handle.
      */
-    const hdf5::type& get_native_type()const;
+    const hdf5::type& get_native_type() const;
+
 private:
     hdf5::type type_wrapper_;
 };
@@ -111,8 +109,10 @@ private:
  *  - Types with a different type class are not equal.
  *  - Two compound types are equal, if and only if:
  *      - They have the same number of members.
- *      - Each member of the first type is equal to the corresponding member of the second type.
- *      - The name of each member of the first type is equal to the name of the corresponding member of the second type.
+ *      - Each member of the first type is equal to the corresponding member of
+ *the second type.
+ *      - The name of each member of the first type is equal to the name of the
+ *corresponding member of the second type.
  *
  *  \relates echelon::type
  *
@@ -121,7 +121,7 @@ private:
  *
  *  \return true, if both types are equal, and false otherwise
  */
-bool operator==(const type& lhs,const type& rhs);
+bool operator==(const type& lhs, const type& rhs);
 
 /** \brief Tests two types for inequality.
  *
@@ -138,7 +138,7 @@ bool operator==(const type& lhs,const type& rhs);
  *
  *  \return true, if both types are not equal, and false otherwise
  */
-bool operator!=(const type& lhs,const type& rhs);
+bool operator!=(const type& lhs, const type& rhs);
 
 /** \brief Description of a compound type's internal structure.
  */
@@ -158,7 +158,8 @@ public:
          */
         element(const std::string& name, const type& type, std::size_t offset)
         : name(name), type_(type.clone()), offset(offset)
-        {}
+        {
+        }
 
         /** \brief name of the member
          */
@@ -173,13 +174,14 @@ public:
         std::size_t offset;
     };
 
-    /** \brief Constructs an empty layout for a compound type with a given total size.
+    /** \brief Constructs an empty layout for a compound type with a given total
+     *size.
      *
      *  \param size_ total size of the compound type in bytes
      */
-    explicit type_layout(std::size_t size_)
-    : size_(size_)
-    {}
+    explicit type_layout(std::size_t size_) : size_(size_)
+    {
+    }
 
     /** \brief Adds a new member to the compound type.
      *
@@ -197,7 +199,8 @@ public:
      */
     typedef std::vector<element>::const_iterator iterator;
 
-    /** Returns an iterator, which points to the first member within the compound type.
+    /** Returns an iterator, which points to the first member within the
+     * compound type.
      */
     iterator begin() const
     {
@@ -206,7 +209,8 @@ public:
         return begin(elements_);
     }
 
-    /** Returns an iterator, which points beyond the last member within the compound type.
+    /** Returns an iterator, which points beyond the last member within the
+     * compound type.
      */
     iterator end() const
     {
@@ -221,11 +225,11 @@ public:
     {
         return size_;
     }
+
 private:
     std::vector<element> elements_;
     std::size_t size_;
 };
-
 }
 
 #endif
