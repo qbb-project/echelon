@@ -77,8 +77,6 @@ find_package(Doxygen)
 find_package(Sphinx)
 
 if(SPHINX_FOUND)
-
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
  
   if(NOT DEFINED SPHINX_THEME)
     set(SPHINX_THEME default)
@@ -111,6 +109,8 @@ if(SPHINX_FOUND)
 endif(SPHINX_FOUND)
         
 if(DOXYGEN_FOUND)
+        
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
         
   add_custom_target(api_doc
          ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
