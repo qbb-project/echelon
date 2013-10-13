@@ -194,37 +194,37 @@ public:
     /** \brief Slices the dataset.
      *
      *  The boundaries of the slice within the dataset are specified by index
-     *ranges, which can be
+     *  ranges, which can be
      *  constructed using echelon::range.
      *  Currently the following index range specifiers are supported (N and M
-     *are non-negative integral values
+     *  are non-negative integral values
      *  and step is a positive integral value):
      *
      *  index range     | semantic
      *  ----------------|-------------------------------------------------------------------------------------------
      *  range(N,M)      | restrict the dimension to the interval \f$ [N,M) \f$.
      *  range(N,M,step) | restrict the dimension to the interval \f$ [N,M) \f$
-     *and only include every step-th value.
+     *  and only include every step-th value.
      *  N               | restrict the dimension to the single value N. This is
-     *equivalent to range(N,N+1)
+     *  equivalent to range(N,N+1)
      *  _               | do not restrict the dimension, but use the full range
-     *of indices
+     *  of indices
      *
      *  Within the range syntax the wildcard _ can be used as the lower or upper
-     *bound to
+     *  bound to
      *  specifiy, that the dimension should not be restricted through this
-     *bound.
+     *  bound.
      *
      *  The number of index range specifiers must match the rank of the dataset.
      *
      *  If an index range only contains one value, the rank of the slice is
-     *reduced by one.
+     *  reduced by one.
      *  If none of the index range satisfies this condition, the rank of the
-     *slice equals the rank
+     *  slice equals the rank
      *  of the dataset.
      *
      *  The following example shows, how a slice can be used to access a portion
-     *of a dataset:
+     *  of a dataset:
      *  \code{.cpp}
      *
      *  auto foo = some_group.create_dataset<double>("foo",{10,10,10});
@@ -232,27 +232,26 @@ public:
      *  multi_array<double> data({6,10},1.0);
      *
      *  // set the first dimension to 2 and clamp the second dimension between 2
-     *and 8.
-     *  // Afterwards the data is written into the 2-slice.
-     *  foo.slice(2,range(2,8),_) <<= data;
+     *  // and 8. Afterwards the data is written into the 2-slice.
+     *  foo(2,range(2,8),_) <<= data;
      *
      *  \endcode
      *
      *  It should be noted, that only the sliced portion of the dataset is
-     *loaded into the main memory.
+     *  loaded into the main memory.
      *  Therefore slicing is an efficient way to work on large datasets and even
-     *allows us to deal with datasets
+     *  allows us to deal with datasets
      *  , which do not fit into the main memory.
      *
      *  At the time of writing, \ref slice does support most operations, which
-     *are valid on a dataset.
+     *  are valid on a dataset.
      *
      *  \tparam Args types of the index range specifiers
      *
      *  \param args index range specifiers
      */
     template <typename... Args>
-    slice slice(Args... args) const
+    slice operator()(Args... args) const
     {
         std::vector<hsize_t> current_shape = shape();
 

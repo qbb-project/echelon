@@ -26,22 +26,22 @@ BOOST_FIXTURE_TEST_CASE( slicing_test, basic_fixture )
       
       std::vector<double> subrange1;
       
-      subrange1 <<= ds.slice(range(3,7));
+      subrange1 <<= ds(range(3,7));
       
       
       std::vector<double> subrange2;
       
-      subrange2 <<= ds.slice(range(_,5));
+      subrange2 <<= ds(range(_,5));
       
       
       std::vector<double> subrange3;
       
-      subrange3 <<= ds.slice(range(5,_));
+      subrange3 <<= ds(range(5,_));
       
       
       std::vector<double> subrange4;
       
-      subrange4 <<= ds.slice(_);    
+      subrange4 <<= ds(_);    
        
       BOOST_CHECK_EQUAL_COLLECTIONS(begin(subrange1),end(subrange1),begin(data) + 3,begin(data) + 7);
       BOOST_CHECK_EQUAL_COLLECTIONS(begin(subrange2),end(subrange2),begin(data),begin(data) + 5);
