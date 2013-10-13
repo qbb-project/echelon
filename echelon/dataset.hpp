@@ -203,12 +203,9 @@ public:
      *  index range     | semantic
      *  ----------------|-------------------------------------------------------------------------------------------
      *  range(N,M)      | restrict the dimension to the interval \f$ [N,M) \f$.
-     *  range(N,M,step) | restrict the dimension to the interval \f$ [N,M) \f$
-     *  and only include every step-th value.
-     *  N               | restrict the dimension to the single value N. This is
-     *  equivalent to range(N,N+1)
-     *  _               | do not restrict the dimension, but use the full range
-     *  of indices
+     *  range(N,M,step) | restrict the dimension to the interval \f$ [N,M) \f$ and only include every step-th value.
+     *  N               | restrict the dimension to the single value N. This is equivalent to range(N,N+1)
+     *  _               | do not restrict the dimension, but use the full range of indices
      *
      *  Within the range syntax the wildcard _ can be used as the lower or upper
      *  bound to
