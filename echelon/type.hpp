@@ -21,6 +21,10 @@ class type_layout;
 class type
 {
 public:
+    /** \brief Type of the underlying HDF5 low-level handle
+     */
+    using native_handle_type = hdf5::type;
+    
     explicit type(hdf5::type type_wrapper_);
 
     /** \brief Returns a handle to the primitive type 'char'.
@@ -97,7 +101,7 @@ public:
 
     /** \brief The underlying HDF5 low-level handle.
      */
-    const hdf5::type& get_native_type() const;
+    const native_handle_type& native_handle() const;
 
 private:
     hdf5::type type_wrapper_;

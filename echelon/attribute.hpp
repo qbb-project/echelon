@@ -23,6 +23,10 @@ namespace echelon
 class attribute
 {
 public:
+    /** \brief Type of the underlying HDF5 low-level handle
+     */
+    using native_handle_type = hdf5::attribute;
+    
     attribute(const object& parent, const std::string& name,
               const type& datatype);
     attribute(const object& parent, const std::string& name);
@@ -57,13 +61,9 @@ public:
      */
     type datatype() const;
 
-    /** \brief The ID, which corresponds to the underlying HDF5 object.
-     */
-    hid_t id() const;
-
     /** \brief The underlying HDF5 low-level handle.
      */
-    const hdf5::attribute& get_native_handle() const;
+    const native_handle_type& native_handle() const;
 
 private:
     hdf5::attribute attribute_wrapper_;

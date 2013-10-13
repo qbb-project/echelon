@@ -61,7 +61,7 @@ hid_t dimension_scale::id() const
     return underlying_dataset_.id();
 }
 
-void attach_dimension_scale(dimension_scale& dim_scale, dataset& to,
+void attach_dimension_scale(const dimension_scale& dim_scale, const dataset& to,
                             unsigned int dimension)
 {
     if (H5DSattach_scale(to.id(), dim_scale.id(), dimension) < 0)

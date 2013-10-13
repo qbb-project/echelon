@@ -56,6 +56,10 @@ class object_reference;
 class object
 {
 public:
+    /** \brief Type of the underlying HDF5 low-level handle
+     */
+    using native_handle_type = hdf5::object;
+    
     explicit object(hdf5::object object_wrapper_);
 
     /** \brief Constructs a handle from an pre-existing group handle.
@@ -140,13 +144,9 @@ public:
      */
     object_reference ref() const;
 
-    /** \brief The ID, which corresponds to the underlying HDF5 object.
-     */
-    hid_t id() const;
-
     /** \brief The underlying HDF5 low-level handle.
      */
-    const hdf5::object& get_native_handle() const;
+    const native_handle_type& native_handle() const;
 
 private:
     hdf5::object object_wrapper_;

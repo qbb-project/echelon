@@ -85,7 +85,7 @@ type type::compound_type(const type_layout& layout)
     for (auto& element : layout)
     {
         compound_type.insert_member(element.name, element.offset,
-                                    element.type_.get_native_type());
+                                    element.type_.native_handle());
     }
 
     return type(std::move(compound_type));
@@ -100,18 +100,18 @@ type type::clone() const
     return type(type_wrapper_.clone());
 }
 
-const hdf5::type& type::get_native_type() const
+const type::native_handle_type& type::native_handle() const
 {
     return type_wrapper_;
 }
 
 bool operator==(const type& lhs, const type& rhs)
 {
-    return lhs.get_native_type() == rhs.get_native_type();
+    return lhs.native_handle() == rhs.native_handle();
 }
 
 bool operator!=(const type& lhs, const type& rhs)
 {
-    return lhs.get_native_type() != rhs.get_native_type();
+    return lhs.native_handle() != rhs.native_handle();
 }
 }

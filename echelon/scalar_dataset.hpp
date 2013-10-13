@@ -26,6 +26,10 @@ namespace echelon
 class scalar_dataset
 {
 public:
+    /** \brief Type of the underlying HDF5 low-level handle
+     */
+    using native_handle_type = hdf5::dataset;
+    
     scalar_dataset(const object& parent, const std::string& name,
                    const type& datatype);
 
@@ -65,13 +69,9 @@ public:
      */
     object_reference ref() const;
 
-    /** \brief The ID, which corresponds to the underlying HDF5 object.
-     */
-    hid_t id() const;
-
     /** \brief The underlying HDF5 low-level handle.
      */
-    const hdf5::dataset& get_native_handle() const;
+    const native_handle_type& native_handle() const;
 
 private:
     hdf5::dataset dataset_wrapper_;

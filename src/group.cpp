@@ -13,7 +13,7 @@ namespace echelon
 {
 
 group::group(const file& loc, const std::string& name)
-: group_wrapper_(loc.id(), name, hdf5::default_property_list), attributes(*this)
+: group_wrapper_(loc.native_handle().id(), name, hdf5::default_property_list), attributes(*this)
 {
 }
 
@@ -27,13 +27,13 @@ group::group(const object& parent, const std::string& name, creation_mode mode)
         link_creation_properties.set_char_encoding(H5T_CSET_UTF8);
 
         group_wrapper_ = hdf5::group(
-            parent.id(), name, link_creation_properties,
+            parent.native_handle().id(), name, link_creation_properties,
             hdf5::default_property_list, hdf5::default_property_list);
     }
     else
     {
         group_wrapper_ =
-            hdf5::group(parent.id(), name, hdf5::default_property_list);
+            hdf5::group(parent.native_handle().id(), name, hdf5::default_property_list);
     }
 }
 
@@ -62,7 +62,7 @@ scalar_dataset group::create_scalar_dataset(const std::string& name,
 
 object group::operator[](const std::string& name) const
 {
-    return object(hdf5::object(id(), name));
+    return object(hdf5::object(native_handle().id(), name));
 }
 
 void group::remove(const std::string& name) const
@@ -75,7 +75,7 @@ group group::require_group(const std::string& name)
     if (exists(*this, name) &&
         get_object_type_by_name(*this, name) == object_type::group)
     {
-        return group(hdf5::group(id(), name, hdf5::default_property_list));
+        return group(hdf5::group(native_handle().id(), name, hdf5::default_property_list));
     }
     else
     {
@@ -90,7 +90,7 @@ dataset group::require_dataset(const std::string& name, const type& datatype,
     if (exists(*this, name) &&
         get_object_type_by_name(*this, name) == object_type::dataset)
     {
-        dataset ds(hdf5::dataset(id(), name, hdf5::default_property_list));
+        dataset ds(hdf5::dataset(native_handle().id(), name, hdf5::default_property_list));
 
         if (ds.shape() != dims)
             throw broken_contract_exception("The required shape doesn't "
@@ -116,7 +116,7 @@ scalar_dataset group::require_scalar_dataset(const std::string& name,
         get_object_type_by_name(*this, name) == object_type::scalar_dataset)
     {
         scalar_dataset ds(
-            hdf5::dataset(id(), name, hdf5::default_property_list));
+            hdf5::dataset(native_handle().id(), name, hdf5::default_property_list));
 
         if (ds.datatype() != datatype)
             throw broken_contract_exception(
@@ -175,12 +175,7 @@ object_reference group::ref() const
     return object_reference(object(*this));
 }
 
-hid_t group::id() const noexcept
-{
-    return group_wrapper_.id();
-}
-
-const hdf5::group& group::get_native_handle() const
+const group::native_handle_type& group::native_handle() const
 {
     return group_wrapper_;
 }

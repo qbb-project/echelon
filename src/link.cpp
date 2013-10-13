@@ -15,7 +15,7 @@ link::link(object origin_, std::string name_)
 
 object link::destination() const
 {
-    return object(hdf5::object(origin_.id(), name()));
+    return object(hdf5::object(origin_.native_handle().id(), name()));
 }
 
 object link::origin() const

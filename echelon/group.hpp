@@ -68,6 +68,10 @@ private:
 class group
 {
 public:
+    /** \brief Type of the underlying HDF5 low-level handle
+     */
+    using native_handle_type = hdf5::group;
+    
     friend class file;
 
     explicit group(hdf5::group group_wrapper_);
@@ -380,7 +384,7 @@ public:
             get_object_type_by_name(*this, name) == object_type::scalar_dataset)
         {
             scalar_dataset ds(
-                hdf5::dataset(id(), name, hdf5::default_property_list));
+                hdf5::dataset(native_handle().id(), name, hdf5::default_property_list));
 
             if (ds.datatype() != datatype)
                 throw broken_contract_exception(
@@ -425,13 +429,9 @@ public:
      */
     object_reference ref() const;
 
-    /** \brief The ID, which corresponds to the underlying HDF5 object.
-     */
-    hid_t id() const noexcept;
-
     /** \brief The underlying HDF5 low-level handle.
      */
-    const hdf5::group& get_native_handle() const;
+    const native_handle_type& native_handle() const;
 
 private:
     friend class constructor_access;

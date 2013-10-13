@@ -36,7 +36,7 @@ dataset::dataset(const object& parent, const std::string& name,
     link_creation_properties.set_char_encoding(H5T_CSET_UTF8);
 
     dataset_wrapper_ =
-        hdf5::dataset(parent.id(), name, datatype.get_native_type(),
+        hdf5::dataset(parent.native_handle().id(), name, datatype.native_handle(),
                       hdf5::dataspace(shape), link_creation_properties,
                       dataset_creation_properties, hdf5::default_property_list);
 }
@@ -67,17 +67,7 @@ object_reference dataset::ref() const
     return object_reference(*this);
 }
 
-hid_t dataset::id() const
-{
-    return dataset_wrapper_.id();
-}
-
-const hdf5::dataset& dataset::get_native_handle() const
-{
-    return dataset_wrapper_;
-}
-
-hdf5::dataset& dataset::get_native_handle()
+const dataset::native_handle_type& dataset::native_handle() const
 {
     return dataset_wrapper_;
 }

@@ -48,13 +48,13 @@ object_type get_object_type(hid_t obj_id)
 object_type get_object_type_by_name(const object& loc, const std::string& name)
 {
     H5O_info_t obj_info;
-    H5Oget_info_by_name(loc.id(), name.c_str(), &obj_info, H5P_DEFAULT);
+    H5Oget_info_by_name(loc.native_handle().id(), name.c_str(), &obj_info, H5P_DEFAULT);
 
     if (obj_info.type == H5O_TYPE_GROUP)
         return object_type::group;
     else if (obj_info.type == H5O_TYPE_DATASET)
     {
-        hdf5::dataset ds(loc.id(), name, hdf5::default_property_list);
+        hdf5::dataset ds(loc.native_handle().id(), name, hdf5::default_property_list);
 
         hdf5::dataspace space = ds.get_space();
 
@@ -82,6 +82,6 @@ object_type get_object_type_by_name(const object& loc, const std::string& name)
 
 bool exists(const object& loc, const std::string& name)
 {
-    return hdf5::exists(loc.get_native_handle(), name);
+    return hdf5::exists(loc.native_handle(), name);
 }
 }

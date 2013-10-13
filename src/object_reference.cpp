@@ -17,8 +17,8 @@ object_reference::object_reference() : reference_wrapper_(), any_valid_handle_()
 }
 
 object_reference::object_reference(const object& referenced_object)
-: reference_wrapper_(referenced_object.id()),
-  any_valid_handle_(referenced_object.get_native_handle())
+: reference_wrapper_(referenced_object.native_handle().id()),
+  any_valid_handle_(referenced_object.native_handle())
 {
 }
 

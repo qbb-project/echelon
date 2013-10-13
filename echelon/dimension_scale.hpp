@@ -24,6 +24,10 @@ class type;
 class dimension_scale
 {
 public:
+    /** \brief Type of the underlying HDF5 low-level handle
+     */
+    using native_handle_type = hdf5::dimension_scale;
+    
     dimension_scale(const dataset& associated_dataset,
                     const std::string& dataset_name, const type& datatype,
                     const std::vector<hsize_t>& extent,
@@ -60,7 +64,7 @@ public:
                         sink);
     }
 
-    hdf5::dimension_scale& get_native_handle();
+    const native_handle_type& native_handle() const;
 
 private:
     hdf5::dimension_scale dim_scale_;

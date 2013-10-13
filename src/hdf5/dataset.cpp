@@ -105,7 +105,7 @@ dataset& dataset::operator=(dataset&& other)
 
 void dataset::write(const type& mem_type, const dataspace& mem_space,
                     const dataspace& file_space,
-                    const property_list& xfer_plist, const void* buf)
+                    const property_list& xfer_plist, const void* buf) const
 {
     if (H5Dwrite(id(), mem_type.id(), mem_space.id(), file_space.id(),
                  xfer_plist.id(), buf) < 0)
@@ -121,7 +121,7 @@ void dataset::read(const type& mem_type, const dataspace& mem_space,
         throw_on_hdf5_error();
 }
 
-void dataset::write(const void* value)
+void dataset::write(const void* value) const
 {
     type datatype = this->datatype();
     dataspace space = get_space();
@@ -137,7 +137,7 @@ void dataset::read(void* value) const
     read(datatype, space, space, default_property_list, value);
 }
 
-void dataset::set_extent(const std::vector<hsize_t>& dims)
+void dataset::set_extent(const std::vector<hsize_t>& dims) const
 {
     if (H5Dset_extent(id(), dims.data()) < 0)
         throw_on_hdf5_error();
@@ -200,7 +200,7 @@ std::string dataset::label(unsigned int index) const
     return std::string(label.data());
 }
 
-void dataset::relabel(unsigned int index, const std::string& new_label)
+void dataset::relabel(unsigned int index, const std::string& new_label) const
 {
     if (H5DSset_label(id(), index, new_label.c_str()) < 0)
         throw_on_hdf5_error();

@@ -122,6 +122,10 @@ private:
 class dataset
 {
 public:
+    /** \brief Type of the underlying HDF5 low-level handle
+     */
+    using native_handle_type = hdf5::dataset;
+    
     dataset(const object& parent, const std::string& name, const type& datatype,
             const std::vector<hsize_t>& shape, int comp_level,
             const std::vector<hsize_t> chunk_shape);
@@ -263,19 +267,10 @@ public:
     /** \brief A HDF5 object reference to this dataset.
      */
     object_reference ref() const;
-
-    /** \brief The ID, which corresponds to the underlying HDF5 object.
-     */
-    hid_t id() const;
-
+    
     /** \brief The underlying HDF5 low-level handle.
      */
-    const hdf5::dataset& get_native_handle() const;
-
-    /** \brief The underlying HDF5 low-level handle.
-     */
-    hdf5::dataset& get_native_handle();
-
+    const native_handle_type& native_handle() const;
 private:
     hdf5::dataset dataset_wrapper_;
 

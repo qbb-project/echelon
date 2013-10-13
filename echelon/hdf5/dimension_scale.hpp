@@ -45,7 +45,7 @@ private:
     dataset underlying_dataset_;
 };
 
-void attach_dimension_scale(dimension_scale& dim_scale, dataset& to,
+void attach_dimension_scale(const dimension_scale& dim_scale, const dataset& to,
                             unsigned int dimension);
 }
 }
