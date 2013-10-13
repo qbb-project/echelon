@@ -6,6 +6,8 @@
 #include <echelon/not_implemented_exception.hpp>
 #include <echelon/container_adaption.hpp>
 
+#include <echelon/utility/macros.hpp>
+
 #include <vector>
 #include <string>
 #include <utility>
@@ -149,9 +151,11 @@ inline void operator<<=(grid<DimensionScaleValueType, DataValueType>& sink,
     throw not_implemented_exception(
         "Reading grids from HDF5 files is currently not implemented.");
 
-    for (const auto& dimension : source.dimensions)
+    //FIXME: implement this
+    
+    /*for (const auto& dimension : source.dimensions)
     {
-    }
+    }*/
 
     sink.values() <<= source;
 }
