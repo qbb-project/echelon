@@ -17,6 +17,8 @@
 #include <echelon/dataset_dimensions.hpp>
 #include <echelon/data_transfer_broker.hpp>
 
+#include <echelon/utility/macros.hpp>
+
 #include <vector>
 //  Copyright (c) 2012 Christopher Hinz
 //
@@ -75,6 +77,8 @@ private:
     static totally_bound_range_t get_boundaries(hsize_t extend,
                                                 range_t<Base, unbound_t> r)
     {
+        //FIXME: add a bound check
+        
         return range(r.base(), extend);
     }
 
@@ -82,6 +86,8 @@ private:
     static totally_bound_range_t get_boundaries(hsize_t,
                                                 range_t<unbound_t, Bound> r)
     {
+        //FIXME: add a bound check
+        
         return range(0, r.bound());
     }
 
@@ -92,11 +98,13 @@ private:
             std::is_integral<Base>::value && std::is_integral<Bound>::value,
             "only integral values are allowed in slicing expressions");
 
+        //FIXME: add a bound check
+        
         return r;
     }
 
     template <typename T>
-    static totally_bound_range_t get_boundaries(hsize_t extend, T value)
+    static totally_bound_range_t get_boundaries(hsize_t ECHELON_UNUSED_RELEASE(extend), T value)
     {
         static_assert(
             std::is_integral<T>::value,

@@ -6,6 +6,8 @@
 #include <echelon/hdf5/group.hpp>
 #include <echelon/hdf5/error_handling.hpp>
 
+#include <echelon/utility/macros.hpp>
+
 #include <utility>
 #include <exception>
 
@@ -31,7 +33,7 @@ struct iterate_proxy_data
 extern "C" {
 
 static herr_t kubus_hdf5_iterate_proxy_op(hid_t g_id, const char* name,
-                                          const H5L_info_t* info,
+                                          const H5L_info_t* ECHELON_UNUSED(info),
                                           void* op_data) noexcept
 {
     iterate_proxy_data& data = *static_cast<iterate_proxy_data*>(op_data);
@@ -64,7 +66,7 @@ struct visit_objects_proxy_data
 extern "C" {
 
 static herr_t kubus_hdf5_visit_objects_proxy_op(hid_t g_id, const char* name,
-                                                const H5O_info_t* info,
+                                                const H5O_info_t* ECHELON_UNUSED(info),
                                                 void* op_data) noexcept
 {
     visit_objects_proxy_data& data =
