@@ -124,7 +124,7 @@ public:
      *         _chunk_shape        | shape of a dataset chunk
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
-     *value type
+     *            value type
      *  \tparam Options options type list
      *
      *  \return a handle to the new dataset
@@ -151,7 +151,7 @@ public:
      *  \param name name of the new dataset
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
-     *value type
+     *            value type
      *
      *  \return a handle to the new scalar dataset
      */
@@ -168,7 +168,7 @@ public:
      *  \param value value, which should be used to intialize the dataset
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
-     *value type
+     *            value type
      *
      *  \return a handle to the new scalar dataset
      */
@@ -199,23 +199,23 @@ public:
     void remove(const std::string& name) const;
 
     /** \brief Returns the requested group, if it already exists, otherwise a
-     *new group is created.
+     *         new group is created.
      *
      *  \param name name of the requested group
      *
      *  \return the requested group, if it is already existing, or a new group
-     *otherwise
+     *          otherwise
      */
     group require_group(const std::string& name);
 
     /** \brief Returns the requested dataset, if it already exists, otherwise a
-     *new dataset is created.
+     *         new dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
      *  This method allows the user to make a contract with the library,
      *  that an object with certain properties exists after the method has
-     *terminated.
+     *  terminated.
      *
      *  If the dataset already exists and its shape or datatype differ
      *  from their requested value and an exception is thrown,
@@ -233,10 +233,10 @@ public:
      *  \tparam Options options type list
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
-     *fulfilled.
+     *                                    fulfilled.
      *
      *  \return the requested dataset, if it is already existing, or a new
-     *dataset otherwise
+     *          dataset otherwise
      */
     template <typename... Options>
     dataset require_dataset(const std::string& name, const type& datatype,
@@ -255,13 +255,13 @@ public:
     }
 
     /** \brief Returns the requested dataset, if it already exists, otherwise a
-     *new dataset is created.
+     *         new dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
      *  This method allows the user to make a contract with the library,
      *  that an object with certain properties exists after the method has
-     *terminated.
+     *  terminated.
      *
      *  If the dataset already exists and its shape or datatype differ
      *  from their requested value and an exception is thrown,
@@ -276,14 +276,14 @@ public:
      *         _chunk_shape        | shape of a dataset chunk
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
-     *value type
+     *            value type
      *  \tparam Options options type list
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
-     *fulfilled.
+     *                                    fulfilled.
      *
      *  \return the requested dataset, if it is already existing, or a new
-     *dataset otherwise
+     *          dataset otherwise
      */
     template <typename T, typename... Options>
     dataset require_dataset(const std::string& name,
@@ -294,13 +294,13 @@ public:
     }
 
     /** \brief Returns the requested scalar dataset, if it already exists,
-     *otherwise a new scalar dataset is created.
+     *         otherwise a new scalar dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
      *  This method allows the user to make a contract with the library,
      *  that an object with certain properties exists after the method has
-     *terminated.
+     *  terminated.
      *
      *  If the scalar dataset already exists and its datatype differs
      *  from its requested value and an exception is thrown,
@@ -310,22 +310,22 @@ public:
      *  \param datatype value type of the new dataset
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
-     *fulfilled.
+     *                                    fulfilled.
      *
      *  \return the requested scalar dataset, if it is already existing, or a
-     *new scalar dataset otherwise
+     *          new scalar dataset otherwise
      */
     scalar_dataset require_scalar_dataset(const std::string& name,
                                           const type& datatype);
 
     /** \brief Returns the requested scalar dataset, if it already exists,
-     *otherwise the scalar dataset is created.
+     *         otherwise the scalar dataset is created.
      *
      *  The new dataset is created using the given parameters.
      *
      *  This method allows the user to make a contract with the library,
      *  that an object with certain properties exists after the method has
-     *terminated.
+     *  terminated.
      *
      *  If the scalar dataset already exists and its datatype differs
      *  from its requested value and an exception is thrown,
@@ -334,13 +334,13 @@ public:
      *  \param name name of the requested dataset
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
-     *value type
+     *            value type
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
-     *fulfilled.
+     *                                    fulfilled.
      *
      *  \return the requested scalar dataset, if it is already existing, or a
-     *new scalar dataset otherwise
+     *          new scalar dataset otherwise
      */
     template <typename T>
     scalar_dataset require_scalar_dataset(const std::string& name)
@@ -349,14 +349,14 @@ public:
     }
 
     /** \brief Returns the requested scalar dataset, if it already exists,
-     *otherwise a new scalar dataset is created.
+     *         otherwise a new scalar dataset is created.
      *
      *  The new dataset is created using the given parameters and is initialized
-     *with the given value.
+     *  with the given value.
      *
      *  This method allows the user to make a contract with the library,
      *  that an object with certain properties exists after the method has
-     *terminated.
+     *  terminated.
      *
      *  If the scalar dataset already exists and its datatype differs
      *  from its requested value and an exception is thrown,
@@ -366,13 +366,13 @@ public:
      *  \param value value, which should be used to intialize the dataset
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
-     *value type
+     *            value type
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
-     *fulfilled.
+     *                                    fulfilled.
      *
      *  \return the requested scalar dataset, if it is already existing, or a
-     *new scalar dataset otherwise
+     *          new scalar dataset otherwise
      */
     template <typename T>
     scalar_dataset require_scalar_dataset(const std::string& name,

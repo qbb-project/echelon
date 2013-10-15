@@ -42,10 +42,10 @@ private:
 };
 
 /** \brief Attribute manager, which should be embedded into a parent object,
- *which supports attributes.
+ *         which supports attributes.
  *
  * \tparam Parent Type of the object into which the attribute repository is
- *embedded.
+ *                embedded.
  */
 template <typename Parent>
 class attribute_repository
@@ -70,7 +70,7 @@ public:
     /** \brief Creates a new attribute.
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
-     *value type
+     *            value type
      *
      *  \param name name of the new attribute
      *
@@ -85,7 +85,7 @@ public:
     /** \brief Creates a new attribute and initializes it with a given value.
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
-     *value type
+     *            value type
      *
      *  \param name name of the new attribute
      *  \param value value, which is used to initialize the attribute
@@ -125,13 +125,13 @@ public:
     }
 
     /** \brief Returns the requested attribute, if it already exists, otherwise
-     *a new attribute is created.
+     *         a new attribute is created.
      *
      *  The new attribute is created using the given parameters.
      *
      *  This method allows the user to make a contract with the library,
      *  that an object with certain properties exists after the method has
-     *terminated.
+     *  terminated.
      *
      *  If the attribute already exists and its datatype differs
      *  from its requested value and an exception is thrown,
@@ -141,10 +141,10 @@ public:
      *  \param datatype value type of the new attribute
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
-     *fulfilled.
+     *                                    fulfilled.
      *
      *  \return the requested attribute, if it is already existing, or a new
-     *attribute otherwise
+     *          attribute otherwise
      */
     attribute require(const std::string& name, const type& datatype)
     {
@@ -166,13 +166,13 @@ public:
     }
 
     /** \brief Returns the requested attribute, if it already exists, otherwise
-     *the attribute is created.
+     *         the attribute is created.
      *
      *  The new attribute is created using the given parameters.
      *
      *  This method allows the user to make a contract with the library,
      *  that an object with certain properties exists after the method has
-     *terminated.
+     *  terminated.
      *
      *  If the attribute already exists and its datatype differs
      *  from its requested value and an exception is thrown,
@@ -181,13 +181,13 @@ public:
      *  \param name name of the requested attribute
      *
      *  \tparam T C++ type, which should be used to determine the attribute's
-     *value type
+     *            value type
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
-     *fulfilled.
+     *                                    fulfilled.
      *
      *  \return the requested attribute, if it is already existing, or a new
-     *attribute otherwise
+     *          attribute otherwise
      */
     template <typename T>
     attribute require(const std::string& name)
@@ -196,14 +196,14 @@ public:
     }
 
     /** \brief Returns the requested attribute, if it already exists, otherwise
-     *a new attribute is created.
+     *         a new attribute is created.
      *
      *  The new attribute is created using the given parameters and is
-     *initialized with the given value.
+     *  initialized with the given value.
      *
      *  This method allows the user to make a contract with the library,
      *  that an object with certain properties exists after the method has
-     *terminated.
+     *  terminated.
      *
      *  If the attribute already exists and its datatype differs
      *  from its requested value and an exception is thrown,
@@ -213,13 +213,13 @@ public:
      *  \param value value, which should be used to intialize the attribute
      *
      *  \tparam T C++ type, which should be used to determine the attribute's
-     *value type
+     *            value type
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
-     *fulfilled.
+     *                                    fulfilled.
      *
      *  \return the requested attribute, if it is already existing, or a new
-     *attribute otherwise
+     *          attribute otherwise
      */
     template <typename T>
     attribute require(const std::string& name, const T& value)

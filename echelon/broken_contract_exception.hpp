@@ -14,7 +14,7 @@ namespace echelon
 {
 
 /** \brief Exception, which is thrown, if a require_*-type method can't fulfill
- * the contract.
+ *         the contract.
  */
 class broken_contract_exception : public std::exception
 {

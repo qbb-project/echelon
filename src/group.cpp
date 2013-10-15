@@ -87,10 +87,11 @@ dataset group::require_dataset(const std::string& name, const type& datatype,
                                const std::vector<hsize_t>& dims, int comp_level,
                                const std::vector<hsize_t> chunk_shape)
 {
+    //FIXME: add a more precise type test here
     if (exists(*this, name) &&
-        get_object_type_by_name(*this, name) == object_type::dataset)
+        get_object_type_by_name(*this, name) == object_type::group)
     {
-        dataset ds(hdf5::dataset(native_handle().id(), name, hdf5::default_property_list));
+        dataset ds(hdf5::group(native_handle().id(), name, hdf5::default_property_list));
 
         if (ds.shape() != dims)
             throw broken_contract_exception("The required shape doesn't "

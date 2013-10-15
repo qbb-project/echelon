@@ -115,9 +115,9 @@ private:
  *  - Two compound types are equal, if and only if:
  *      - They have the same number of members.
  *      - Each member of the first type is equal to the corresponding member of
- *the second type.
+ *        the second type.
  *      - The name of each member of the first type is equal to the name of the
- *corresponding member of the second type.
+ *        corresponding member of the second type.
  *
  *  \relates echelon::type
  *
@@ -180,7 +180,7 @@ public:
     };
 
     /** \brief Constructs an empty layout for a compound type with a given total
-     *size.
+     *         size.
      *
      *  \param size_ total size of the compound type in bytes
      */

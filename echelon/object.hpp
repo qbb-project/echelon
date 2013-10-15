@@ -99,43 +99,40 @@ public:
     object& operator=(const scalar_dataset& object_);
 
     /** \brief Constructs a group handle, which shares ownership with this
-     *handle.
+     *         handle.
      *
      *  The incorporated conversion might fail, if the generated handle can't
-     *reference
-     *  the object, which is referenced by this handle. An exception is thrown
-     *in this case.
+     *  reference the object, which is referenced by this handle.
+     *  An exception is thrown in this case.
      *
      *  \throws wrong_object_type_exception is thrown, if the generated handle
-     *would be incompatible with the
+     *                                      would be incompatible with the
      *                                      referenced object.
      */
     operator group() const;
 
     /** \brief Constructs a dataset handle, which shares ownership with this
-     *handle.
+     *         handle.
      *
      *  The incorporated conversion might fail, if the generated handle can't
-     *reference
-     *  the object, which is referenced by this handle. An exception is thrown
-     *in this case.
+     *  reference the object, which is referenced by this handle.
+     *  An exception is thrown in this case.
      *
      *  \throws wrong_object_type_exception is thrown, if the generated handle
-     *would be incompatible with the
+     *                                      would be incompatible with the
      *                                      referenced object.
      */
     operator dataset() const;
 
     /** \brief Constructs a scalar dataset handle, which shares ownership with
-     *this handle.
+     *         this handle.
      *
      *  The incorporated conversion might fail, if the generated handle can't
-     *reference
-     *  the object, which is referenced by this handle. An exception is thrown
-     *in this case.
+     *  reference the object, which is referenced by this handle.
+     *  An exception is thrown in this case.
      *
      *  \throws wrong_object_type_exception is thrown, if the generated handle
-     *would be incompatible with the
+     *                                      would be incompatible with the
      *                                      referenced object.
      */
     operator scalar_dataset() const;

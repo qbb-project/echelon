@@ -124,13 +124,13 @@ class dataset
 public:
     /** \brief Type of the underlying HDF5 low-level handle
      */
-    using native_handle_type = hdf5::dataset;
+    using native_handle_type = hdf5::group;
     
     dataset(const object& parent, const std::string& name, const type& datatype,
             const std::vector<hsize_t>& shape, int comp_level,
             const std::vector<hsize_t> chunk_shape);
 
-    explicit dataset(hdf5::dataset dataset_wrapper_);
+    explicit dataset(native_handle_type native_handle_);
 
     /** \brief Writes the content of a data source into the dataset.
      *
@@ -267,7 +267,12 @@ public:
     /** \brief The underlying HDF5 low-level handle.
      */
     const native_handle_type& native_handle() const;
+    
+    /** \brief The underlying HDF5 dataset handle.
+     */
+    const hdf5::dataset& data() const;
 private:
+    hdf5::group native_handle_;
     hdf5::dataset dataset_wrapper_;
 
 public:

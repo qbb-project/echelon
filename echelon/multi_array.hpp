@@ -49,15 +49,12 @@ public:
 
     /** \brief Accesses a specified element.
      *
-     *  \tparam Indices Types of the indices. All indices should have integral
-     *type.
+     *  \tparam Indices Types of the indices. All indices should have integral type.
      *
      *  \pre Let \f$ \left(s_1,...s_{rank}\right) \f$ be the shape of the array
-     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of
-     *indices,
-     *       then \f$ rank = rank_2 \f$ and \f$ i_{i} < s_{i} \f$ for every \f$
-     *i \in
-     *       \left\{ 0,...,rank-1 \right\} \f$ should hold.
+     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of indices,
+     *       then \f$ rank = rank_2 \f$ and \f$ i_{i} < s_{i} \f$ for every
+     *       \f$ i \in \left\{ 0,...,rank-1 \right\} \f$ should hold.
      *
      *  \param indices Indices of the requested element
      *
@@ -74,14 +71,12 @@ public:
 
     /** \brief Accesses a specified element.
      *
-     *  \tparam Indices Types of the indices. All indices should have integral
-     *type.
+     *  \tparam Indices Types of the indices. All indices should have integral type.
+     *
      *
      *  \pre Let \f$ \left(s_1,...s_{rank}\right) \f$ be the shape of the array
-     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of
-     *indices,
-     *       then \f$ rank = rank_2 \f$ and \f$ i_{i} < s_{i} \f$ for every \f$
-     *i \in
+     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of indices,
+     *       then \f$ rank = rank_2 \f$ and \f$ i_{i} < s_{i} \f$ for every \f$ i \in
      *       \left\{ 0,...,rank-1 \right\} \f$ should hold.
      *
      *  \param indices Indices of the requested element
@@ -116,10 +111,10 @@ public:
     }
 
     /** \brief Returns an iterator, which points to the first element of the
-     *flattened array.
+     *         flattened array.
      *
      *  \note The order, in which the elements appear in the flattened sequence,
-     *is not specified.
+     *        is not specified.
      */
     typename std::vector<T>::iterator begin()
     {
@@ -127,10 +122,10 @@ public:
     }
 
     /** \brief Returns an iterator, which points to the last element of the
-     *flattened array.
+     *         flattened array.
      *
      *  \note The order, in which the elements appear in the flattened sequence,
-     *is not specified.
+     *        is not specified.
      */
     typename std::vector<T>::iterator end()
     {
@@ -138,10 +133,10 @@ public:
     }
 
     /** \brief Returns an iterator, which points to the first element of the
-     *flattened array.
+     *         flattened array.
      *
      *  \note The order, in which the elements appear in the flattened sequence,
-     *is not specified.
+     *        is not specified.
      */
     typename std::vector<T>::const_iterator begin() const
     {
@@ -149,10 +144,10 @@ public:
     }
 
     /** \brief Returns an iterator, which points to the last element of the
-     *flattened array.
+     *         flattened array.
      *
      *  \note The order, in which the elements appear in the flattened sequence,
-     *is not specified.
+     *        is not specified.
      */
     typename std::vector<T>::const_iterator end() const
     {

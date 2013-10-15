@@ -78,10 +78,11 @@ object::operator group() const
 
 object::operator dataset() const
 {
-    if (get_object_type(native_handle().id()) != object_type::dataset)
+    //FIXME: add a more precise type test here
+    if (get_object_type(native_handle().id()) != object_type::group)
         throw wrong_object_type_exception("wrong object type");
 
-    return dataset(hdf5::dataset(object_wrapper_));
+    return dataset(hdf5::group(object_wrapper_));
 }
 
 object::operator scalar_dataset() const

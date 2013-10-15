@@ -33,10 +33,9 @@ public:
 
     /** \brief Constructs a new adaptor around a given container
      *         using a given shape.
-
+     *
      *  \pre Let \f$ (s_1,...,s_{N}) \f$ be the requested shape and let
-     *       \f$ s \f$ be the size of the wrapped container, then \f$ \prod_{i}
-     s_{i} = s \f$
+     *       \f$ s \f$ be the size of the wrapped container, then \f$ \prod_{i} s_{i} = s \f$
      *       should hold.
      *
      *  \param container_ the adapted container
@@ -50,14 +49,13 @@ public:
     /** \brief Accesses a specified element.
      *
      *  \tparam Indices Types of the indices. All indices should have integral
-     *type.
+     *                  type.
      *
      *  \pre Let \f$ \left(s_1,...s_{rank}\right) \f$ be the shape of the array
-     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of
-     *indices,
+     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of indices,
      *       then \f$ rank = rank_2 \f$ and \f$ i_{i} < s_{i} \f$ for every \f$
-     *i \in
-     *       \left\{ 0,...,rank-1 \right\} \f$ should hold.
+     *       i \in \left\{ 0,...,rank-1 \right\} \f$ should hold.
+     *       
      *
      *  \param indices Indices of the requested element
      *
@@ -75,14 +73,12 @@ public:
     /** \brief Accesses a specified element.
      *
      *  \tparam Indices Types of the indices. All indices should have integral
-     *type.
+     *                  type.
      *
      *  \pre Let \f$ \left(s_1,...s_{rank}\right) \f$ be the shape of the array
-     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of
-     *indices,
+     *       and let \f$ \left(i_1,...i_{rank_2}\right) \f$ be the tuple of indices,
      *       then \f$ rank = rank_2 \f$ and \f$ i_{i} < s_{i} \f$ for every \f$
-     *i \in
-     *       \left\{ 0,...,rank-1 \right\} \f$ should hold.
+     *        i \in \left\{ 0,...,rank-1 \right\} \f$ should hold.
      *
      *  \param indices Indices of the requested element
      *
@@ -98,10 +94,10 @@ public:
     }
 
     /** \brief Returns an iterator, which points to the first element of the
-     *flattened array.
+     *         flattened array.
      *
      *  \note The order, in which the elements appear in the flattened sequence,
-     *is not specified.
+     *        is not specified.
      */
     typename Container::iterator begin()
     {
@@ -109,10 +105,10 @@ public:
     }
 
     /** \brief Returns an iterator, which points to the last element of the
-     *flattened array.
+     *         flattened array.
      *
      *  \note The order, in which the elements appear in the flattened sequence,
-     *is not specified.
+     *        is not specified.
      */
     typename Container::iterator end()
     {
@@ -120,10 +116,10 @@ public:
     }
 
     /** \brief Returns an iterator, which points to the first element of the
-     *flattened array.
+     *         flattened array.
      *
      *  \note The order, in which the elements appear in the flattened sequence,
-     *is not specified.
+     *        is not specified.
      */
     typename Container::const_iterator begin() const
     {
@@ -131,10 +127,10 @@ public:
     }
 
     /** \brief Returns an iterator, which points to the last element of the
-     *flattened array.
+     *         flattened array.
      *
      *  \note The order, in which the elements appear in the flattened sequence,
-     *is not specified.
+     *        is not specified.
      */
     typename Container::const_iterator end() const
     {

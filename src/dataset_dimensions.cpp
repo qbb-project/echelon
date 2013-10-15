@@ -27,7 +27,7 @@ dimension_scale dimension::attach_dimension_scale(const std::string& name,
                               extent, name);
 
     hdf5::attach_dimension_scale(dim_scale.native_handle(),
-                                 associated_dataset_->native_handle(),
+                                 associated_dataset_->data(),
                                  index_);
 
     return dim_scale;
@@ -35,17 +35,17 @@ dimension_scale dimension::attach_dimension_scale(const std::string& name,
 
 std::string dimension::label() const
 {
-    return associated_dataset_->native_handle().label(index_);
+    return associated_dataset_->data().label(index_);
 }
 
 void dimension::relabel(const std::string& new_label)
 {
-    associated_dataset_->native_handle().relabel(index_, new_label);
+    associated_dataset_->data().relabel(index_, new_label);
 }
 
 hsize_t dimension::extend() const
 {
-    return associated_dataset_->native_handle()
+    return associated_dataset_->data()
         .get_space()
         .get_simple_extent_dims()[index_];
 }

@@ -56,7 +56,7 @@ public:
      *  The shape of the data source must match the shape of the slice.
      *
      *  \tparam T type of the container; T must satisfy the data source
-     *requirements.
+     *            requirements.
      *
      *  \param source the data source
      */
@@ -79,7 +79,7 @@ public:
     /** \brief Reads the content of the slice into a data sink.
      *
      *  \tparam T type of the container; T must satisfy the data sink
-     *requirements.
+     *            requirements.
      *
      *  \param sink the data sink
      *  \param source the slice, which is used as a source

@@ -8,7 +8,6 @@
 #include <echelon/dataset.hpp>
 #include <echelon/file.hpp>
 #include <echelon/type.hpp>
-#include <echelon/uuid.hpp>
 
 namespace echelon
 {
@@ -19,23 +18,13 @@ dimension_scale::dimension_scale(const dataset& associated_dataset,
                                  const std::vector<hsize_t>& extent,
                                  const std::string& scale_name)
 {
-    file associated_file(
-        associated_dataset.native_handle().associated_file());
-
-    auto echelon_group = associated_file.require_group("echelon");
-    auto dimension_scales_group =
-        echelon_group.require_group("dimension_scales");
-
-    std::string unique_id = generate_unique_identifier(
-        associated_dataset.native_handle().name());
-
-    auto this_datasets_dimension_scales =
-        dimension_scales_group.require_group(unique_id);
+    hdf5::group dimensions_scales(associated_dataset.native_handle().id(),"dimension_scales",
+                                  hdf5::default_property_list);
 
     hdf5::dataspace space(extent);
 
     dim_scale_ =
-        hdf5::dimension_scale(this_datasets_dimension_scales.native_handle().id(), dataset_name,
+        hdf5::dimension_scale(dimensions_scales.id(), dataset_name,
                               datatype.native_handle(), space, scale_name);
 }
 

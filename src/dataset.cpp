@@ -16,8 +16,10 @@ namespace echelon
 dataset::dataset(const object& parent, const std::string& name,
                  const type& datatype, const std::vector<hsize_t>& shape,
                  int comp_level, const std::vector<hsize_t> chunk_shape)
-: dataset_wrapper_(-1), attributes(*this), dimensions(*this, shape.size())
-{
+: native_handle_(parent.native_handle().id(), name, hdf5::default_property_list,
+                 hdf5::default_property_list,hdf5::default_property_list),
+  dataset_wrapper_(-1), attributes(*this), dimensions(*this, shape.size())
+{  
     hdf5::property_list dataset_creation_properties(
         hdf5::property_list_class(H5P_DATASET_CREATE));
 
@@ -36,14 +38,18 @@ dataset::dataset(const object& parent, const std::string& name,
     link_creation_properties.set_char_encoding(H5T_CSET_UTF8);
 
     dataset_wrapper_ =
-        hdf5::dataset(parent.native_handle().id(), name, datatype.native_handle(),
+        hdf5::dataset(native_handle_.id(), "data", datatype.native_handle(),
                       hdf5::dataspace(shape), link_creation_properties,
                       dataset_creation_properties, hdf5::default_property_list);
+        
+    hdf5::group(native_handle_.id(),"dimension_scales", hdf5::default_property_list,
+                hdf5::default_property_list, hdf5::default_property_list);
 }
 
-dataset::dataset(hdf5::dataset dataset_wrapper_)
-: dataset_wrapper_(std::move(dataset_wrapper_)), attributes(*this),
-  dimensions(*this, rank())
+dataset::dataset(native_handle_type native_handle_)
+: native_handle_(std::move(native_handle_)),
+  dataset_wrapper_(hdf5::dataset(this->native_handle_.id(),"data",hdf5::default_property_list)),
+  attributes(*this),  dimensions(*this, rank())
 {
 }
 
@@ -69,6 +75,12 @@ object_reference dataset::ref() const
 
 const dataset::native_handle_type& dataset::native_handle() const
 {
+    return native_handle_;
+}
+
+const hdf5::dataset& dataset::data() const
+{
     return dataset_wrapper_;
 }
+
 }

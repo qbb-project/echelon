@@ -21,7 +21,7 @@ namespace echelon
  *  \tparam DataValueType value type of the grid
  *
  *  \note This class is experimental and currently not fully implemented and
- *documented. Use it with care.
+ *        documented. Use it with care.
  */
 template <typename DimensionScaleValueType,
           typename DataValueType = DimensionScaleValueType>
