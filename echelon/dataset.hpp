@@ -137,7 +137,7 @@ public:
      *  The shape of the data source must match the shape of the dataset.
      *
      *  \tparam T type of the container; T must satisfy the data source
-     *requirements.
+     *  requirements.
      *
      *  \param sink  the dataset, which is used as a sink
      *  \param source the data source
@@ -161,7 +161,7 @@ public:
     /** \brief Reads the content of the dataset into a data sink.
      *
      *  \tparam T type of the container; T must satisfy the data sink
-     *requirements.
+     *  requirements.
      *
      *  \param sink the data sink
      *  \param source the dataset, which is used as a source
