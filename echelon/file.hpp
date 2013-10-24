@@ -363,7 +363,7 @@ public:
 
     /** \brief Visits every link, which is reachable from the root group
      *
-     *  \param op visitor, which is applied to every visited link
+     *  \param visitor visitor, which is applied to every visited link
      *
      */
     void visit_links(const std::function<void(const link&)>& visitor) const;
@@ -371,7 +371,7 @@ public:
     /** \brief Visits every object, which is reachable from the root group
      *         (including the root group)
      *
-     *  \param op visitor, which is applied to every visited object
+     *  \param visitor visitor, which is applied to every visited object
      *
      */
     void visit_objects(const std::function<void(const object&)>& visitor) const;
