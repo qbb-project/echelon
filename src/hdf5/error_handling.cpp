@@ -50,7 +50,15 @@ minor_error_translation_map = {
     {H5E_NOTFOUND, error_translator<not_found_exception>()},
     {H5E_CANTOPENOBJ, error_translator<can_not_open_object_exception>()},
     {H5E_EXISTS, error_translator<exists_exception>()},
-    {H5E_ALREADYEXISTS, error_translator<already_exists_exception>()}};
+    {H5E_ALREADYEXISTS, error_translator<already_exists_exception>()},
+    {H5E_CANTOPENFILE, error_translator<cant_open_file_exception>()},
+    {H5E_CANTCREATE, error_translator<cant_open_file_exception>()},
+    {H5E_NOTHDF5, error_translator<invalid_hdf5_file_exception>()},
+    {H5E_UNSUPPORTED, error_translator<unsupported_feature_exception>()},
+    {H5E_BADRANGE, error_translator<out_of_range_exception>()},
+    {H5E_BADVALUE, error_translator<bad_value_exception>()},
+    {H5E_BADTYPE, error_translator<invalid_type_exception>()}
+};
 
 std::map<std::pair<hid_t, hid_t>,
          std::function<void(const std::exception_ptr&, const H5E_error2_t*)>>

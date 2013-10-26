@@ -461,6 +461,72 @@ public:
     virtual ~symbol_already_exists_exception() noexcept {};
 };
 
+class cant_open_file_exception : public file_exception
+{
+public:
+    cant_open_file_exception(const std::string& what_, hid_t minor_num_)
+    : file_exception(what_, minor_num_)
+    {
+    }
+
+    virtual ~cant_open_file_exception() noexcept {};    
+};
+
+class invalid_hdf5_file_exception : public file_exception
+{
+public:
+    invalid_hdf5_file_exception(const std::string& what_, hid_t minor_num_)
+    : file_exception(what_, minor_num_)
+    {
+    }
+
+    virtual ~invalid_hdf5_file_exception() noexcept {};    
+};
+
+class unsupported_feature_exception : public invalid_argument_exception
+{
+public:
+    unsupported_feature_exception(const std::string& what_, hid_t minor_num_)
+    : invalid_argument_exception(what_, minor_num_)
+    {
+    }
+
+    virtual ~unsupported_feature_exception() noexcept {};    
+};
+
+class out_of_range_exception : public invalid_argument_exception
+{
+public:
+    out_of_range_exception(const std::string& what_, hid_t minor_num_)
+    : invalid_argument_exception(what_, minor_num_)
+    {
+    }
+
+    virtual ~out_of_range_exception() noexcept {};    
+};
+
+class bad_value_exception : public invalid_argument_exception
+{
+public:
+    bad_value_exception(const std::string& what_, hid_t minor_num_)
+    : invalid_argument_exception(what_, minor_num_)
+    {
+    }
+
+    virtual ~bad_value_exception() noexcept {};    
+};
+
+class invalid_type_exception : public invalid_argument_exception
+{
+public:
+    invalid_type_exception(const std::string& what_, hid_t minor_num_)
+    : invalid_argument_exception(what_, minor_num_)
+    {
+    }
+
+    virtual ~invalid_type_exception() noexcept {};    
+};
+
 void throw_on_hdf5_error();
 
 void enable_error_handling();
