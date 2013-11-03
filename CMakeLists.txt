@@ -75,51 +75,52 @@ endif()
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
 find_package(Sphinx)
-
-if(SPHINX_FOUND)
- 
-  if(NOT DEFINED SPHINX_THEME)
-    set(SPHINX_THEME default)
-  endif()
-  if(NOT DEFINED SPHINX_THEME_DIR)
-    set(SPHINX_THEME_DIR)
-  endif()
-
-  set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")
-
-  set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
-
-  set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
-  configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide/conf.py.in"
-        "${BINARY_BUILD_DIR}/conf.py"
-        @ONLY)
-
-  add_custom_target(user_guide
-        ${SPHINX_EXECUTABLE}
-        -q -b html
-        -c "${BINARY_BUILD_DIR}"
-        -d "${SPHINX_CACHE_DIR}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide"
-        "${SPHINX_HTML_DIR}"
-        COMMENT "Building user guide with Sphinx.")
-
-  list(APPEND ECHELON_DOC_TARGETS user_guide)
-  
-endif(SPHINX_FOUND)
         
 if(DOXYGEN_FOUND)
         
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
-        
-  add_custom_target(api_doc
-         ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
-         COMMAND 
-         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
-         COMMENT "Generating API documentation with Doxygen." VERBATIM)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
+            
+    add_custom_target(api_doc
+        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
+        COMMAND 
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
+        COMMENT "Generating API documentation with Doxygen." VERBATIM)
 
-  list(APPEND ECHELON_DOC_TARGETS api_doc)
+    list(APPEND ECHELON_DOC_TARGETS api_doc)
   
+    if(SPHINX_FOUND)
+     
+      if(NOT DEFINED SPHINX_THEME)
+        set(SPHINX_THEME default)
+      endif()
+      if(NOT DEFINED SPHINX_THEME_DIR)
+        set(SPHINX_THEME_DIR)
+      endif()
+
+      set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")
+
+      set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
+
+      set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
+      configure_file(
+            "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide/conf.py.in"
+            "${BINARY_BUILD_DIR}/conf.py"
+            @ONLY)
+
+      add_custom_target(user_guide
+            ${SPHINX_EXECUTABLE}
+            -q -b html
+            -c "${BINARY_BUILD_DIR}"
+            -d "${SPHINX_CACHE_DIR}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide"
+            "${SPHINX_HTML_DIR}"
+            COMMENT "Building user guide with Sphinx."
+            DEPENDS api_doc)
+
+      list(APPEND ECHELON_DOC_TARGETS user_guide)
+      
+    endif(SPHINX_FOUND)
+
 endif(DOXYGEN_FOUND)
 
 if(NOT ECHELON_IS_A_SUBPROJECT)
