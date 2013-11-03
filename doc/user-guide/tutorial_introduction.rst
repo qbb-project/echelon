@@ -11,8 +11,8 @@ Tutorial 1 - Introduction
 File creation and basic write access
 ====================================
 
-To create an empty file, we simply construct a new file handle, specifing the file path and a creation mode.
-For this example we choose the truncate mode, which ensures, that the content of any pre-existing file is discarded.
+To create an empty file, we simply construct a new :echelon:`file <echelon::file>` handle, specifing the file path and a creation mode.
+For this example, we choose the truncate mode, which ensures, that the content of any pre-existing file is discarded.
 The code ::
 
     file hdf5_file("first_file.h5", file::create_mode::truncate);
@@ -20,8 +20,9 @@ The code ::
 creates the empty HDF5 file 'first_file.h5' and names the resulting handle hdf5_file.
 With the first step done, we can add new objects to the file and store our data.
 
-Before we will store any data in our newly created file, we will discuss one of the main benefits and major concepts of HDF5, the group.
-An HDF5 group allows us to save and access our data in a structured way. You can think of a group as an object similar to a folder
+Before, we will store any data in our newly created file, we will discuss one of the main benefits and major concepts of HDF5, the group.
+An HDF5 :echelon:`group <echelon::group>`
+allows us to save and access our data in a structured way. You can think of a group as an object similar to a folder
 in your favorite file system, since both are used to bundle related objects together, even other groups/folders.
 If you are familiar with UNIX file systems, you may even notice more similarities. Any new file starts with a group, which
 we call the root group and denote with '/'. Since the file and the root group are strongly related, we normally
@@ -33,7 +34,7 @@ Using ::
 
 we create a new group 'data' within the root group and save the group handle in data.
 
-Now we will store some test data in our file. To do this, we have to create a new dataset.
+Now, we will store some test data in our file. To do this, we have to create a new dataset.
 A dataset is a rectangular, homogeneous collection of elements and is the primary facility for
 data storage in HDF5. A dataset can distribute its elements over an arbitrary number of dimensions.
 This is convenient, since many object in science, for example matrices and tensors, extend along several
