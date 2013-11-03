@@ -249,5 +249,5 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 doxylink = {
-        'echelon' : ('/home/christopher/git/work/echelon/build/doc/echelon.tag', '/home/christopher/git/work/echelon/build/doc/html/')
+        'echelon' : ('@CMAKE_CURRENT_BINARY_DIR@/doc/echelon.tag', '@CMAKE_CURRENT_BINARY_DIR@/doc/html/')
 }
