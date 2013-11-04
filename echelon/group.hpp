@@ -62,6 +62,37 @@ private:
     std::string what_;
 };
 
+class dataset_options
+{
+public:
+    dataset_options& compression_level(int value)
+    {
+        compression_level_ = value;
+
+        return *this;
+    }
+
+    dataset_options& chunk_shape(std::vector<hsize_t> value)
+    {
+        chunk_shape_ = std::move(value);
+
+        return *this;
+    }
+
+    int compression_level() const
+    {
+        return compression_level_;
+    }
+
+    const std::vector<hsize_t>& chunk_shape() const
+    {
+        return chunk_shape_;
+    }
+private:
+    int compression_level_ = -1;
+    std::vector<hsize_t> chunk_shape_ = {};
+};
+
 /** \brief A handle to an HDF5 group object.
  *
  */
@@ -94,23 +125,15 @@ public:
      *         _compression_level  | level of the deflate compression (0 - 9)
      *         _chunk_shape        | shape of a dataset chunk
      *
-     *  \tparam Options options type list
-     *
      *  \return a handle to the new dataset
      */
-    template <typename... Options>
     dataset create_dataset(const std::string& name, const type& datatype,
-                           const std::vector<hsize_t>& dims, Options... options)
+                           const std::vector<hsize_t>& dims, const dataset_options& options = {})
     {
-        auto desc = utility::options_description<>()(_compression_level, -1)(
-            _chunk_shape, std::vector<hsize_t>());
-
-        auto parsed_options = desc.parse(options...);
-
         return create_dataset(
-            name, datatype, dims,
-            get_option_value(_compression_level, parsed_options),
-            get_option_value(_chunk_shape, parsed_options));
+                   name, datatype, dims,
+                   options.compression_level(),
+                   options.chunk_shape());
     }
 
     /** \brief Creates a new HDF5 dataset within this group.
@@ -125,15 +148,14 @@ public:
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
      *            value type
-     *  \tparam Options options type list
      *
      *  \return a handle to the new dataset
      */
-    template <typename T, typename... Options>
+    template <typename T>
     dataset create_dataset(const std::string& name,
-                           const std::vector<hsize_t>& dims, Options... options)
+                           const std::vector<hsize_t>& dims, const dataset_options& options = {})
     {
-        return create_dataset(name, get_hdf5_type<T>(), dims, options...);
+        return create_dataset(name, get_hdf5_type<T>(), dims, options);
     }
 
     /** \brief Creates a new HDF5 scalar dataset within this group.

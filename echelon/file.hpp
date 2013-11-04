@@ -86,15 +86,12 @@ public:
      *         _compression_level  | level of the deflate compression (0 - 9)
      *         _chunk_shape        | shape of a dataset chunk
      *
-     *  \tparam Options options type list
-     *
      *  \return a handle to the new dataset
      */
-    template <typename... Options>
     dataset create_dataset(const std::string& name, const type& datatype,
-                           const std::vector<hsize_t>& dims, Options... options)
+                           const std::vector<hsize_t>& dims, const dataset_options& options = {})
     {
-        return root_group_.create_dataset(name, datatype, dims, options...);
+        return root_group_.create_dataset(name, datatype, dims, options);
     }
 
     /** \brief Creates a new HDF5 dataset within the root group.
@@ -109,15 +106,14 @@ public:
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
      *            value type
-     *  \tparam Options options type list
      *
      *  \return a handle to the new dataset
      */
-    template <typename T, typename... Options>
+    template <typename T>
     dataset create_dataset(const std::string& name,
-                           const std::vector<hsize_t>& dims, Options... options)
+                           const std::vector<hsize_t>& dims, const dataset_options& options = {})
     {
-        return root_group_.create_dataset<T>(name, dims, options...);
+        return root_group_.create_dataset<T>(name, dims, options);
     }
 
     /** \brief Creates a new HDF5 scalar dataset within the root group.
