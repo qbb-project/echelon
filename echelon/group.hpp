@@ -15,7 +15,6 @@
 #include <echelon/scalar_dataset.hpp>
 #include <echelon/object_reference.hpp>
 #include <echelon/utility.hpp>
-#include <echelon/keywords.hpp>
 #include <echelon/link.hpp>
 
 #include <echelon/broken_contract_exception.hpp>
@@ -128,13 +127,7 @@ public:
      *  \return a handle to the new dataset
      */
     dataset create_dataset(const std::string& name, const type& datatype,
-                           const std::vector<hsize_t>& dims, const dataset_options& options = {})
-    {
-        return create_dataset(
-                   name, datatype, dims,
-                   options.compression_level(),
-                   options.chunk_shape());
-    }
+                           const std::vector<hsize_t>& dims, const dataset_options& options = {});
 
     /** \brief Creates a new HDF5 dataset within this group.
      *
@@ -252,29 +245,15 @@ public:
      *         _compression_level  | level of the deflate compression (0 - 9)
      *         _chunk_shape        | shape of a dataset chunk
      *
-     *  \tparam Options options type list
-     *
      *  \throws broken_contract_exception is thrown, if the contract can't be
      *                                    fulfilled.
      *
      *  \return the requested dataset, if it is already existing, or a new
      *          dataset otherwise
      */
-    template <typename... Options>
     dataset require_dataset(const std::string& name, const type& datatype,
                             const std::vector<hsize_t>& dims,
-                            Options... options)
-    {
-        auto desc = utility::options_description<>()(_compression_level, -1)(
-            _chunk_shape, std::vector<hsize_t>());
-
-        auto parsed_options = desc.parse(options...);
-
-        return require_dataset(
-            name, datatype, dims,
-            get_option_value(_compression_level, parsed_options),
-            get_option_value(_chunk_shape, parsed_options));
-    }
+                            const dataset_options& options = {});
 
     /** \brief Returns the requested dataset, if it already exists, otherwise a
      *         new dataset is created.
@@ -299,7 +278,6 @@ public:
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
      *            value type
-     *  \tparam Options options type list
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
      *                                    fulfilled.
@@ -307,12 +285,12 @@ public:
      *  \return the requested dataset, if it is already existing, or a new
      *          dataset otherwise
      */
-    template <typename T, typename... Options>
+    template <typename T>
     dataset require_dataset(const std::string& name,
                             const std::vector<hsize_t>& dims,
-                            Options... options)
+                            const dataset_options& options = {})
     {
-        return require_dataset(name, get_hdf5_type<T>(), dims, options...);
+        return require_dataset(name, get_hdf5_type<T>(), dims, options);
     }
 
     /** \brief Returns the requested scalar dataset, if it already exists,

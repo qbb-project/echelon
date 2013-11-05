@@ -10,8 +10,6 @@
 #include <echelon/link.hpp>
 #include <echelon/hdf5/file.hpp>
 
-#include <echelon/keywords.hpp>
-
 #include <string>
 #include <memory>
 
@@ -89,10 +87,7 @@ public:
      *  \return a handle to the new dataset
      */
     dataset create_dataset(const std::string& name, const type& datatype,
-                           const std::vector<hsize_t>& dims, const dataset_options& options = {})
-    {
-        return root_group_.create_dataset(name, datatype, dims, options);
-    }
+                           const std::vector<hsize_t>& dims, const dataset_options& options = {});
 
     /** \brief Creates a new HDF5 dataset within the root group.
      *
@@ -206,21 +201,15 @@ public:
      *         _compression_level  | level of the deflate compression (0 - 9)
      *         _chunk_shape        | shape of a dataset chunk
      *
-     *  \tparam Options options type list
-     *
      *  \throws broken_contract_exception is thrown, if the contract can't be
      *                                    fulfilled.
      *
      *  \return the requested dataset, if it is already existing, or a new
      *          dataset otherwise
      */
-    template <typename... Options>
     dataset require_dataset(const std::string& name, const type& datatype,
                             const std::vector<hsize_t>& dims,
-                            Options... options)
-    {
-        return root_group_.require_dataset(name, datatype, dims, options...);
-    }
+                            const dataset_options& options = {});
 
     /** \brief Returns the requested dataset, if it already exists, otherwise a
      *         new dataset is created.
@@ -245,7 +234,6 @@ public:
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
      *            value type
-     *  \tparam Options options type list
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
      *                                    fulfilled.
@@ -253,12 +241,12 @@ public:
      *  \return the requested dataset, if it is already existing, or a new
      *          dataset otherwise
      */
-    template <typename T, typename... Options>
+    template <typename T>
     dataset require_dataset(const std::string& name,
                             const std::vector<hsize_t>& dims,
-                            Options... options)
+                            const dataset_options& options = {})
     {
-        return root_group_.require_dataset<T>(name, dims, options...);
+        return root_group_.require_dataset<T>(name, dims, options);
     }
 
     /** \brief Returns the requested scalar dataset, if it already exists,

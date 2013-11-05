@@ -48,6 +48,14 @@ group group::create_group(const std::string& name)
 }
 
 dataset group::create_dataset(const std::string& name, const type& datatype,
+                              const std::vector<hsize_t>& dims,
+                              const dataset_options& options)
+{
+    return create_dataset(name, datatype, dims, options.compression_level(),
+                          options.chunk_shape());
+}
+
+dataset group::create_dataset(const std::string& name, const type& datatype,
                               const std::vector<hsize_t>& dims, int comp_level,
                               const std::vector<hsize_t> chunk_shape)
 {
@@ -81,6 +89,14 @@ group group::require_group(const std::string& name)
     {
         return create_group(name);
     }
+}
+
+dataset group::require_dataset(const std::string& name, const type& datatype,
+                               const std::vector<hsize_t>& dims,
+                               const dataset_options& options)
+{
+    return require_dataset(name, datatype, dims, options.compression_level(),
+                           options.chunk_shape());
 }
 
 dataset group::require_dataset(const std::string& name, const type& datatype,

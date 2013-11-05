@@ -34,6 +34,13 @@ group file::create_group(const std::string& name)
     return root_group_.create_group(name);
 }
 
+dataset file::create_dataset(const std::string& name, const type& datatype,
+                             const std::vector<hsize_t>& dims,
+                             const dataset_options& options)
+{
+    return root_group_.create_dataset(name, datatype, dims, options);
+}
+
 scalar_dataset file::create_scalar_dataset(const std::string& name,
                                            const type& datatype)
 {
@@ -53,6 +60,13 @@ void file::remove(const std::string& name) const
 group file::require_group(const std::string& name)
 {
     return root_group_.require_group(name);
+}
+
+dataset file::require_dataset(const std::string& name, const type& datatype,
+                              const std::vector<hsize_t>& dims,
+                              const dataset_options& options)
+{
+    return root_group_.require_dataset(name, datatype, dims, options);
 }
 
 scalar_dataset file::require_scalar_dataset(const std::string& name,
