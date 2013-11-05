@@ -61,9 +61,18 @@ private:
     std::string what_;
 };
 
+/** \brief Additional options for the dataset creation
+ *
+ */
 class dataset_options
 {
 public:
+    /** \brief Sets the gzip compression level of the dataset
+     * 
+     *  \param value compression level
+     * 
+     *  \return *this
+     */
     dataset_options& compression_level(int value)
     {
         compression_level_ = value;
@@ -71,6 +80,12 @@ public:
         return *this;
     }
 
+    /** \brief Sets the chunk shape of the dataset
+     * 
+     *  \param value chunk shape
+     * 
+     *  \return *this
+     */
     dataset_options& chunk_shape(std::vector<hsize_t> value)
     {
         chunk_shape_ = std::move(value);
@@ -78,11 +93,15 @@ public:
         return *this;
     }
 
+    /** \brief gzip compression level
+     */
     int compression_level() const
     {
         return compression_level_;
     }
 
+    /** \brief chunk shape
+     */
     const std::vector<hsize_t>& chunk_shape() const
     {
         return chunk_shape_;
