@@ -4,7 +4,7 @@ import itertools
 from pyparsing import Word, Literal, alphas, nums, alphanums, OneOrMore, Optional, SkipTo, ParseException, Group, ZeroOrMore, Suppress, Combine, delimitedList, quotedString, nestedExpr, ParseResults, oneOf
 
 # define punctuation - reuse of expressions helps packratting work better
-LPAR,RPAR,LBRACK,RBRACK,COMMA,EQ = list(map(Literal,"()[],="))
+LPAR,RPAR,LBRACK,RBRACK,LBRACE,RBRACE,COMMA,EQ = list(map(Literal,"()[]{},="))
 
 #Qualifier to go in front of type in the argument list (unsigned const int foo)
 qualifier = OneOrMore(oneOf('const unsigned typename struct enum'))
@@ -29,6 +29,7 @@ angle_bracket_pair = nestedExpr(opener='<',closer='>').setParseAction(turn_parse
 #TODO Fix for nesting brackets
 parentheses_pair = LPAR + SkipTo(RPAR) + RPAR
 square_bracket_pair = LBRACK + SkipTo(RBRACK) + RBRACK
+brace_pair = LBRACE + SkipTo(RBRACE) + RBRACE
 
 #The raw type of the input, i.e. 'int' in (unsigned const int * foo)
 #TODO I guess this should be a delimited list (by '::') of name and angle brackets
@@ -44,7 +45,7 @@ input_name = OneOrMore(Word(alphanums + '_') | angle_bracket_pair | parentheses_
 pointer_or_reference = oneOf('* & &&')
 
 #The '=QString()' or '=false' bit in (int foo = 4, bool bar = false)
-default_value = Literal('=') + OneOrMore(number | quotedString | input_type | parentheses_pair | angle_bracket_pair | square_bracket_pair | Word('|&^'))
+default_value = Literal('=') + OneOrMore(number | quotedString | input_type | parentheses_pair | angle_bracket_pair | square_bracket_pair | brace_pair | Word('|&^'))
 
 #A combination building up the interesting bit -- the argument type, e.g. 'const QString &', 'int' or 'char*'
 argument_type = Optional(qualifier, default='')("qualifier") + \
