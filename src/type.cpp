@@ -91,6 +91,11 @@ type type::compound_type(const type_layout& layout)
     return type(std::move(compound_type));
 }
 
+std::size_t type::size() const
+{
+    return type_wrapper_.size();
+}
+
 type::type(hdf5::type type_wrapper_) : type_wrapper_(std::move(type_wrapper_))
 {
 }

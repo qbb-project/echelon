@@ -91,6 +91,8 @@ public:
      */
     static type compound_type(const type_layout& layout);
 
+    std::size_t size() const;
+    
     /** \brief Clones the type.
      *
      *  \post t == t.clone()

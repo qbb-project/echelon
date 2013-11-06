@@ -10,6 +10,9 @@
 #include <echelon/group.hpp>
 #include <echelon/dataset.hpp>
 
+#include <cmath>
+#include <iostream>
+
 namespace echelon
 {
 
@@ -26,6 +29,42 @@ dataset::dataset(const object& parent, const std::string& name,
     if (!chunk_shape.empty())
     {
         dataset_creation_properties.set_chunk(chunk_shape);
+    }
+    else if(comp_level > -1)
+    {
+        //perform auto-chunking
+        
+        std::size_t dataset_rank = shape.size();
+        
+        size_t chunk_cache_size;
+        
+        hdf5::property_list dataset_access_properties(
+            hdf5::property_list_class(H5P_DATASET_ACCESS));
+        H5Pget_chunk_cache(dataset_access_properties.id(),nullptr,&chunk_cache_size,nullptr);
+        
+        double load_factor = 0.1;
+        
+        std::size_t chunk_size = chunk_cache_size*load_factor;
+        
+        std::size_t num_of_elements = chunk_size/datatype.size();
+        
+        std::size_t chunk_width = std::pow(num_of_elements,1.0/dataset_rank);
+        
+        if(chunk_width == 0)
+            chunk_width = 1;
+        
+        std::cout << chunk_width << std::endl;
+        
+        std::vector<hsize_t> auto_chunk_shape;
+        auto_chunk_shape.reserve(dataset_rank);
+        
+        for(std::size_t i = 0;i < dataset_rank;++i)
+        {
+            //FIXME: chunk_width < size of dim is only needed for fixed-sized datasets
+            auto_chunk_shape.push_back(chunk_width < shape[i] ? chunk_width : shape[i]);
+        }
+        
+        dataset_creation_properties.set_chunk(auto_chunk_shape);
     }
 
     if (comp_level > -1)
