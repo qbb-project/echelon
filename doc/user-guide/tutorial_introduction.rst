@@ -20,7 +20,7 @@ The code ::
 creates the empty HDF5 file 'first_file.h5' and names the resulting handle hdf5_file.
 With the first step done, we can add new objects to the file and store our data.
 
-Before, we will store any data in our newly created file, we will discuss one of the main benefits and major concepts of HDF5, the group.
+Before, we will store any data in our newly created file, we discuss one of the main benefits and major concepts of HDF5, the group.
 An HDF5 :echelon:`group <echelon::group>`
 allows us to save and access our data in a structured way. You can think of a group as an object similar to a folder
 in your favorite file system, since both are used to bundle related objects together, even other groups/folders.
