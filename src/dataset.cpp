@@ -11,7 +11,6 @@
 #include <echelon/dataset.hpp>
 
 #include <cmath>
-#include <iostream>
 
 namespace echelon
 {
@@ -52,8 +51,6 @@ dataset::dataset(const object& parent, const std::string& name,
         
         if(chunk_width == 0)
             chunk_width = 1;
-        
-        std::cout << chunk_width << std::endl;
         
         std::vector<hsize_t> auto_chunk_shape;
         auto_chunk_shape.reserve(dataset_rank);
