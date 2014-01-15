@@ -102,6 +102,7 @@ if(DOXYGEN_FOUND)
       set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
 
       set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
+      set(SPHINX_LATEX_DIR "${CMAKE_CURRENT_BINARY_DIR}/latex")
       configure_file(
             "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide/conf.py.in"
             "${BINARY_BUILD_DIR}/conf.py"
@@ -119,6 +120,15 @@ if(DOXYGEN_FOUND)
 
       list(APPEND ECHELON_DOC_TARGETS user_guide)
       
+      add_custom_target(user_guide_latex
+            ${SPHINX_EXECUTABLE}
+            -q -b latex
+            -c "${BINARY_BUILD_DIR}"
+            -d "${SPHINX_CACHE_DIR}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide"
+            "${SPHINX_LATEX_DIR}"
+            COMMENT "Building user guide (latex version) with Sphinx.")
+
     endif(SPHINX_FOUND)
 
 endif(DOXYGEN_FOUND)
