@@ -26,7 +26,7 @@ inline std::vector<std::size_t> shape(const std::vector<T>& container)
 }
 
 template <typename C>
-inline std::vector<std::size_t> shape(const C& container)
+inline auto shape(const C& container) -> decltype(container.shape())
 {
     return container.shape();
 }
@@ -37,7 +37,7 @@ namespace detail
 // shape.
 // Its sole purpose is to ensure that the correct overload can be found by ADL.
 template <typename C>
-inline std::vector<std::size_t> shape_adl(const C& container)
+inline auto shape_adl(const C& container) -> decltype(shape(container))
 {
     return shape(container);
 }
