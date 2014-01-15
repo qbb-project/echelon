@@ -52,14 +52,15 @@ dataset group::create_dataset(const std::string& name, const type& datatype,
                               const dataset_options& options)
 {
     return create_dataset(name, datatype, dims, options.compression_level(),
-                          options.chunk_shape());
+                          options.auto_chunking(),options.chunk_shape());
 }
 
 dataset group::create_dataset(const std::string& name, const type& datatype,
                               const std::vector<hsize_t>& dims, int comp_level,
+                              bool auto_chunking,
                               const std::vector<hsize_t> chunk_shape)
 {
-    return dataset(*this, name, datatype, dims, comp_level, chunk_shape);
+    return dataset(*this, name, datatype, dims, comp_level, auto_chunking, chunk_shape);
 }
 
 scalar_dataset group::create_scalar_dataset(const std::string& name,
@@ -96,12 +97,12 @@ dataset group::require_dataset(const std::string& name, const type& datatype,
                                const dataset_options& options)
 {
     return require_dataset(name, datatype, dims, options.compression_level(),
-                           options.chunk_shape());
+                           options.auto_chunking(), options.chunk_shape());
 }
 
 dataset group::require_dataset(const std::string& name, const type& datatype,
                                const std::vector<hsize_t>& dims, int comp_level,
-                               const std::vector<hsize_t> chunk_shape)
+                               bool auto_chunking, const std::vector<hsize_t> chunk_shape)
 {
     //FIXME: add a more precise type test here
     if (exists(*this, name) &&
@@ -122,7 +123,7 @@ dataset group::require_dataset(const std::string& name, const type& datatype,
     }
     else
     {
-        return create_dataset(name, datatype, dims, comp_level, chunk_shape);
+        return create_dataset(name, datatype, dims, comp_level, auto_chunking, chunk_shape);
     }
 }
 

@@ -129,6 +129,7 @@ public:
     
     dataset(const object& parent, const std::string& name, const type& datatype,
             const std::vector<hsize_t>& shape, int comp_level,
+            bool auto_chunking,
             const std::vector<hsize_t> chunk_shape);
 
     explicit dataset(native_handle_type native_handle_);

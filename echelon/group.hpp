@@ -25,6 +25,7 @@
 #include <memory>
 #include <exception>
 #include <functional>
+#include <boost/concept_check.hpp>
 
 namespace echelon
 {
@@ -67,6 +68,19 @@ private:
 class dataset_options
 {
 public:
+    /** \brief Enables/Disables auto-chunking
+     * 
+     *  \param value state of the auto-chunking algorithm
+     * 
+     *  \return *this
+     */
+    dataset_options& auto_chunking(bool value)
+    {
+        auto_chunking_ = value;
+        
+        return *this;
+    }
+    
     /** \brief Sets the gzip compression level of the dataset
      * 
      *  \param value compression level
@@ -92,6 +106,13 @@ public:
 
         return *this;
     }
+    
+    /** \brief auto-chunking option
+     */
+    bool auto_chunking() const
+    {
+        return auto_chunking_;
+    }
 
     /** \brief gzip compression level
      */
@@ -107,6 +128,7 @@ public:
         return chunk_shape_;
     }
 private:
+    bool auto_chunking_ = false;
     int compression_level_ = -1;
     std::vector<hsize_t> chunk_shape_ = {};
 };
@@ -467,11 +489,11 @@ private:
 
     dataset create_dataset(const std::string& name, const type& datatype,
                            const std::vector<hsize_t>& dims, int comp_level,
-                           const std::vector<hsize_t> chunk_shape);
+                           bool auto_chunking, const std::vector<hsize_t> chunk_shape);
 
     dataset require_dataset(const std::string& name, const type& datatype,
                             const std::vector<hsize_t>& dims, int comp_level,
-                            const std::vector<hsize_t> chunk_shape);
+                            bool auto_chunking, const std::vector<hsize_t> chunk_shape);
 
     hdf5::group group_wrapper_;
 

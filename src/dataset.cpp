@@ -17,7 +17,8 @@ namespace echelon
 
 dataset::dataset(const object& parent, const std::string& name,
                  const type& datatype, const std::vector<hsize_t>& shape,
-                 int comp_level, const std::vector<hsize_t> chunk_shape)
+                 int comp_level, bool auto_chunking,
+                 const std::vector<hsize_t> chunk_shape)
 : native_handle_(parent.native_handle().id(), name, hdf5::default_property_list,
                  hdf5::default_property_list,hdf5::default_property_list),
   dataset_wrapper_(-1), attributes(*this), dimensions(*this, shape.size())
@@ -29,7 +30,7 @@ dataset::dataset(const object& parent, const std::string& name,
     {
         dataset_creation_properties.set_chunk(chunk_shape);
     }
-    else if(comp_level > -1)
+    else if(comp_level > -1 || auto_chunking)
     {
         //perform auto-chunking
         
