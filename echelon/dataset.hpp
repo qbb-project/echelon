@@ -148,7 +148,7 @@ public:
     {
         using std::begin;
         
-        auto current_shape = detail::shape_adl(source);
+        const auto& current_shape = detail::shape_adl(source);
 
         std::vector<hsize_t> mem_shape(begin(current_shape),
                                        end(current_shape));
@@ -174,7 +174,7 @@ public:
     {
         using std::begin;
         
-        auto current_shape = detail::shape_adl(source);
+        const auto& current_shape = detail::shape_adl(source);
 
         std::vector<hsize_t> mem_shape(begin(current_shape),
                                        end(current_shape));
