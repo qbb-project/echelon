@@ -29,6 +29,7 @@
 #include <string>
 #include <type_traits>
 #include <cassert>
+#include <iterator>
 
 namespace echelon
 {
@@ -145,6 +146,8 @@ public:
     template <typename T>
     friend void operator<<=(dataset& sink, const T& source)
     {
+        using std::begin;
+        
         auto current_shape = detail::shape_adl(source);
 
         std::vector<hsize_t> mem_shape(begin(current_shape),
