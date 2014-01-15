@@ -146,3 +146,34 @@ using the standard output stream: ::
         for(auto value : v)
             std::cout << value << "  ";
     }
+
+
+*****************************
+Tutorial x - Advanced tidbits
+*****************************
+
+Dimensions and dimension scales
+===============================
+
+One feature of datasets which wasn't presented so far are :echelon:`dataset dimensions <echelon::dimension>`.
+The dimensions are accessed through the, hopefully indisputably named, dataset property :echelon:`dimensions <echelon::dataset::dimensions>`. 
+For example, one could give each dimension a descriptive, as shown in the following code sample label ::
+
+    my_dataset.dimensions.relabel("foo");
+
+For details, please refer to the corresponding :echelon:`API documentation <echelon::dataset_dimensions>`.
+
+Another useful feature linked to dataset dimensions are :echelon:`dimension scales <echelon::dimension_scale>` which can be used to add certain meta-data to that dimension. For example, if one has saved a tabulated function in a dataset, one could add the corresponding value for each variable in a dimension scale, keeping this meta-data close to the actual data.
+
+The following code shows how to add a dimension scale 'x' of type double to an already existing dataset ::
+
+    my_dataset.dimensions.attach_dimension_scale<double>("x");
+
+Echelon will automatically assemble the necessary data structures within the file and will free them if the dataset is destroyed. The shape of each dimensions scale is always one-dimensional and
+matches the length of the corresponding dataset dimension.
+
+Since dimension scales are in a sense specialized datasets one can use them as is usual for datasets. For example the code ::
+
+    my_dimension_scale <<= x;    
+
+would write the content of the container x into the dimension scale.

@@ -21,6 +21,8 @@ namespace echelon
 class dataset;
 class type;
 
+/** \brief A handle to a dimension scale.
+ */
 class dimension_scale
 {
 public:
@@ -33,8 +35,20 @@ public:
                     const std::vector<hsize_t>& extent,
                     const std::string& scale_name);
 
+    /** \brief The shape of the dimension scale.
+     */
     std::vector<hsize_t> shape() const;
 
+    /** \brief Writes the content of a data source into the dimension scale.
+     *
+     *  The shape of the data source must match the shape of the dimension scale.
+     *
+     *  \tparam T type of the container; T must satisfy the data source
+     *  requirements.
+     *
+     *  \param sink  the dimension, which is used as a sink
+     *  \param source the data source
+     */
     template <typename T>
     friend void operator<<=(dimension_scale& sink, const T& source)
     {
@@ -51,6 +65,14 @@ public:
                          source);
     }
 
+    /** \brief Reads the content of the dimension scale into a data sink.
+     *
+     *  \tparam T type of the container; T must satisfy the data sink
+     *  requirements.
+     *
+     *  \param sink the data sink
+     *  \param source the dimension scale, which is used as a source
+     */
     template <typename T>
     friend void operator<<=(T& sink, const dimension_scale& source)
     {
@@ -64,6 +86,8 @@ public:
                         sink);
     }
 
+    /** \brief The underlying HDF5 low-level handle.
+     */
     const native_handle_type& native_handle() const;
 
 private:

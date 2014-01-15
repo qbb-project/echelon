@@ -20,23 +20,50 @@
 namespace echelon
 {
 
+/** \brief Handle to a dataset dimension
+ */
 class dimension
 {
 public:
     dimension(dataset& associated_dataset_, std::size_t index_);
 
+    /** \brief Attach a new dimension scale to this dimension.
+     * 
+     *  \param name      Name of the new dimension scale
+     *  \param datatype  Datatype of the new dimension scale
+     * 
+     *  \return a handle to the new dimension scale.
+     */
     dimension_scale attach_dimension_scale(const std::string& name,
                                            const type& datatype);
 
+    /** \brief Attach a new dimension scale to this dimension.
+     * 
+     *  \param name  Name of the new dimension scale
+     * 
+     *  \tparam T    C++ type, which should be used to determine
+     *               the dimension scale's value typele
+     * 
+     *  \return a handle to the new dimension scale.
+     */
     template <typename T>
     dimension_scale attach_dimension_scale(const std::string& name)
     {
         return attach_dimension_scale(name, get_hdf5_type<T>());
     }
 
+    /** \brief The label of the dimension.
+     */
     std::string label() const;
+    
+    /**  \brief Relabel the dimension.
+     * 
+     *   \param new_label New label of the dimension
+     */
     void relabel(const std::string& new_label);
 
+    /** \brief The extend of the dimension.
+     */
     hsize_t extend() const;
 
 private:
@@ -44,39 +71,66 @@ private:
     std::size_t index_;
 };
 
+/** \brief Accessor class for the dimensions of a dataset
+ */
 class dataset_dimensions
 {
 public:
+    /** \brief Type of the iterator over all dataset dimensions
+     */
     typedef std::vector<dimension>::iterator iterator;
+    
+    /** \brief Type of the iterator over all dataset dimensions
+     */
     typedef std::vector<dimension>::const_iterator const_iterator;
 
     dataset_dimensions(dataset& associated_dataset_, std::size_t rank_);
 
+    /** \brief Access a dimension by index.
+     * 
+     *  \param index Index of the dimension
+     * 
+     *  \return a handle to the specified dimension.
+     */
     dimension& operator[](std::size_t index)
     {
         return dimensions_[index];
     }
 
+    /** \brief Access a dimension by index.
+     * 
+     *  \param index Index of the dimension
+     * 
+     *  \return a handle to the specified dimension.
+     */
     const dimension& operator[](std::size_t index) const
     {
         return dimensions_[index];
     }
 
+    /** \brief Iterator pointing to the first dimension
+     */
     iterator begin()
     {
         return dimensions_.begin();
     }
 
+    /** \brief Iterator pointing just after the last dimension
+     */
     iterator end()
     {
         return dimensions_.end();
     }
 
+    /** \brief Iterator pointing to the first dimension
+     */
     const_iterator begin() const
     {
         return dimensions_.begin();
     }
 
+    /** \brief Iterator pointing just after the last dimension
+     */
     const_iterator end() const
     {
         return dimensions_.end();
