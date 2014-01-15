@@ -172,9 +172,14 @@ public:
     template <typename T>
     friend void operator<<=(T& sink, const dataset& source)
     {
-        std::vector<hsize_t> file_shape = source.shape();
+        using std::begin;
+        
+        auto current_shape = detail::shape_adl(source);
 
-        hdf5::dataspace mem_space(file_shape);
+        std::vector<hsize_t> mem_shape(begin(current_shape),
+                                       end(current_shape));
+
+        hdf5::dataspace mem_space(mem_shape);
         hdf5::dataspace file_space = source.dataset_wrapper_.get_space();
         hdf5::type datatype = source.dataset_wrapper_.datatype();
 
