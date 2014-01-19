@@ -37,7 +37,7 @@ we create a new group 'data' within the root group and save the group handle in 
 Now, we will store some test data in our file. To do this, we have to create a new dataset.
 A dataset is a rectangular, homogeneous collection of elements and is the primary facility for
 data storage in HDF5. A dataset can distribute its elements over an arbitrary number of dimensions.
-This is convenient, since many object in science, for example matrices and tensors, extend along several
+This is convenient, since many objects in science, for example matrices and tensors, extend along several
 dimensions and we can map our data structures naturally onto our file structure. ::
 
     dataset ds = data.create_dataset<double>("ds", { 10 });
