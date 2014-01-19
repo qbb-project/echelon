@@ -251,5 +251,5 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 doxylink = {
-        'echelon' : ('@CMAKE_CURRENT_BINARY_DIR@/doc/echelon.tag', '@CMAKE_CURRENT_BINARY_DIR@/doc/html/')
+        'echelon' : ('@CMAKE_CURRENT_BINARY_DIR@/doc/echelon.tag', '../api_doc')
 }

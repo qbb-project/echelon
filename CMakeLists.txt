@@ -79,6 +79,9 @@ find_package(Sphinx)
 if(DOXYGEN_FOUND)
         
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
+
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/latex)
             
     add_custom_target(api_doc
         ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
@@ -101,8 +104,8 @@ if(DOXYGEN_FOUND)
 
       set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
 
-      set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
-      set(SPHINX_LATEX_DIR "${CMAKE_CURRENT_BINARY_DIR}/latex")
+      set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/html/user_guide")
+      set(SPHINX_LATEX_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/latex/user_guide")
       configure_file(
             "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide/conf.py.in"
             "${BINARY_BUILD_DIR}/conf.py"

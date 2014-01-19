@@ -48,11 +48,11 @@ The final step is to store our data in the dataset, which can be done by using t
 
     ds <<= v;
 
-In our example v is a std::vector<double>, which contains ten elements. It should be noted, that
+In our example, v is a std::vector<double>, which contains ten elements. It should be noted, that
 the shape and datatype of the data must always match the shape and datatype of the dataset. An exception is thrown otherwise.
 While we will restrict ourself to the element type double and the container std::vector in this example, echelon supports
 several other types and containers, and can be extended to handle many more. Since this topic is a very complex one,
-we will discuss it in its entire at a later point. For now it should be sufficient, that you know, that every primitive
+we will discuss it in its entire at a later point. For now, it should be sufficient, that you know, that every primitive
 C++ type is supported.
 
 The following code summarizes every step we have done so far, from the creation of our file to the storage of
