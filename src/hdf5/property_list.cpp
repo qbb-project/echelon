@@ -104,6 +104,14 @@ void property_list::set_deflate(unsigned int level)
         throw_on_hdf5_error();
 }
 
+void property_list::set_shuffle()
+{
+    herr_t error_code = H5Pset_shuffle(id());
+
+    if (error_code < 0)
+        throw_on_hdf5_error();    
+}
+
 std::vector<hsize_t> property_list::get_chunk() const
 {
     int chunk_rank = H5Pget_chunk(id(), 0, nullptr);

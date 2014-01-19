@@ -67,6 +67,7 @@ dataset::dataset(const object& parent, const std::string& name,
 
     if (comp_level > -1)
     {
+        dataset_creation_properties.set_shuffle();
         dataset_creation_properties.set_deflate(comp_level);
     }
 
