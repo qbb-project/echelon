@@ -81,9 +81,9 @@ public:
         return *this;
     }
     
-    /** \brief Sets the gzip compression level of the dataset
+    /** \brief Sets the gzip compression level (0 - 9) of the dataset
      * 
-     *  \param value compression level
+     *  \param value compression level (0 - 9)
      * 
      *  \return *this
      */
