@@ -72,9 +72,13 @@ def normalise(symbol):
 	:return:
 		a tuple consisting of two strings: ``(qualified function name or symbol, normalised argument list)``
 	"""
-	
+	#special case operator()
 	try:
-		bracket_location = symbol.index('(')
+		try:
+			operator_location = symbol.index('operator()(')
+			bracket_location = operator_location + len('operator()')
+		except ValueError:
+			bracket_location = symbol.index('(')
 		#Split the input string into everything before the opening bracket and everything else
 		function_name = symbol[:bracket_location]
 		arglist_input_string = symbol[bracket_location:]

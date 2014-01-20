@@ -147,6 +147,57 @@ using the standard output stream: ::
             std::cout << value << "  ";
     }
 
+****************************************
+Tutorial 2 - Partial I/O and compression
+****************************************
+
+Slicing
+=======
+
+Until now, we have read entire datasets from the file into the main memory. While this is sufficient for simple use cases it is often not possible or desirable to read all data at the same time.
+For similar reasons, one might to assemble a dataset chunk by chunk instead of writing it in one go.
+In these use cases, partial I/O comes into play. It allows one to only read or write a certain subset of the dataset. Just now, echelon supports the use of regular, rectangular access patterns
+called :echelon:`slices <echelon::slice>`. While slice usually only denotes a subset with a lower rank, we will also use it for selections with the same rank as the dataset for convenience.
+Creating slices in echelon is fairly trivial. For example the following code ::
+
+    using echelon::_;
+
+    auto slice = my_dataset(10, _);
+
+will create a 1-slice (a one-dimensional slice) from a two-dimensional dataset by fixing the first index to ten. The :echelon:`slicing operator <echelon::dataset::operator()(Args...)>`
+always takes the same number of arguments as the rank of the dataset. A runtime error is raised otherwise. echelon::_ is a placeholder for unrestricted dimensions.
+In a similar way, one can restrict a dimension to certain bounds. The code ::
+
+    using echelon::_;
+    using echelon::range;
+
+    auto slice = my_dataset(range(2, 10), _);
+
+restricts the first dimension of the dataset to the interval :math:`\left[2, 10\right[`. If a certain bound should not be restricted the placeholder _ can be used.          
+For detailed informations about all possible slicing pattern, one should consult the documentation of the :echelon:`slicing operator <echelon::dataset::operator()(Args...)>`.
+
+At the time of writing, :echelon:`echelon::slice` does support most operations, which are valid on a dataset.
+For example, one can write data into the slice: ::
+
+    slice <<= data;
+
+Compression
+===========
+
+If working with large amounts of data it is often desirable to avoid a huge memory footprint, especially if in the case of long-term storage. In many cases, one can achieve this
+by compressing the dataset, while sacrificing I/O performance at the same time. Luckily, echelon---respectively HDF5---comes with built-in compression capabilities.
+Compression can be enabled during dataset creation through the :echelon:`echelon::dataset_options` class and the corresponding argument of the :echelon:`echelon::group::create_dataset`
+and :echelon:`echelon::group::require_dataset` methods by setting the respective option. For example ::
+
+    echelon::dataset_options options;
+    options.compression_level(4);
+    my_group.create_dataset<double>("test", {1000, 1000}, options);
+
+will enable deflate compression with a compression level of 4.
+
+HDF5 requires to change the storage layout of the dataset from 'continuous' to 'chunked' if compression is enabled. echelon will automatically try to guess a reasonable shape of the chunks.
+Since this choice might have a huge impact on compression ratio and I/O performance, one can override the auto-chunking heuristic by providing one's own chunk shape through the
+:echelon:`echelon::dataset_options` class. As of now, a single chunk should not be larger than the entire dataset. 
 
 *****************************
 Tutorial x - Advanced tidbits
