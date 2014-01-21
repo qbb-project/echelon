@@ -23,8 +23,10 @@ dimension_scale::dimension_scale(const dataset& associated_dataset,
 
     hdf5::dataspace space(extent);
 
+    auto enclosing_group = hdf5::group(dimensions_scales.id(), dataset_name, hdf5::default_property_list, hdf5::default_property_list, hdf5::default_property_list);
+    
     dim_scale_ =
-        hdf5::dimension_scale(dimensions_scales.id(), dataset_name,
+        hdf5::dimension_scale(enclosing_group.id(), "scale",
                               datatype.native_handle(), space, scale_name);
 }
 
