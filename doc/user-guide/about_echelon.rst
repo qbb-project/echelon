@@ -17,7 +17,7 @@ Project goals
 * Common use cases should be straightforward.
 * The library should be extendable, if appropriate. Especially user-defined data types should be supported.
 * The library should be able to read and manipulate every valid HDF5 file,
-  which was created by a supported version of the HDF5 library.
+  which was created by a supported version of the HDF5 library. (note: This goal is slightly outdated. See below.)
 * The design of the library should be driven by common concepts rather than special cases.
 * The library should permit peak performance for common usage patterns.
 
