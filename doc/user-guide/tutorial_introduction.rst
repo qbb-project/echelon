@@ -184,7 +184,7 @@ For example, one can write data into the slice: ::
 Compression
 ===========
 
-If working with large amounts of data it is often desirable to avoid a huge memory footprint, especially if in the case of long-term storage. In many cases, one can achieve this
+If working with large amounts of data it is often desirable to avoid a huge memory footprint, especially in the case of long-term storage. In many cases, one can achieve this
 by compressing the dataset, while sacrificing I/O performance at the same time. Luckily, echelon---respectively HDF5---comes with built-in compression capabilities.
 Compression can be enabled during dataset creation through the :echelon:`echelon::dataset_options` class and the corresponding argument of the :echelon:`echelon::group::create_dataset`
 and :echelon:`echelon::group::require_dataset` methods by setting the respective option. For example ::
