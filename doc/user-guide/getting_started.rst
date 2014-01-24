@@ -72,3 +72,10 @@ If used as a subproject, echelon defines the same
 variables, as if it would have done in the external dependency case, which makes both approaches quite interchangeable.
 The big advantage of the subproject approach is, that echelon is automatically build alongside your project
 and you don't have to bother with a second manual compilation.
+
+Manually link against echelon 
+=============================
+
+If you use a different build system than CMake (or good old manual compilation), you need to link manually against
+the libraries echelon and echelon_hdf5, together with the HDF5 libraries hdf5 and hdf5_hl.
+In addition, the compiler's C++11 support has to be enabled.
