@@ -208,7 +208,7 @@ Dimensions and dimension scales
 
 One feature of datasets which wasn't presented so far are :echelon:`dataset dimensions <echelon::dimension>`.
 The dimensions are accessed through the, hopefully indisputably named, dataset property :echelon:`dimensions <echelon::dataset::dimensions>`. 
-For example, one could give each dimension a descriptive, as shown in the following code sample label ::
+For example, one could give each dimension a descriptive label, as shown in the following code sample ::
 
     my_dataset.dimensions.relabel("foo");
 
