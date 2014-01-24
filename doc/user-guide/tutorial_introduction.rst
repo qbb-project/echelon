@@ -81,7 +81,7 @@ Basic read access
 
 By now, we have learned how to store data in our file.
 But it would be rather pointless to store data in the file, if we could not load it again.
-In this section we will learn how to load the data from the previous example into a container.
+In this section, we will learn how to load the data from the previous example into a container.
 
 As a first step we create a handle ::
 
