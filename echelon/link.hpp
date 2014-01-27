@@ -7,6 +7,9 @@
 #define ECHELON_LINK_HPP
 
 #include <echelon/object.hpp>
+
+#include <echelon/hdf5/link.hpp>
+
 #include <string>
 
 namespace echelon
@@ -18,6 +21,8 @@ class link
 {
 public:
     link(object origin_, std::string name_);
+
+    explicit link(hdf5::link native_link_);
 
     /** \brief Returns the destination of the link.
      *
@@ -37,8 +42,7 @@ public:
     const std::string& name() const;
 
 private:
-    object origin_;
-    std::string name_;
+    hdf5::link native_link_;
 };
 }
 

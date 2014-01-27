@@ -22,14 +22,12 @@ struct and_<Front> : std::integral_constant<bool, Front::value>
 };
 
 template <typename Front, typename... Tail>
-struct and_<Front, Tail...> : std::integral_constant<
-    bool, Front::value&& and_<Tail...>::value>
+struct and_<Front, Tail...> : std::integral_constant<bool, Front::value&& and_<Tail...>::value>
 {
 };
 
 template <typename... T>
-struct all_integral
-    : and_<std::is_integral<typename std::remove_reference<T>::type>...>
+struct all_integral : and_<std::is_integral<typename std::remove_reference<T>::type>...>
 {
 };
 }

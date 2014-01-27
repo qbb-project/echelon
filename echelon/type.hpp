@@ -24,8 +24,8 @@ public:
     /** \brief Type of the underlying HDF5 low-level handle
      */
     using native_handle_type = hdf5::type;
-    
-    explicit type(hdf5::type type_wrapper_);
+
+    explicit type(native_handle_type native_handle_);
 
     /** \brief Returns a handle to the primitive type 'char'.
      */
@@ -92,7 +92,7 @@ public:
     static type compound_type(const type_layout& layout);
 
     std::size_t size() const;
-    
+
     /** \brief Clones the type.
      *
      *  \post t == t.clone()
@@ -106,7 +106,7 @@ public:
     const native_handle_type& native_handle() const;
 
 private:
-    hdf5::type type_wrapper_;
+    hdf5::type type_handle_;
 };
 
 /** \brief Tests two types for equality.
@@ -196,8 +196,7 @@ public:
      *  \param element_type type of the member
      *  \param offset offset of the member within the compound type in bytes
      */
-    void add_element(std::string name, const type& element_type,
-                     std::size_t offset)
+    void add_element(std::string name, const type& element_type, std::size_t offset)
     {
         elements_.emplace_back(name, element_type, offset);
     }

@@ -1,4 +1,4 @@
-//  Copyright (c) 2012-2013 Christopher Hinz
+//  Copyright (c) 2012 Christopher Hinz
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -6,48 +6,68 @@
 #ifndef ECHELON_HDF5_ATTRIBUTE_HPP
 #define ECHELON_HDF5_ATTRIBUTE_HPP
 
-#include <echelon/hdf5/object_reference.hpp>
-#include <echelon/hdf5/object.hpp>
-#include <echelon/hdf5/property_list.hpp>
 #include <echelon/hdf5/type.hpp>
-#include <echelon/hdf5/dataspace.hpp>
-#include <echelon/hdf5/property_list.hpp>
+#include <echelon/hdf5/object.hpp>
 
-#include <hdf5.h>
-#include <string>
-#include <type_traits>
+#include <echelon/hdf5/precursor/attribute.hpp>
+
+#include <echelon/hdf5/data_transfer_broker.hpp>
+
+#include <utility>
 
 namespace echelon
 {
 namespace hdf5
 {
-
+/** \brief A handle to an HDF5 attribute.
+ */
 class attribute
 {
 public:
-    explicit attribute(hid_t attribute_id_);
-    attribute(hid_t loc_id_, const std::string& name_, const type& attr_type_,
-              const property_list& acpl, const property_list& aapl);
-    attribute(hid_t loc_id_, const std::string& name_);
-    ~attribute();
-    attribute(const attribute& other);
-    attribute(attribute&& other);
+    /** \brief Type of the underlying HDF5 low-level handle
+     */
+    using native_handle_type = hdf5::precursor::attribute;
 
-    attribute& operator=(const attribute& other);
-    attribute& operator=(attribute&& other);
+    attribute(const object& parent, const std::string& name, const type& datatype);
+    attribute(const object& parent, const std::string& name);
 
-    void write(const void* value);
-    void read(void* value) const;
+    /** \brief Writes the content of a variable into the attribute.
+     *
+     *  \tparam T Type of the written value.
+     *
+     *  \param attr  attribute, to which the value is written
+     *  \param value value, which is written into the attribute
+     */
+    template <typename T>
+    friend inline void operator<<=(attribute& attr, const T& value)
+    {
+        write(attr.attribute_wrapper_, value);
+    }
 
+    /** \brief Reads the content of an attribute into a variable.
+     *
+     *  \tparam T Type of the read value.
+     *
+     *  \param value value, which is read from the attribute
+     *  \param attr  attribute, from which the value is read
+     */
+    template <typename T>
+    friend inline void operator<<=(T& value, const attribute& attr)
+    {
+        read(attr.attribute_wrapper_, value);
+    }
+
+    /** \brief The value type of the attribute.
+     */
     type datatype() const;
 
-    hid_t id() const;
+    /** \brief The underlying HDF5 low-level handle.
+     */
+    const native_handle_type& native_handle() const;
 
 private:
-    hid_t attribute_id_;
+    hdf5::precursor::attribute attribute_wrapper_;
 };
-
-bool is_attribute_existing(const object& loc, const std::string& name);
 }
 }
 

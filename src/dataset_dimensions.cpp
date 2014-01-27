@@ -4,58 +4,66 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <echelon/dataset_dimensions.hpp>
-#include <cassert>
-
 #include <echelon/dataset.hpp>
+
+#include <cassert>
+#include <utility>
 
 namespace echelon
 {
 
-dimension::dimension(dataset& associated_dataset_, std::size_t index_)
-: associated_dataset_(&associated_dataset_), index_(index_)
+dimension::dimension(hdf5::group containing_group_handle_, std::size_t index_)
+: containing_group_handle_{std::move(containing_group_handle_)}, index_{index_}
 {
 }
 
-dimension_scale dimension::attach_dimension_scale(const std::string& name,
-                                                  const type& datatype)
+dimension_scale dimension::attach_dimension_scale(const std::string& name, const type& datatype)
 {
-    std::vector<hsize_t> extent = {extend()};
+    hdf5::dataset data = containing_group_handle_["data"];
 
-    std::string dataset_name = "dim" + std::to_string(index_);
+    hdf5::group dimensions = containing_group_handle_.require_group("dimensions");
 
-    dimension_scale dim_scale(*associated_dataset_, dataset_name, datatype,
-                              extent, name);
+    std::string dim_name = "dimension<" + std::to_string(index_) + ">";
 
-    hdf5::attach_dimension_scale(dim_scale.native_handle(),
-                                 associated_dataset_->data(),
-                                 index_);
+    hdf5::group this_dim = dimensions.require_group(dim_name);
 
-    return dim_scale;
+    hdf5::group dim_scales = this_dim.require_group("dimension_scales");
+
+    auto dim_scale = data.dimensions()[index_].attach_dimension_scale(
+        name, dim_scales, name, datatype.native_handle(), {extend()});
+
+    return dimension_scale(dim_scale);
 }
 
 std::string dimension::label() const
 {
-    return associated_dataset_->data().label(index_);
+    hdf5::dataset data = containing_group_handle_["data"];
+
+    return data.dimensions()[index_].label();
 }
 
 void dimension::relabel(const std::string& new_label)
 {
-    associated_dataset_->data().relabel(index_, new_label);
+    hdf5::dataset data = containing_group_handle_["data"];
+
+    return data.dimensions()[index_].relabel(new_label);
 }
 
 hsize_t dimension::extend() const
 {
-    return associated_dataset_->data()
-        .get_space()
-        .get_simple_extent_dims()[index_];
+    hdf5::dataset data = containing_group_handle_["data"];
+
+    return data.dimensions()[index_].extend();
 }
 
-dataset_dimensions::dataset_dimensions(dataset& associated_dataset_,
-                                       std::size_t rank_)
+dataset_dimensions::dataset_dimensions(hdf5::group containing_group_handle_)
 {
-    for (std::size_t i = 0; i < rank_; ++i)
-        dimensions_.emplace_back(associated_dataset_, i);
+    hdf5::dataset data = containing_group_handle_["data"];
+    auto rank = data.dimensions().count();
 
-    assert(rank_ == dimensions_.size());
+    for (std::size_t i = 0; i < rank; ++i)
+        dimensions_.emplace_back(containing_group_handle_, i);
+
+    assert(rank == dimensions_.size());
 }
 }

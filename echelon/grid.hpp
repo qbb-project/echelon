@@ -1,10 +1,9 @@
 #ifndef ECHELON_GRID_HPP
 #define ECHELON_GRID_HPP
 
-#include <echelon/multi_array.hpp>
+#include <echelon/support/multi_array.hpp>
 #include <echelon/dataset.hpp>
-#include <echelon/not_implemented_exception.hpp>
-#include <echelon/container_adaption.hpp>
+#include <echelon/hdf5/not_implemented_exception.hpp>
 
 #include <echelon/utility/macros.hpp>
 
@@ -23,16 +22,14 @@ namespace echelon
  *  \note This class is experimental and currently not fully implemented and
  *        documented. Use it with care.
  */
-template <typename DimensionScaleValueType,
-          typename DataValueType = DimensionScaleValueType>
+template <typename DimensionScaleValueType, typename DataValueType = DimensionScaleValueType>
 class grid
 {
 public:
     class dimension_scale
     {
     public:
-        dimension_scale(std::string name,
-                        std::vector<DimensionScaleValueType> values)
+        dimension_scale(std::string name, std::vector<DimensionScaleValueType> values)
         : name{std::move(name)}, values(std::move(values))
         {
         }
@@ -45,8 +42,7 @@ public:
 
     explicit grid(const std::vector<dimension_scale_type>& dimension_scales_,
                   const DataValueType& value_ = DataValueType())
-    : dimension_scales_(dimension_scales_),
-      data_(get_sizes_from_scales(dimension_scales_), value_)
+    : dimension_scales_(dimension_scales_), data_(get_sizes_from_scales(dimension_scales_), value_)
     {
     }
 
@@ -120,18 +116,15 @@ private:
 *  \param source the data source
 */
 template <typename DimensionScaleValueType, typename DataValueType>
-inline void
-operator<<=(dataset& sink,
-            const grid<DimensionScaleValueType, DataValueType>& source)
+inline void operator<<=(dataset& sink, const grid<DimensionScaleValueType, DataValueType>& source)
 {
     std::size_t count = 0;
 
     for (const auto& scale : source.dimension_scales())
     {
-        sink.dimensions[count].relabel(scale.name);
+        sink.dimensions()[count].relabel(scale.name);
         auto ds =
-            sink.dimensions[count]
-                .attach_dimension_scale<DimensionScaleValueType>(scale.name);
+            sink.dimensions()[count].attach_dimension_scale<DimensionScaleValueType>(scale.name);
         ds <<= scale.values;
         ++count;
     }
@@ -145,14 +138,13 @@ operator<<=(dataset& sink,
 *  \param source the dataset, which is used as a source
 */
 template <typename DimensionScaleValueType, typename DataValueType>
-inline void operator<<=(grid<DimensionScaleValueType, DataValueType>& sink,
-                        const dataset& source)
+inline void operator<<=(grid<DimensionScaleValueType, DataValueType>& sink, const dataset& source)
 {
-    throw not_implemented_exception(
+    throw hdf5::not_implemented_exception(
         "Reading grids from HDF5 files is currently not implemented.");
 
-    //FIXME: implement this
-    
+    // FIXME: implement this
+
     /*for (const auto& dimension : source.dimensions)
     {
     }*/

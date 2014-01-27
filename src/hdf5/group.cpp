@@ -4,233 +4,180 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <echelon/hdf5/group.hpp>
-#include <echelon/hdf5/error_handling.hpp>
 
-#include <echelon/utility/macros.hpp>
-
-#include <utility>
-#include <exception>
+#include <echelon/hdf5/file.hpp>
 
 namespace echelon
 {
 namespace hdf5
 {
-
-namespace
+group::group(const file& loc, const std::string& name)
+: group_wrapper_(loc.native_handle().id(), name, hdf5::precursor::default_property_list)
 {
+}
 
-struct iterate_proxy_data
+group::group(const object& parent, const std::string& name, creation_mode mode) : group_wrapper_(-1)
 {
-    explicit iterate_proxy_data(std::function<herr_t(hid_t, const char*)> op)
-    : op{std::move(op)}, caught_exception{}
+    if (mode == creation_mode::create)
     {
+        hdf5::precursor::property_list link_creation_properties(
+            hdf5::precursor::property_list_class(H5P_LINK_CREATE));
+        link_creation_properties.set_char_encoding(H5T_CSET_UTF8);
+
+        group_wrapper_ = hdf5::precursor::group(
+            parent.native_handle().id(), name, link_creation_properties,
+            hdf5::precursor::default_property_list, hdf5::precursor::default_property_list);
     }
-
-    std::function<herr_t(hid_t, const char*)> op;
-    std::exception_ptr caught_exception;
-};
-
-extern "C" {
-
-static herr_t kubus_hdf5_iterate_proxy_op(hid_t g_id, const char* name,
-                                          const H5L_info_t* ECHELON_UNUSED(info),
-                                          void* op_data) noexcept
-{
-    iterate_proxy_data& data = *static_cast<iterate_proxy_data*>(op_data);
-
-    try
+    else
     {
-        return data.op(g_id, name);
-    }
-    catch (...)
-    {
-        data.caught_exception = std::current_exception();
-
-        return 1;
-    }
-}
-}
-
-struct visit_objects_proxy_data
-{
-    explicit visit_objects_proxy_data(
-        std::function<herr_t(hid_t, const char*)> op)
-    : op{std::move(op)}, caught_exception{}
-    {
-    }
-
-    std::function<herr_t(hid_t, const char*)> op;
-    std::exception_ptr caught_exception;
-};
-
-extern "C" {
-
-static herr_t kubus_hdf5_visit_objects_proxy_op(hid_t g_id, const char* name,
-                                                const H5O_info_t* ECHELON_UNUSED(info),
-                                                void* op_data) noexcept
-{
-    visit_objects_proxy_data& data =
-        *static_cast<visit_objects_proxy_data*>(op_data);
-
-    try
-    {
-        return data.op(g_id, name);
-    }
-    catch (...)
-    {
-        data.caught_exception = std::current_exception();
-
-        return 1;
-    }
-}
-}
-}
-
-group::group() : group_id_(-1)
-{
-}
-
-group::group(hid_t group_id_) : group_id_(group_id_)
-{
-    ECHELON_ASSERT_MSG(id() == -1 || H5Iget_type(id()) == H5I_GROUP,
-                       "ID does not refer to a group");
-    ECHELON_ASSERT_MSG(id() == -1 || H5Iis_valid(id()) > 0,
-                       "invalid object ID");
-}
-
-group::group(const object& other) : group_id_(other.id())
-{
-    ECHELON_ASSERT_MSG(H5Iget_type(id()) == H5I_GROUP,
-                       "ID does not refer to a group");
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
-
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0,
-                       "unable to increment the reference count");
-}
-
-group::group(hid_t loc_id_, const std::string& name_,
-             const property_list& lcpl_, const property_list& gcpl_,
-             const property_list& gapl_)
-: group_id_(H5Gcreate2(loc_id_, name_.c_str(), lcpl_.id(), gcpl_.id(),
-                       gapl_.id()))
-{
-    if (id() < 0)
-        throw_on_hdf5_error();
-}
-
-group::group(hid_t loc_id_, const std::string& name_,
-             const property_list& gapl_)
-: group_id_(H5Gopen2(loc_id_, name_.c_str(), gapl_.id()))
-{
-    if (id() < 0)
-        throw_on_hdf5_error();
-}
-
-group::~group()
-{
-    if (id() > -1)
-    {
-        ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
-
-        ECHELON_VERIFY_MSG(H5Gclose(id()) >= 0, "unable to close the group");
+        group_wrapper_ = hdf5::precursor::group(parent.native_handle().id(), name,
+                                                hdf5::precursor::default_property_list);
     }
 }
 
-group::group(const group& other) : group_id_(other.id())
+group::group(hdf5::precursor::group group_wrapper_) : group_wrapper_(std::move(group_wrapper_))
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
-
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0,
-                       "unable to increment the reference count");
 }
 
-group::group(group&& other) : group_id_(other.id())
+group group::create_group(const std::string& name)
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
-
-    other.group_id_ = -1;
+    return group(*this, name, creation_mode::create);
 }
 
-group& group::operator=(const group& other)
+dataset group::create_dataset(const std::string& name, const type& datatype,
+                              const std::vector<hsize_t>& dims, const dataset_options& options)
 {
-    using std::swap;
-
-    group temp(other);
-
-    swap(*this, temp);
-
-    return *this;
+    return create_dataset(name, datatype, dims, options.compression_level(),
+                          options.auto_chunking(), options.shuffle_filter(), options.chunk_shape());
 }
 
-group& group::operator=(group&& other)
+dataset group::create_dataset(const std::string& name, const type& datatype,
+                              const std::vector<hsize_t>& dims, int comp_level, bool auto_chunking,
+                              bool shuffle_filter, const std::vector<hsize_t> chunk_shape)
 {
-    using std::swap;
-
-    swap(group_id_, other.group_id_);
-
-    return *this;
+    return dataset(*this, name, datatype, dims, comp_level, auto_chunking, shuffle_filter,
+                   chunk_shape);
 }
 
-hsize_t group::iterate_links(H5_index_t index_type, H5_iter_order_t order,
-                             hsize_t start_index,
-                             std::function<herr_t(hid_t, const char*)> op) const
+scalar_dataset group::create_scalar_dataset(const std::string& name, const type& datatype)
 {
-    hsize_t current_index = start_index;
-
-    iterate_proxy_data data(op);
-
-    herr_t error_code = H5Literate(id(), index_type, order, &current_index,
-                                   &kubus_hdf5_iterate_proxy_op, &data);
-
-    if (error_code < 0)
-        throw_on_hdf5_error();
-
-    if (data.caught_exception)
-        std::rethrow_exception(data.caught_exception);
-
-    return current_index;
+    return scalar_dataset(*this, name, datatype);
 }
 
-void group::visit_links(H5_index_t index_type, H5_iter_order_t order,
-                        std::function<herr_t(hid_t, const char*)> visitor) const
+object group::operator[](const std::string& name) const
 {
-    iterate_proxy_data data(visitor);
-
-    herr_t error_code =
-        H5Lvisit(id(), index_type, order, &kubus_hdf5_iterate_proxy_op, &data);
-
-    if (error_code < 0)
-        throw_on_hdf5_error();
-
-    if (data.caught_exception)
-        std::rethrow_exception(data.caught_exception);
-}
-
-void
-group::visit_objects(H5_index_t index_type, H5_iter_order_t order,
-                     std::function<herr_t(hid_t, const char*)> visitor) const
-{
-    visit_objects_proxy_data data(visitor);
-
-    herr_t error_code = H5Ovisit(id(), index_type, order,
-                                 &kubus_hdf5_visit_objects_proxy_op, &data);
-
-    if (error_code < 0)
-        throw_on_hdf5_error();
-
-    if (data.caught_exception)
-        std::rethrow_exception(data.caught_exception);
+    return object(hdf5::precursor::object(native_handle().id(), name));
 }
 
 void group::remove(const std::string& name) const
 {
-    if (H5Ldelete(id(), name.c_str(), H5P_DEFAULT) < 0)
-        throw_on_hdf5_error();
+    group_wrapper_.remove(name);
 }
 
-hid_t group::id() const
+group group::require_group(const std::string& name)
 {
-    return group_id_;
+    if (exists(*this, name) && get_object_type_by_name(*this, name) == object_type::group)
+    {
+        return group(hdf5::precursor::group(native_handle().id(), name,
+                                            hdf5::precursor::default_property_list));
+    }
+    else
+    {
+        return create_group(name);
+    }
+}
+
+dataset group::require_dataset(const std::string& name, const type& datatype,
+                               const std::vector<hsize_t>& dims, const dataset_options& options)
+{
+    // FIXME: add a more precise type test here
+    if (exists(*this, name) && get_object_type_by_name(*this, name) == object_type::dataset)
+    {
+        dataset ds = (*this)[name];
+
+        if (ds.shape() != dims)
+            throw broken_contract_exception("The required shape doesn't "
+                                            "match the shape of the dataset.");
+
+        if (ds.datatype() != datatype)
+            throw broken_contract_exception("The required datatype doesn't "
+                                            "match the datatype of the dataset.");
+
+        return ds;
+    }
+    else
+    {
+        return create_dataset(name, datatype, dims, options);
+    }
+}
+
+scalar_dataset group::require_scalar_dataset(const std::string& name, const type& datatype)
+{
+    if (exists(*this, name) && get_object_type_by_name(*this, name) == object_type::scalar_dataset)
+    {
+        scalar_dataset ds(hdf5::precursor::dataset(native_handle().id(), name,
+                                                   hdf5::precursor::default_property_list));
+
+        if (ds.datatype() != datatype)
+            throw broken_contract_exception("The required datatype doesn't "
+                                            "match the datatype of the dataset.");
+
+        return ds;
+    }
+    else
+    {
+        return create_scalar_dataset(name, datatype);
+    }
+}
+
+void group::iterate_links(const std::function<void(const link&)>& op) const
+{
+    group_wrapper_.iterate_links(H5_INDEX_NAME, H5_ITER_NATIVE, 0,
+                                 [&op](hid_t loc_id, const char* name)->hid_t
+                                 {
+        op(link(object(hdf5::precursor::object(loc_id, hdf5::precursor::share_ownership)),
+                std::string(name)));
+
+        return 0;
+    });
+}
+
+void group::visit_links(const std::function<void(const link&)>& visitor) const
+{
+    group_wrapper_.visit_links(H5_INDEX_NAME, H5_ITER_NATIVE,
+                               [&visitor](hid_t loc_id, const char* name)->hid_t
+                               {
+        visitor(link(object(hdf5::precursor::object(loc_id, hdf5::precursor::share_ownership)),
+                     std::string(name)));
+
+        return 0;
+    });
+}
+
+void group::visit_objects(const std::function<void(const object&)>& visitor) const
+{
+    group_wrapper_.visit_objects(H5_INDEX_NAME, H5_ITER_NATIVE,
+                                 [&visitor](hid_t loc_id, const char* name)->hid_t
+                                 {
+        visitor(object(hdf5::precursor::object(loc_id, std::string(name))));
+
+        return 0;
+    });
+}
+
+object_reference group::ref() const
+{
+    return object_reference(object(*this));
+}
+
+const group::native_handle_type& group::native_handle() const
+{
+    return group_wrapper_;
+}
+
+attribute_repository<group> group::attributes() const
+{
+    return attribute_repository<group>(*this);
 }
 }
 }

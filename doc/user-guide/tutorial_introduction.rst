@@ -197,7 +197,10 @@ will enable deflate compression with a compression level of 4.
 
 HDF5 requires to change the storage layout of the dataset from 'continuous' to 'chunked' if compression is enabled. echelon will automatically try to guess a reasonable shape of the chunks.
 Since this choice might have a huge impact on compression ratio and I/O performance, one can override the auto-chunking heuristic by providing one's own chunk shape through the
-:echelon:`echelon::dataset_options` class. As of now, a single chunk should not be larger than the entire dataset. 
+:echelon:`echelon::dataset_options` class. As of now, a single chunk should not be larger than the entire dataset.
+
+.. note::
+    Enabling the shuffle filter via the corresponding option might increase the compression ratio.
 
 *****************************
 Tutorial x - Advanced tidbits
@@ -207,18 +210,18 @@ Dimensions and dimension scales
 ===============================
 
 One feature of datasets which wasn't presented so far are :echelon:`dataset dimensions <echelon::dimension>`.
-The dimensions are accessed through the, hopefully indisputably named, dataset property :echelon:`dimensions <echelon::dataset::dimensions>`. 
+The dimensions are accessed through the, hopefully indisputably named, dataset property :echelon:`dimensions <echelon::dataset::dimensions()>`. 
 For example, one could give each dimension a descriptive label, as shown in the following code sample ::
 
-    my_dataset.dimensions.relabel("foo");
+    my_dataset.dimensions()[0].relabel("foo");
 
 For details, please refer to the corresponding :echelon:`API documentation <echelon::dataset_dimensions>`.
 
 Another useful feature linked to dataset dimensions are :echelon:`dimension scales <echelon::dimension_scale>` which can be used to add certain meta-data to that dimension. For example, if one has saved a tabulated function in a dataset, one could add the corresponding value for each variable in a dimension scale, keeping this meta-data close to the actual data.
 
-The following code shows how to add a dimension scale 'x' of type double to an already existing dataset ::
+The following code shows how to add a dimension scale 'x' of type double to the first dimension of an already existing dataset ::
 
-    my_dataset.dimensions.attach_dimension_scale<double>("x");
+    my_dataset.dimensions()[0].attach_dimension_scale<double>("x");
 
 Echelon will automatically assemble the necessary data structures within the file and will free them if the dataset is destroyed. The shape of each dimensions scale is always one-dimensional and
 matches the length of the corresponding dataset dimension.

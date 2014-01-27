@@ -7,39 +7,15 @@
 #define ECHELON_ATTRIBUTE_REPOSITORY_HPP
 
 #include <echelon/type.hpp>
-#include <echelon/type_factory.hpp>
 #include <echelon/attribute.hpp>
-
-#include <echelon/broken_contract_exception.hpp>
 
 #include <memory>
 #include <map>
 #include <string>
-#include <exception>
+#include <utility>
 
 namespace echelon
 {
-
-class non_existing_attribute_exception : public std::exception
-{
-public:
-    non_existing_attribute_exception(std::string what_)
-    : what_(std::move(what_))
-    {
-    }
-
-    ~non_existing_attribute_exception() noexcept
-    {
-    }
-
-    const char* what() const noexcept override
-    {
-        return what_.c_str();
-    }
-
-private:
-    std::string what_;
-};
 
 /** \brief Attribute manager, which should be embedded into a parent object,
  *         which supports attributes.
@@ -51,7 +27,8 @@ template <typename Parent>
 class attribute_repository
 {
 public:
-    explicit attribute_repository(const Parent& parent_) : parent_(&parent_)
+    explicit attribute_repository(typename Parent::native_handle_type handle_)
+    : native_parent_(std::move(handle_))
     {
     }
 
@@ -64,7 +41,7 @@ public:
      */
     attribute create(const std::string& name, const type& datatype)
     {
-        return attribute(object(*parent_), name, datatype);
+        return attribute(native_parent_.attributes().create(name, datatype.native_handle()));
     }
 
     /** \brief Creates a new attribute.
@@ -79,7 +56,7 @@ public:
     template <typename T>
     attribute create(const std::string& name)
     {
-        return create(name, get_hdf5_type<T>());
+        return attribute(native_parent_.attributes().template create<T>(name));
     }
 
     /** \brief Creates a new attribute and initializes it with a given value.
@@ -95,11 +72,7 @@ public:
     template <typename T>
     attribute create(const std::string& name, const T& value)
     {
-        attribute attr = create<T>(name);
-
-        attr <<= value;
-
-        return attr;
+        return attribute(native_parent_.attributes().template create(name, value));
     }
 
     /** \brief Accessor function for this attribute repository.
@@ -110,7 +83,7 @@ public:
      */
     attribute operator[](const std::string& name) const
     {
-        return attribute(object(*parent_), name);
+        return attribute(native_parent_.attributes()[name]);
     }
 
     /** \brief Tests, if an attribute exists.
@@ -121,7 +94,7 @@ public:
      */
     bool exists(const std::string& name) const
     {
-        return hdf5::is_attribute_existing(hdf5::object(parent_->id()), name);
+        return native_parent_.attributes().exists(name);
     }
 
     /** \brief Returns the requested attribute, if it already exists, otherwise
@@ -148,21 +121,7 @@ public:
      */
     attribute require(const std::string& name, const type& datatype)
     {
-        if (exists(name))
-        {
-            attribute attr(object(*parent_), name);
-
-            if (attr.datatype() != datatype)
-                throw broken_contract_exception(
-                    "The required datatype doesn't "
-                    "match the datatype of the attribute.");
-
-            return attr;
-        }
-        else
-        {
-            return create(name, datatype);
-        }
+        return attribute(native_parent_.attributes().require(name, datatype.native_handle()));
     }
 
     /** \brief Returns the requested attribute, if it already exists, otherwise
@@ -192,7 +151,7 @@ public:
     template <typename T>
     attribute require(const std::string& name)
     {
-        return require(name, get_hdf5_type<T>());
+        return attribute(native_parent_.attributes().template require<T>(name));
     }
 
     /** \brief Returns the requested attribute, if it already exists, otherwise
@@ -224,31 +183,11 @@ public:
     template <typename T>
     attribute require(const std::string& name, const T& value)
     {
-        type datatype = get_hdf5_type<T>();
-
-        if (exists(name))
-        {
-            attribute attr(object(*parent_), name);
-
-            if (attr.datatype() != datatype)
-                throw broken_contract_exception(
-                    "The required datatype doesn't "
-                    "match the datatype of the attribute.");
-
-            return attr;
-        }
-        else
-        {
-            attribute attr = create(name, datatype);
-
-            attr <<= value;
-
-            return attr;
-        }
+        return attribute(native_parent_.attributes().require(name, value));
     }
 
 private:
-    const Parent* parent_;
+    typename Parent::native_handle_type native_parent_;
 };
 }
 

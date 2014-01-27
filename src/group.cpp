@@ -7,139 +7,116 @@
 
 #include <echelon/file.hpp>
 
-#include <iostream>
-
 namespace echelon
 {
 
-group::group(const file& loc, const std::string& name)
-: group_wrapper_(loc.native_handle().id(), name, hdf5::default_property_list), attributes(*this)
+group::group(const file& loc, const std::string& name) : group_handle_(loc.native_handle()[name])
 {
 }
 
-group::group(const object& parent, const std::string& name, creation_mode mode)
-: group_wrapper_(-1), attributes(*this)
-{
-    if (mode == creation_mode::create)
-    {
-        hdf5::property_list link_creation_properties(
-            hdf5::property_list_class(H5P_LINK_CREATE));
-        link_creation_properties.set_char_encoding(H5T_CSET_UTF8);
-
-        group_wrapper_ = hdf5::group(
-            parent.native_handle().id(), name, link_creation_properties,
-            hdf5::default_property_list, hdf5::default_property_list);
-    }
-    else
-    {
-        group_wrapper_ =
-            hdf5::group(parent.native_handle().id(), name, hdf5::default_property_list);
-    }
-}
-
-group::group(hdf5::group group_wrapper_)
-: group_wrapper_(std::move(group_wrapper_)), attributes(*this)
+group::group(group::native_handle_type native_handle_) : group_handle_(std::move(native_handle_))
 {
 }
 
 group group::create_group(const std::string& name)
 {
-    return group(*this, name, creation_mode::create);
+    auto new_group = group_handle_.create_group(name);
+    new_group.attributes().create("echelon.class", "group");
+
+    return group(new_group);
 }
 
 dataset group::create_dataset(const std::string& name, const type& datatype,
-                              const std::vector<hsize_t>& dims,
-                              const dataset_options& options)
+                              const std::vector<hsize_t>& dims, const dataset_options& options)
 {
     return create_dataset(name, datatype, dims, options.compression_level(),
-                          options.auto_chunking(),options.chunk_shape());
+                          options.auto_chunking(), options.shuffle_filter(), options.chunk_shape());
 }
 
 dataset group::create_dataset(const std::string& name, const type& datatype,
-                              const std::vector<hsize_t>& dims, int comp_level,
-                              bool auto_chunking,
-                              const std::vector<hsize_t> chunk_shape)
+                              const std::vector<hsize_t>& dims, int comp_level, bool auto_chunking,
+                              bool shuffle_filter, const std::vector<hsize_t> chunk_shape)
 {
-    return dataset(*this, name, datatype, dims, comp_level, auto_chunking, chunk_shape);
+    hdf5::dataset_options options;
+
+    options.compression_level(comp_level)
+        .auto_chunking(auto_chunking)
+        .chunk_shape(chunk_shape)
+        .shuffle_filter(shuffle_filter);
+
+    auto containing_group = group_handle_.create_group(name);
+    containing_group.create_dataset("data", datatype.native_handle(), dims, options);
+
+    containing_group.attributes().create("echelon.class", "dataset");
+
+    return dataset(containing_group);
 }
 
-scalar_dataset group::create_scalar_dataset(const std::string& name,
-                                            const type& datatype)
+scalar_dataset group::create_scalar_dataset(const std::string& name, const type& datatype)
 {
-    return scalar_dataset(*this, name, datatype);
+    auto containing_group = group_handle_.create_group(name);
+
+    containing_group.create_scalar_dataset("data", datatype.native_handle());
+
+    containing_group.attributes().create("echelon.class", "scalar_dataset");
+
+    return scalar_dataset(containing_group);
 }
 
 object group::operator[](const std::string& name) const
 {
-    return object(hdf5::object(native_handle().id(), name));
+    return object(group_handle_[name]);
 }
 
 void group::remove(const std::string& name) const
 {
-    group_wrapper_.remove(name);
+    group_handle_.remove(name);
 }
 
 group group::require_group(const std::string& name)
 {
-    if (exists(*this, name) &&
-        get_object_type_by_name(*this, name) == object_type::group)
-    {
-        return group(hdf5::group(native_handle().id(), name, hdf5::default_property_list));
-    }
-    else
-    {
-        return create_group(name);
-    }
+    return group(group_handle_.require_group(name));
 }
 
 dataset group::require_dataset(const std::string& name, const type& datatype,
-                               const std::vector<hsize_t>& dims,
-                               const dataset_options& options)
+                               const std::vector<hsize_t>& dims, const dataset_options& options)
 {
-    return require_dataset(name, datatype, dims, options.compression_level(),
-                           options.auto_chunking(), options.chunk_shape());
-}
-
-dataset group::require_dataset(const std::string& name, const type& datatype,
-                               const std::vector<hsize_t>& dims, int comp_level,
-                               bool auto_chunking, const std::vector<hsize_t> chunk_shape)
-{
-    //FIXME: add a more precise type test here
-    if (exists(*this, name) &&
-        get_object_type_by_name(*this, name) == object_type::group)
+    // FIXME: Is this test correct, shouldn't we simply test for existence??
+    if (hdf5::exists(native_handle(), name) &&
+        hdf5::get_object_type_by_name(native_handle(), name) == hdf5::object_type::group)
     {
-        dataset ds(hdf5::group(native_handle().id(), name, hdf5::default_property_list));
+        dataset ds = (*this)[name];
+
+        // FIXME: check class here
 
         if (ds.shape() != dims)
-            throw broken_contract_exception("The required shape doesn't "
-                                            "match the shape of the dataset.");
+            throw hdf5::broken_contract_exception("The required shape doesn't "
+                                                  "match the shape of the dataset.");
 
         if (ds.datatype() != datatype)
-            throw broken_contract_exception(
-                "The required datatype doesn't "
-                "match the datatype of the dataset.");
+            throw hdf5::broken_contract_exception("The required datatype doesn't "
+                                                  "match the datatype of the dataset.");
 
         return ds;
     }
     else
     {
-        return create_dataset(name, datatype, dims, comp_level, auto_chunking, chunk_shape);
+        return create_dataset(name, datatype, dims, options);
     }
 }
 
-scalar_dataset group::require_scalar_dataset(const std::string& name,
-                                             const type& datatype)
+scalar_dataset group::require_scalar_dataset(const std::string& name, const type& datatype)
 {
-    if (exists(*this, name) &&
-        get_object_type_by_name(*this, name) == object_type::scalar_dataset)
+    // FIXME: Is this test correct, shouldn't we simply test for existence??
+    if (hdf5::exists(native_handle(), name) &&
+        hdf5::get_object_type_by_name(native_handle(), name) == hdf5::object_type::group)
     {
-        scalar_dataset ds(
-            hdf5::dataset(native_handle().id(), name, hdf5::default_property_list));
+        scalar_dataset ds = (*this)[name];
 
+        // FIXME: check class here
         if (ds.datatype() != datatype)
-            throw broken_contract_exception(
-                "The required datatype doesn't "
-                "match the datatype of the dataset.");
+            throw hdf5::broken_contract_exception("The required datatype doesn't "
+                                                  "match the datatype of the dataset.");
 
         return ds;
     }
@@ -151,50 +128,34 @@ scalar_dataset group::require_scalar_dataset(const std::string& name,
 
 void group::iterate_links(const std::function<void(const link&)>& op) const
 {
-    group_wrapper_.iterate_links(
-        H5_INDEX_NAME, H5_ITER_NATIVE,
-        0, [&op](hid_t loc_id, const char * name)->hid_t
-    {
-            op(link(object(hdf5::object(loc_id, hdf5::share_ownership)),
-                    std::string(name)));
-
-            return 0;
-        });
+    group_handle_.iterate_links([&](const hdf5::link& l)
+                                { op(link(l)); });
 }
 
 void group::visit_links(const std::function<void(const link&)>& visitor) const
 {
-    group_wrapper_.visit_links(
-        H5_INDEX_NAME, H5_ITER_NATIVE,
-                           [&visitor](hid_t loc_id, const char * name)->hid_t
-    {
-            visitor(link(object(hdf5::object(loc_id, hdf5::share_ownership)),
-                         std::string(name)));
-
-            return 0;
-        });
+    group_handle_.visit_links([&](const hdf5::link& l)
+                              { visitor(link(l)); });
 }
 
-void
-group::visit_objects(const std::function<void(const object&)>& visitor) const
+void group::visit_objects(const std::function<void(const object&)>& visitor) const
 {
-    group_wrapper_.visit_objects(
-        H5_INDEX_NAME, H5_ITER_NATIVE,
-                           [&visitor](hid_t loc_id, const char * name)->hid_t
-    {
-            visitor(object(hdf5::object(loc_id, std::string(name))));
-
-            return 0;
-        });
+    group_handle_.visit_objects([&](const hdf5::object& l)
+                                { visitor(object(l)); });
 }
 
 object_reference group::ref() const
 {
-    return object_reference(object(*this));
+    return object_reference(group_handle_.ref());
 }
 
-const group::native_handle_type& group::native_handle() const
+group::native_handle_type group::native_handle() const
 {
-    return group_wrapper_;
+    return group_handle_;
+}
+
+attribute_repository<group> group::attributes() const
+{
+    return attribute_repository<group>(native_handle());
 }
 }

@@ -8,59 +8,25 @@
 
 #include <echelon/object.hpp>
 #include <echelon/type.hpp>
-#include <echelon/type_factory.hpp>
-#include <echelon/hdf5/group.hpp>
 #include <echelon/attribute_repository.hpp>
 #include <echelon/dataset.hpp>
 #include <echelon/scalar_dataset.hpp>
 #include <echelon/object_reference.hpp>
-#include <echelon/utility.hpp>
 #include <echelon/link.hpp>
 
-#include <echelon/broken_contract_exception.hpp>
+#include <echelon/hdf5/group.hpp>
+#include <echelon/hdf5/type_factory.hpp>
 
 #include <string>
 #include <vector>
 #include <map>
 #include <memory>
-#include <exception>
 #include <functional>
-#include <boost/concept_check.hpp>
 
 namespace echelon
 {
 
 class file;
-
-/** \brief Exception, which is thrown, if a requested object does not exist.
- */
-class non_existing_member_exception : public std::exception
-{
-public:
-    /** \brief Creates a new exception with a given error description.
-     *
-     * \param what_ error description
-     */
-    non_existing_member_exception(std::string what_) : what_(std::move(what_))
-    {
-    }
-
-    /** \brief The destructor
-     */
-    ~non_existing_member_exception() noexcept
-    {
-    }
-
-    /** \brief An associated error description.
-     */
-    const char* what() const noexcept override
-    {
-        return what_.c_str();
-    }
-
-private:
-    std::string what_;
-};
 
 /** \brief Additional options for the dataset creation
  *
@@ -69,22 +35,22 @@ class dataset_options
 {
 public:
     /** \brief Enables/Disables auto-chunking
-     * 
+     *
      *  \param value state of the auto-chunking algorithm
-     * 
+     *
      *  \return *this
      */
     dataset_options& auto_chunking(bool value)
     {
         auto_chunking_ = value;
-        
+
         return *this;
     }
-    
+
     /** \brief Sets the gzip compression level (0 - 9) of the dataset
-     * 
+     *
      *  \param value compression level (0 - 9)
-     * 
+     *
      *  \return *this
      */
     dataset_options& compression_level(int value)
@@ -94,10 +60,19 @@ public:
         return *this;
     }
 
+    /** \brief Enables/disables the shuffle filter
+     */
+    dataset_options& shuffle_filter(bool value)
+    {
+        shuffle_filter_ = value;
+
+        return *this;
+    }
+
     /** \brief Sets the chunk shape of the dataset
-     * 
+     *
      *  \param value chunk shape
-     * 
+     *
      *  \return *this
      */
     dataset_options& chunk_shape(std::vector<hsize_t> value)
@@ -106,7 +81,7 @@ public:
 
         return *this;
     }
-    
+
     /** \brief auto-chunking option
      */
     bool auto_chunking() const
@@ -121,15 +96,24 @@ public:
         return compression_level_;
     }
 
+    /** \brief shuffle filter option
+     */
+    bool shuffle_filter() const
+    {
+        return shuffle_filter_;
+    }
+
     /** \brief chunk shape
      */
     const std::vector<hsize_t>& chunk_shape() const
     {
         return chunk_shape_;
     }
+
 private:
     bool auto_chunking_ = false;
     int compression_level_ = -1;
+    bool shuffle_filter_ = false;
     std::vector<hsize_t> chunk_shape_ = {};
 };
 
@@ -142,10 +126,10 @@ public:
     /** \brief Type of the underlying HDF5 low-level handle
      */
     using native_handle_type = hdf5::group;
-    
+
     friend class file;
 
-    explicit group(hdf5::group group_wrapper_);
+    explicit group(native_handle_type native_handle_);
 
     /** \brief Creates a new HDF5 group within this group.
      *
@@ -186,10 +170,10 @@ public:
      *  \return a handle to the new dataset
      */
     template <typename T>
-    dataset create_dataset(const std::string& name,
-                           const std::vector<hsize_t>& dims, const dataset_options& options = {})
+    dataset create_dataset(const std::string& name, const std::vector<hsize_t>& dims,
+                           const dataset_options& options = {})
     {
-        return create_dataset(name, get_hdf5_type<T>(), dims, options);
+        return create_dataset(name, type(hdf5::get_hdf5_type<T>()), dims, options);
     }
 
     /** \brief Creates a new HDF5 scalar dataset within this group.
@@ -199,8 +183,7 @@ public:
      *
      *  \return a handle to the new scalar dataset
      */
-    scalar_dataset create_scalar_dataset(const std::string& name,
-                                         const type& datatype);
+    scalar_dataset create_scalar_dataset(const std::string& name, const type& datatype);
 
     /** \brief Creates a new HDF5 scalar dataset within this group.
      *
@@ -214,7 +197,7 @@ public:
     template <typename T>
     scalar_dataset create_scalar_dataset(const std::string& name)
     {
-        return create_scalar_dataset(name, get_hdf5_type<T>());
+        return create_scalar_dataset(name, type(hdf5::get_hdf5_type<T>()));
     }
 
     /** \brief Creates a new HDF5 scalar dataset within this group and
@@ -229,8 +212,7 @@ public:
      *  \return a handle to the new scalar dataset
      */
     template <typename T>
-    scalar_dataset create_scalar_dataset(const std::string& name,
-                                         const T& value)
+    scalar_dataset create_scalar_dataset(const std::string& name, const T& value)
     {
         scalar_dataset ds = create_scalar_dataset<T>(name);
 
@@ -293,8 +275,7 @@ public:
      *          dataset otherwise
      */
     dataset require_dataset(const std::string& name, const type& datatype,
-                            const std::vector<hsize_t>& dims,
-                            const dataset_options& options = {});
+                            const std::vector<hsize_t>& dims, const dataset_options& options = {});
 
     /** \brief Returns the requested dataset, if it already exists, otherwise a
      *         new dataset is created.
@@ -327,11 +308,10 @@ public:
      *          dataset otherwise
      */
     template <typename T>
-    dataset require_dataset(const std::string& name,
-                            const std::vector<hsize_t>& dims,
+    dataset require_dataset(const std::string& name, const std::vector<hsize_t>& dims,
                             const dataset_options& options = {})
     {
-        return require_dataset(name, get_hdf5_type<T>(), dims, options);
+        return require_dataset(name, type(hdf5::get_hdf5_type<T>()), dims, options);
     }
 
     /** \brief Returns the requested scalar dataset, if it already exists,
@@ -356,8 +336,7 @@ public:
      *  \return the requested scalar dataset, if it is already existing, or a
      *          new scalar dataset otherwise
      */
-    scalar_dataset require_scalar_dataset(const std::string& name,
-                                          const type& datatype);
+    scalar_dataset require_scalar_dataset(const std::string& name, const type& datatype);
 
     /** \brief Returns the requested scalar dataset, if it already exists,
      *         otherwise the scalar dataset is created.
@@ -386,7 +365,7 @@ public:
     template <typename T>
     scalar_dataset require_scalar_dataset(const std::string& name)
     {
-        return require_scalar_dataset(name, get_hdf5_type<T>());
+        return require_scalar_dataset(name, type(hdf5::get_hdf5_type<T>()));
     }
 
     /** \brief Returns the requested scalar dataset, if it already exists,
@@ -416,32 +395,9 @@ public:
      *          new scalar dataset otherwise
      */
     template <typename T>
-    scalar_dataset require_scalar_dataset(const std::string& name,
-                                          const T& value)
+    scalar_dataset require_scalar_dataset(const std::string& name, const T& value)
     {
-        type datatype = get_hdf5_type<T>();
-
-        if (exists(*this, name) &&
-            get_object_type_by_name(*this, name) == object_type::scalar_dataset)
-        {
-            scalar_dataset ds(
-                hdf5::dataset(native_handle().id(), name, hdf5::default_property_list));
-
-            if (ds.datatype() != datatype)
-                throw broken_contract_exception(
-                    "The required datatype doesn't "
-                    "match the datatype of the dataset.");
-
-            return ds;
-        }
-        else
-        {
-            scalar_dataset ds = create_scalar_dataset(name, datatype);
-
-            ds <<= value;
-
-            return ds;
-        }
+        return require_scalar_dataset(name, value);
     }
 
     /** \brief Iterates over every link within this group.
@@ -472,7 +428,7 @@ public:
 
     /** \brief The underlying HDF5 low-level handle.
      */
-    const native_handle_type& native_handle() const;
+    native_handle_type native_handle() const;
 
 private:
     friend class constructor_access;
@@ -485,22 +441,17 @@ private:
     };
 
     explicit group(const file& loc, const std::string& name = "/");
-    group(const object& parent, const std::string& name, creation_mode mode);
 
     dataset create_dataset(const std::string& name, const type& datatype,
-                           const std::vector<hsize_t>& dims, int comp_level,
-                           bool auto_chunking, const std::vector<hsize_t> chunk_shape);
+                           const std::vector<hsize_t>& dims, int comp_level, bool auto_chunking,
+                           bool shuffle_filter, const std::vector<hsize_t> chunk_shape);
 
-    dataset require_dataset(const std::string& name, const type& datatype,
-                            const std::vector<hsize_t>& dims, int comp_level,
-                            bool auto_chunking, const std::vector<hsize_t> chunk_shape);
-
-    hdf5::group group_wrapper_;
+    hdf5::group group_handle_;
 
 public:
     /** \brief The attributes, which are attached to the group.
      */
-    attribute_repository<group> attributes;
+    attribute_repository<group> attributes() const;
 };
 }
 

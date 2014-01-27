@@ -5,34 +5,18 @@
 
 #include <echelon/attribute.hpp>
 
+#include <utility>
+
 namespace echelon
 {
 
-attribute::attribute(const object& parent, const std::string& name,
-                     const type& datatype)
-: attribute_wrapper_(-1)
-{
-    hdf5::property_list attribute_creation_properties(
-        hdf5::property_list_class(H5P_ATTRIBUTE_CREATE));
-    attribute_creation_properties.set_char_encoding(H5T_CSET_UTF8);
-
-    attribute_wrapper_ = hdf5::attribute(
-        parent.native_handle().id(), name, datatype.native_handle(),
-        attribute_creation_properties, hdf5::default_property_list);
-}
-
-attribute::attribute(const object& parent, const std::string& name)
-: attribute_wrapper_(parent.native_handle().id(), name)
+attribute::attribute(native_handle_type native_handle_)
+: attribute_handle_{std::move(native_handle_)}
 {
 }
 
 type attribute::datatype() const
 {
-    return type(attribute_wrapper_.datatype());
-}
-
-const attribute::native_handle_type& attribute::native_handle() const
-{
-    return attribute_wrapper_;
+    return type(attribute_handle_.datatype());
 }
 }

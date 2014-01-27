@@ -6,47 +6,88 @@
 #ifndef ECHELON_HDF5_DIMENSION_SCALE_HPP
 #define ECHELON_HDF5_DIMENSION_SCALE_HPP
 
-#include <echelon/hdf5/dataset.hpp>
+#include <echelon/hdf5/data_transfer_broker.hpp>
+#include <echelon/hdf5/slice.hpp> //for shape_adl
+#include <echelon/object.hpp>
+
+#include <echelon/hdf5/precursor/dimension_scale.hpp>
 
 #include <string>
-
-#include <hdf5.h>
-#include <hdf5_hl.h>
 
 namespace echelon
 {
 namespace hdf5
 {
+class dataset;
+class type;
 
+/** \brief A handle to a dimension scale.
+ */
 class dimension_scale
 {
 public:
-    dimension_scale() = default;
-    dimension_scale(hid_t loc_id, const std::string& dataset_name,
-                    const type& dtype, const dataspace& space,
-                    const std::string& scale_name);
+    /** \brief Type of the underlying HDF5 low-level handle
+     */
+    using native_handle_type = hdf5::precursor::dimension_scale;
 
-    void write(const type& mem_type, const dataspace& mem_space,
-               const dataspace& file_space, const property_list& xfer_plist,
-               const void* buf);
-    void read(const type& mem_type, const dataspace& mem_space,
-              const dataspace& file_space, const property_list& xfer_plist,
-              void* buf) const;
+    dimension_scale(object location, const std::string& dataset_name, const type& datatype,
+                    const std::vector<hsize_t>& extent, const std::string& scale_name);
 
-    void write(const void* value);
-    void read(void* value) const;
+    /** \brief The shape of the dimension scale.
+     */
+    std::vector<hsize_t> shape() const;
 
-    dataspace get_space() const;
-    type datatype() const;
+    /** \brief Writes the content of a data source into the dimension scale.
+     *
+     *  The shape of the data source must match the shape of the dimension scale.
+     *
+     *  \tparam T type of the container; T must satisfy the data source
+     *  requirements.
+     *
+     *  \param sink  the dimension, which is used as a sink
+     *  \param source the data source
+     */
+    template <typename T>
+    friend void operator<<=(dimension_scale& sink, const T& source)
+    {
+        auto current_shape = detail::shape_adl(source);
 
-    hid_t id() const;
+        std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
+
+        hdf5::precursor::dataspace mem_space(mem_shape);
+        hdf5::precursor::dataspace file_space = sink.dim_scale_.get_space();
+        hdf5::precursor::type datatype = sink.dim_scale_.datatype();
+
+        write(sink.dim_scale_, datatype, mem_space, file_space, source);
+    }
+
+    /** \brief Reads the content of the dimension scale into a data sink.
+     *
+     *  \tparam T type of the container; T must satisfy the data sink
+     *  requirements.
+     *
+     *  \param sink the data sink
+     *  \param source the dimension scale, which is used as a source
+     */
+    template <typename T>
+    friend void operator<<=(T& sink, const dimension_scale& source)
+    {
+        std::vector<hsize_t> file_shape = source.shape();
+
+        hdf5::precursor::dataspace mem_space(file_shape);
+        hdf5::precursor::dataspace file_space = source.dim_scale_.get_space();
+        hdf5::precursor::type datatype = source.dim_scale_.datatype();
+
+        read(source.dim_scale_, datatype, mem_space, file_space, sink);
+    }
+
+    /** \brief The underlying HDF5 low-level handle.
+     */
+    const native_handle_type& native_handle() const;
 
 private:
-    dataset underlying_dataset_;
+    hdf5::precursor::dimension_scale dim_scale_;
 };
-
-void attach_dimension_scale(const dimension_scale& dim_scale, const dataset& to,
-                            unsigned int dimension);
 }
 }
 

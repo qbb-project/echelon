@@ -10,31 +10,25 @@
 #include <echelon/scalar_dataset.hpp>
 #include <echelon/object_reference.hpp>
 
-#include <echelon/utility.hpp>
-
 #include <utility>
 #include <cassert>
 
 namespace echelon
 {
 
-object::object(hdf5::object object_wrapper_)
-: object_wrapper_(std::move(object_wrapper_))
+object::object(hdf5::object native_handle_) : object_handle_(std::move(native_handle_))
 {
 }
 
-object::object(const group& object_)
-: object_wrapper_(object_.native_handle())
+object::object(const group& object_) : object_handle_(object_.native_handle())
 {
 }
 
-object::object(const dataset& object_)
-: object_wrapper_(object_.native_handle())
+object::object(const dataset& object_) : object_handle_(object_.native_handle())
 {
 }
 
-object::object(const scalar_dataset& object_)
-: object_wrapper_(object_.native_handle())
+object::object(const scalar_dataset& object_) : object_handle_(object_.native_handle())
 {
 }
 
@@ -70,36 +64,28 @@ object& object::operator=(const scalar_dataset& object_)
 
 object::operator group() const
 {
-    if (get_object_type(native_handle().id()) != object_type::group)
-        throw wrong_object_type_exception("wrong object type");
-
-    return group(hdf5::group(object_wrapper_));
+    return group(object_handle_);
 }
 
 object::operator dataset() const
 {
-    //FIXME: add a more precise type test here
-    if (get_object_type(native_handle().id()) != object_type::group)
-        throw wrong_object_type_exception("wrong object type");
+    // FIXME: add a more precise type test here
 
-    return dataset(hdf5::group(object_wrapper_));
+    return dataset(hdf5::group(object_handle_));
 }
 
 object::operator scalar_dataset() const
 {
-    if (get_object_type(native_handle().id()) != object_type::scalar_dataset)
-        throw wrong_object_type_exception("wrong object type");
-
-    return scalar_dataset(hdf5::dataset(object_wrapper_));
+    return scalar_dataset(object_handle_);
 }
 
 object_reference object::ref() const
 {
-    return object_reference(*this);
+    return object_reference(object_handle_.ref());
 }
 
-const object::native_handle_type& object::native_handle() const
+object::native_handle_type object::native_handle() const
 {
-    return object_wrapper_;
+    return object_handle_;
 }
 }

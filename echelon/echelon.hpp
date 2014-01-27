@@ -17,17 +17,12 @@
 #include <echelon/scalar_dataset.hpp>
 #include <echelon/attribute.hpp>
 
-#include <echelon/multi_array_adaptor.hpp>
-#include <echelon/multi_array.hpp>
+#include <echelon/support/multi_array_adaptor.hpp>
+#include <echelon/support/multi_array.hpp>
 #include <echelon/grid.hpp>
 
 #include <echelon/object_reference.hpp>
 
-#include <echelon/container_adaption.hpp>
 #include <echelon/std/stl_support.hpp>
-
-#include <echelon/adapt_type.hpp>
-
-#include <echelon/hdf5/error_handling.hpp>
 
 #endif

@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE( std_string_support_test )
   
       auto ds = temp_file.create_dataset<std::string>("dataset",{ 2 });
       auto sds = temp_file.create_scalar_dataset<std::string>("scalar_dataset");
-      auto attr = temp_file.attributes.create<std::string>("attribute");
+      auto attr = temp_file.attributes().create<std::string>("attribute");
 
       ds <<= hello_world;
       sds <<= foo;
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( std_string_support_test )
 BOOST_AUTO_TEST_CASE( cstring_support_test )
 {
       auto sds = temp_file.create_scalar_dataset("scalar_dataset","foo");
-      auto attr = temp_file.attributes.create("attribute","bar");
+      auto attr = temp_file.attributes().create("attribute","bar");
       
       std::string sds_value;
       std::string attr_value;

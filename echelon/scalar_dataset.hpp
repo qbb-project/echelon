@@ -9,14 +9,11 @@
 #include <echelon/object.hpp>
 
 #include <echelon/type.hpp>
-#include <echelon/hdf5/dataset.hpp>
-#include <echelon/hdf5/dataspace.hpp>
-#include <echelon/hdf5/property_list.hpp>
+#include <echelon/hdf5/group.hpp>
+#include <echelon/hdf5/scalar_dataset.hpp>
 
 #include <echelon/object_reference.hpp>
 #include <echelon/attribute_repository.hpp>
-
-#include <echelon/data_transfer_broker.hpp>
 
 namespace echelon
 {
@@ -28,12 +25,9 @@ class scalar_dataset
 public:
     /** \brief Type of the underlying HDF5 low-level handle
      */
-    using native_handle_type = hdf5::dataset;
-    
-    scalar_dataset(const object& parent, const std::string& name,
-                   const type& datatype);
+    using native_handle_type = hdf5::group;
 
-    explicit scalar_dataset(hdf5::dataset dataset_wrapper_);
+    explicit scalar_dataset(native_handle_type native_handle_);
 
     /** \brief Writes the content of a variable into the scalar dataset.
      *
@@ -45,7 +39,7 @@ public:
     template <typename T>
     friend inline void operator<<=(scalar_dataset& sink, const T& value)
     {
-        write(sink.dataset_wrapper_, value);
+        sink.scalar_dataset_handle_ <<= value;
     }
 
     /** \brief Reads the content of the scalar dataset into a variable.
@@ -58,7 +52,7 @@ public:
     template <typename T>
     friend inline void operator<<=(T& value, const scalar_dataset& source)
     {
-        read(source.dataset_wrapper_, value);
+        value <<= source.scalar_dataset_handle_;
     }
 
     /** \brief The value type of the scalar dataset.
@@ -71,15 +65,16 @@ public:
 
     /** \brief The underlying HDF5 low-level handle.
      */
-    const native_handle_type& native_handle() const;
+    native_handle_type native_handle() const;
 
 private:
-    hdf5::dataset dataset_wrapper_;
+    hdf5::group group_handle_;
+    hdf5::scalar_dataset scalar_dataset_handle_;
 
 public:
     /** \brief The attributes, which are attached to the scalar dataset.
      */
-    attribute_repository<scalar_dataset> attributes;
+    attribute_repository<scalar_dataset> attributes() const;
 };
 }
 

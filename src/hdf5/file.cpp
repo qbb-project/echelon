@@ -1,111 +1,117 @@
-//  Copyright (c) 2012-2013 Christopher Hinz
+//  Copyright (c) 2012 Christopher Hinz
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <echelon/hdf5/file.hpp>
-#include <echelon/hdf5/property_list.hpp>
-#include <echelon/hdf5/error_handling.hpp>
-
-#include <utility>
 
 namespace echelon
 {
 namespace hdf5
 {
-
-file::file(hid_t file_id_) : file_id_(file_id_)
+file::file(const std::string& path, create_mode mode)
+: file_wrapper_(path, mode == create_mode::truncate ? H5F_ACC_TRUNC : H5F_ACC_EXCL, H5P_DEFAULT,
+                H5P_DEFAULT),
+  root_group_(*this)
 {
-    ECHELON_ASSERT_MSG(id() == -1 || H5Iget_type(id()) == H5I_FILE,
-                       "ID does not refer to a file");
-    ECHELON_ASSERT_MSG(id() == -1 || H5Iis_valid(id()) > 0,
-                       "invalid object ID");
 }
 
-file::file(const std::string& name_, unsigned flags_, hid_t fcpl_id_,
-           hid_t fapl_id_)
-: file_id_(H5Fcreate(name_.c_str(), flags_, fcpl_id_, fapl_id_))
+file::file(const std::string& path, open_mode mode)
+: file_wrapper_(path, mode == open_mode::read_only ? H5F_ACC_RDONLY : H5F_ACC_RDWR, H5P_DEFAULT),
+  root_group_(*this)
 {
-    if (id() < 0)
-        throw_on_hdf5_error();
 }
 
-file::file(const std::string& name_, unsigned flags_, hid_t fapl_id_)
-: file_id_(H5Fopen(name_.c_str(), flags_, fapl_id_))
+file::file(hdf5::precursor::file file_wrapper_)
+: file_wrapper_(std::move(file_wrapper_)), root_group_(*this)
 {
-    if (id() < 0)
-        throw_on_hdf5_error();
 }
 
-file::~file()
+group file::create_group(const std::string& name)
 {
-    if (id() > -1)
-    {
-        ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
-
-        ECHELON_VERIFY_MSG(H5Fclose(id()) >= 0, "unable to close the file");
-    }
+    return root_group_.create_group(name);
 }
 
-file::file(const file& other) : file_id_(other.id())
+dataset file::create_dataset(const std::string& name, const type& datatype,
+                             const std::vector<hsize_t>& dims, const dataset_options& options)
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
-
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0,
-                       "unable to increment the reference count");
+    return root_group_.create_dataset(name, datatype, dims, options);
 }
 
-file::file(file&& other) : file_id_(other.id())
+scalar_dataset file::create_scalar_dataset(const std::string& name, const type& datatype)
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
-
-    other.file_id_ = -1;
+    return root_group_.create_scalar_dataset(name, datatype);
 }
 
-file& file::operator=(const file& other)
+object file::operator[](const std::string& name) const
 {
-    using std::swap;
-
-    file temp(other);
-    swap(*this, temp);
-
-    return *this;
+    return root_group_[name];
 }
 
-file& file::operator=(file&& other)
+void file::remove(const std::string& name) const
 {
-    using std::swap;
-
-    swap(file_id_, other.file_id_);
-
-    return *this;
+    return root_group_.remove(name);
 }
 
-hid_t file::id() const noexcept
+group file::require_group(const std::string& name)
 {
-    return file_id_;
+    return root_group_.require_group(name);
+}
+
+dataset file::require_dataset(const std::string& name, const type& datatype,
+                              const std::vector<hsize_t>& dims, const dataset_options& options)
+{
+    return root_group_.require_dataset(name, datatype, dims, options);
+}
+
+scalar_dataset file::require_scalar_dataset(const std::string& name, const type& datatype)
+{
+    return root_group_.require_scalar_dataset(name, datatype);
+}
+
+void file::iterate_links(const std::function<void(const link&)>& op) const
+{
+    root_group_.iterate_links(op);
+}
+
+void file::visit_links(const std::function<void(const link&)>& visitor) const
+{
+    root_group_.visit_links(visitor);
+}
+
+void file::visit_objects(const std::function<void(const object&)>& visitor) const
+{
+    root_group_.visit_objects(visitor);
+}
+
+object_reference file::ref() const
+{
+    return root_group_.ref();
+}
+
+const file::native_handle_type& file::native_handle() const
+{
+    return file_wrapper_;
+}
+
+attribute_repository<group> file::attributes() const
+{
+    return attribute_repository<group>(root_group_);
 }
 
 group mount(const file& mounted_file, const group& mount_point)
 {
-    if (H5Fmount(mount_point.id(), ".", mounted_file.id(), H5P_DEFAULT) < 0)
-        throw_on_hdf5_error();
-
-    return mount_point;
+    return group(hdf5::precursor::mount(mounted_file.native_handle(), mount_point.native_handle()));
 }
 
 group mount(const file& mounted_file, const file& mount_point)
 {
-    if (H5Fmount(mount_point.id(), ".", mounted_file.id(), H5P_DEFAULT) < 0)
-        throw_on_hdf5_error();
-
-    return group(mount_point.id(), "/", default_property_list);
+    return group(hdf5::precursor::mount(mounted_file.native_handle(), mount_point.native_handle()));
 }
 
 void unmount(const group& mount_point)
 {
-    if (H5Funmount(mount_point.id(), ".") < 0)
-        throw_on_hdf5_error();
+    hdf5::precursor::unmount(mount_point.native_handle());
 }
 }
 }

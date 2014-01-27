@@ -9,34 +9,27 @@
 #include <echelon/group.hpp>
 #include <echelon/dataset.hpp>
 
+#include <utility>
+
 namespace echelon
 {
 
-object_reference::object_reference() : reference_wrapper_(), any_valid_handle_()
+object_reference::object_reference() : reference_handle_{}
 {
 }
 
-object_reference::object_reference(const object& referenced_object)
-: reference_wrapper_(referenced_object.native_handle().id()),
-  any_valid_handle_(referenced_object.native_handle())
-{
-}
-
-object_reference::object_reference(hdf5::object_reference reference_wrapper_,
-                                   hdf5::handle any_valid_handle_)
-: reference_wrapper_(std::move(reference_wrapper_)),
-  any_valid_handle_(std::move(any_valid_handle_))
+object_reference::object_reference(hdf5::object_reference native_handle_)
+: reference_handle_{std::move(native_handle_)}
 {
 }
 
 object object_reference::operator*() const
 {
-    return object(
-        hdf5::object(reference_wrapper_.dereference(any_valid_handle_.id())));
+    return object(*reference_handle_);
 }
 
 object_reference::operator bool() const
 {
-    return static_cast<bool>(reference_wrapper_);
+    return static_cast<bool>(reference_handle_);
 }
 }

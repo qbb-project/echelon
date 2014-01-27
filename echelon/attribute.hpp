@@ -11,25 +11,19 @@
 
 #include <echelon/hdf5/attribute.hpp>
 
-#include <echelon/data_transfer_broker.hpp>
-
 #include <utility>
 
 namespace echelon
 {
 
-/** \brief A handle to an HDF5 attribute.
+/** \brief A handle to an echelon attribute.
  */
 class attribute
 {
 public:
-    /** \brief Type of the underlying HDF5 low-level handle
-     */
     using native_handle_type = hdf5::attribute;
-    
-    attribute(const object& parent, const std::string& name,
-              const type& datatype);
-    attribute(const object& parent, const std::string& name);
+
+    explicit attribute(native_handle_type native_handle_);
 
     /** \brief Writes the content of a variable into the attribute.
      *
@@ -41,7 +35,7 @@ public:
     template <typename T>
     friend inline void operator<<=(attribute& attr, const T& value)
     {
-        write(attr.attribute_wrapper_, value);
+        attr.attribute_handle_ <<= value;
     }
 
     /** \brief Reads the content of an attribute into a variable.
@@ -54,19 +48,15 @@ public:
     template <typename T>
     friend inline void operator<<=(T& value, const attribute& attr)
     {
-        read(attr.attribute_wrapper_, value);
+        value <<= attr.attribute_handle_;
     }
 
     /** \brief The value type of the attribute.
      */
     type datatype() const;
 
-    /** \brief The underlying HDF5 low-level handle.
-     */
-    const native_handle_type& native_handle() const;
-
 private:
-    hdf5::attribute attribute_wrapper_;
+    hdf5::attribute attribute_handle_;
 };
 }
 

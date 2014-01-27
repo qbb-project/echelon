@@ -1,4 +1,4 @@
-//  Copyright (c) 2012-2013 Christopher Hinz
+//  Copyright (c) 2012 Christopher Hinz
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -6,46 +6,81 @@
 #ifndef ECHELON_HDF5_OBJECT_REFERENCE_HPP
 #define ECHELON_HDF5_OBJECT_REFERENCE_HPP
 
-#include <hdf5.h>
+#include <echelon/hdf5/precursor/object_reference.hpp>
+#include <echelon/hdf5/precursor/handle.hpp>
+#include <echelon/hdf5/customization_hooks.hpp>
+#include <echelon/hdf5/object.hpp>
+
 #include <string>
 
 namespace echelon
 {
 namespace hdf5
 {
-
-class dataset;
-
+/** \brief A reference to an HDF5 object.
+ *
+ * \note Note that the concept of a HDF5 reference has nothing to do with C++
+ *       references. Since a HDF5 reference has a null state, it resembles a C++ pointer
+ *       without pointer arithmetic and correspondingly it has a similar interface.
+ */
 class object_reference
 {
 public:
-    /*
-     *  \warning  I am not sure, if HDF5 really denotes a null reference with a
-     * zero-initialized
-     *            hobj_ref_t object, since the HDF5 documentation is (at best)
-     * very vague about such matters.
-     *            I got the idea while studying the h5py source code. Since h5py
-     * seems to be well tested, this
-     *            assumption should be valid. To be forearmed against future
-     * changes, which could break this
-     *            assumption, we should verify this behavior via unit tests.
+    friend struct type_lowering_hook<object_reference>;
+
+    /** \brief Creates a null reference.
      */
-    object_reference() = default;
+    object_reference();
 
-    explicit object_reference(hid_t obj_id_);
-    explicit object_reference(hobj_ref_t obj_ref_);
-    object_reference(hid_t loc_id_, const std::string& name_);
+    /** \brief Creates a reference to a given object.
+     *
+     *  \param referenced_object referenced object
+     */
+    explicit object_reference(const object& referenced_object);
+    explicit object_reference(hdf5::precursor::object_reference reference_wrapper_,
+                              hdf5::precursor::handle any_valid_handle_);
 
-    const hobj_ref_t& native_ref() const;
+    /** \brief Dereferences this reference.
+     *
+     *  \return handle to the referenced object
+     */
+    object operator*() const;
 
-    H5O_type_t get_object_type(hid_t valid_obj_id) const;
-
-    hid_t dereference(hid_t valid_obj_id) const;
-
+    /** \brief Tests, if the reference is non-null.
+     *
+     *  \return true, if the reference is non-null and false otherwise
+     */
     explicit operator bool() const;
 
+    /** \brief The underlying low-level reference.
+     */
+    const hdf5::precursor::object_reference& raw_ref() const
+    {
+        return reference_wrapper_;
+    }
+
 private:
-    hobj_ref_t obj_ref_;
+    hdf5::precursor::object_reference reference_wrapper_;
+    hdf5::precursor::handle any_valid_handle_;
+};
+
+template <>
+struct type_lowering_hook<object_reference>
+{
+    typedef object_reference original_type;
+    typedef hdf5::precursor::object_reference lowered_type;
+
+    template <typename Sink>
+    static lowered_type lower_type(const original_type& value, const Sink&)
+    {
+        return value.raw_ref();
+    }
+
+    template <typename Source>
+    static original_type raise_type(lowered_type value, const Source& source)
+    {
+        return object_reference(value, hdf5::precursor::handle(source));
+    }
 };
 }
 }

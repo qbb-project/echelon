@@ -11,32 +11,28 @@
 namespace echelon
 {
 
-scalar_dataset::scalar_dataset(const object& parent, const std::string& name,
-                               const type& datatype)
-: dataset_wrapper_(parent.native_handle().id(), name, datatype.native_handle(),
-                   hdf5::dataspace(), hdf5::default_property_list,
-                   hdf5::default_property_list, hdf5::default_property_list),
-  attributes(*this)
-{
-}
-
-scalar_dataset::scalar_dataset(hdf5::dataset dataset_wrapper_)
-: dataset_wrapper_(std::move(dataset_wrapper_)), attributes(*this)
+scalar_dataset::scalar_dataset(native_handle_type native_handle_)
+: group_handle_{std::move(native_handle_)}, scalar_dataset_handle_{group_handle_["data"]}
 {
 }
 
 type scalar_dataset::datatype() const
 {
-    return type(dataset_wrapper_.datatype());
+    return type(scalar_dataset_handle_.datatype());
 }
 
 object_reference scalar_dataset::ref() const
 {
-    return object_reference(*this);
+    return object_reference(scalar_dataset_handle_.ref());
 }
 
-const scalar_dataset::native_handle_type& scalar_dataset::native_handle() const
+scalar_dataset::native_handle_type scalar_dataset::native_handle() const
 {
-    return dataset_wrapper_;
+    return group_handle_;
+}
+
+attribute_repository<scalar_dataset> scalar_dataset::attributes() const
+{
+    return attribute_repository<scalar_dataset>(native_handle());
 }
 }

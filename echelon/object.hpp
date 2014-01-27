@@ -14,37 +14,6 @@
 namespace echelon
 {
 
-/** \brief Exception, which is thrown, if the conversion of a polymorphic handle
- *         to a more specialized, but incompatible, handle fails.
- */
-class wrong_object_type_exception : public std::exception
-{
-public:
-    /** \brief Creates a new exception with a given error description.
-     *
-     * \param what_ error description
-     */
-    wrong_object_type_exception(std::string what_) : what_(std::move(what_))
-    {
-    }
-
-    /** \brief The destructor
-     */
-    ~wrong_object_type_exception() noexcept
-    {
-    }
-
-    /** \brief An associated error description.
-     */
-    const char* what() const noexcept override
-    {
-        return what_.c_str();
-    }
-
-private:
-    std::string what_;
-};
-
 class group;
 class dataset;
 class scalar_dataset;
@@ -59,8 +28,8 @@ public:
     /** \brief Type of the underlying HDF5 low-level handle
      */
     using native_handle_type = hdf5::object;
-    
-    explicit object(hdf5::object object_wrapper_);
+
+    explicit object(native_handle_type native_handle_);
 
     /** \brief Constructs a handle from an pre-existing group handle.
      *
@@ -143,10 +112,10 @@ public:
 
     /** \brief The underlying HDF5 low-level handle.
      */
-    const native_handle_type& native_handle() const;
+    native_handle_type native_handle() const;
 
 private:
-    hdf5::object object_wrapper_;
+    hdf5::object object_handle_;
 };
 }
 

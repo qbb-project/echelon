@@ -80,34 +80,33 @@ type type::object_reference()
 
 type type::compound_type(const type_layout& layout)
 {
-    hdf5::type compound_type = hdf5::type::empty_compound_type(layout.size());
+    hdf5::type_layout hdf5_layout(layout.size());
 
-    for (auto& element : layout)
+    for (const auto& element : layout)
     {
-        compound_type.insert_member(element.name, element.offset,
-                                    element.type_.native_handle());
+        hdf5_layout.add_element(element.name, element.type_.native_handle(), element.offset);
     }
 
-    return type(std::move(compound_type));
+    return type(hdf5::type::compound_type(hdf5_layout));
 }
 
 std::size_t type::size() const
 {
-    return type_wrapper_.size();
+    return type_handle_.size();
 }
 
-type::type(hdf5::type type_wrapper_) : type_wrapper_(std::move(type_wrapper_))
+type::type(type::native_handle_type native_handle_) : type_handle_(std::move(native_handle_))
 {
 }
 
 type type::clone() const
 {
-    return type(type_wrapper_.clone());
+    return type(type_handle_.clone());
 }
 
 const type::native_handle_type& type::native_handle() const
 {
-    return type_wrapper_;
+    return type_handle_;
 }
 
 bool operator==(const type& lhs, const type& rhs)

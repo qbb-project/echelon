@@ -8,6 +8,8 @@
 
 #include <echelon/group.hpp>
 #include <echelon/link.hpp>
+#include <echelon/attribute_repository.hpp>
+
 #include <echelon/hdf5/file.hpp>
 
 #include <string>
@@ -28,7 +30,7 @@ public:
     /** \brief Type of the underlying HDF5 low-level handle
      */
     using native_handle_type = hdf5::file;
-    
+
     /** Enum containing possible creation modes for a file handle.
      */
     enum class create_mode
@@ -62,7 +64,7 @@ public:
      */
     file(const std::string& path, open_mode mode);
 
-    explicit file(hdf5::file file_wrapper_);
+    explicit file(native_handle_type native_handle_);
 
     // group interface
 
@@ -105,8 +107,8 @@ public:
      *  \return a handle to the new dataset
      */
     template <typename T>
-    dataset create_dataset(const std::string& name,
-                           const std::vector<hsize_t>& dims, const dataset_options& options = {})
+    dataset create_dataset(const std::string& name, const std::vector<hsize_t>& dims,
+                           const dataset_options& options = {})
     {
         return root_group_.create_dataset<T>(name, dims, options);
     }
@@ -118,8 +120,7 @@ public:
      *
      *  \return a handle to the new scalar dataset
      */
-    scalar_dataset create_scalar_dataset(const std::string& name,
-                                         const type& datatype);
+    scalar_dataset create_scalar_dataset(const std::string& name, const type& datatype);
 
     /** \brief Creates a new HDF5 scalar dataset within the root group.
      *
@@ -148,8 +149,7 @@ public:
      *  \return a handle to the new scalar dataset
      */
     template <typename T>
-    scalar_dataset create_scalar_dataset(const std::string& name,
-                                         const T& value)
+    scalar_dataset create_scalar_dataset(const std::string& name, const T& value)
     {
         return root_group_.create_scalar_dataset(name, value);
     }
@@ -208,8 +208,7 @@ public:
      *          dataset otherwise
      */
     dataset require_dataset(const std::string& name, const type& datatype,
-                            const std::vector<hsize_t>& dims,
-                            const dataset_options& options = {});
+                            const std::vector<hsize_t>& dims, const dataset_options& options = {});
 
     /** \brief Returns the requested dataset, if it already exists, otherwise a
      *         new dataset is created.
@@ -242,8 +241,7 @@ public:
      *          dataset otherwise
      */
     template <typename T>
-    dataset require_dataset(const std::string& name,
-                            const std::vector<hsize_t>& dims,
+    dataset require_dataset(const std::string& name, const std::vector<hsize_t>& dims,
                             const dataset_options& options = {})
     {
         return root_group_.require_dataset<T>(name, dims, options);
@@ -271,8 +269,7 @@ public:
      *  \return the requested scalar dataset, if it is already existing, or a
      *          new scalar dataset otherwise
      */
-    scalar_dataset require_scalar_dataset(const std::string& name,
-                                          const type& datatype);
+    scalar_dataset require_scalar_dataset(const std::string& name, const type& datatype);
 
     /** \brief Returns the requested scalar dataset, if it already exists,
      *         otherwise the scalar dataset is created.
@@ -331,8 +328,7 @@ public:
      *          new scalar dataset otherwise
      */
     template <typename T>
-    scalar_dataset require_scalar_dataset(const std::string& name,
-                                          const T& value)
+    scalar_dataset require_scalar_dataset(const std::string& name, const T& value)
     {
         return root_group_.require_scalar_dataset(name, value);
     }
@@ -367,16 +363,16 @@ public:
 
     /** \brief The underlying HDF5 low-level handle.
      */
-    const native_handle_type& native_handle() const;
+    native_handle_type native_handle() const;
 
 private:
-    hdf5::file file_wrapper_;
+    hdf5::file file_handle_;
     group root_group_;
 
 public:
     /** \brief The attributes, which are attached to the root group.
      */
-    attribute_repository<group> attributes;
+    attribute_repository<group> attributes() const;
 };
 
 /** \brief Mounts a file at a specified location.

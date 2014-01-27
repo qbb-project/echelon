@@ -26,11 +26,11 @@ std::ostream& operator<<(std::ostream& os,
 {
     std::size_t len;
 
-    H5LTdtype_to_text(datatype.native_handle().id(),0,H5LT_DDL,&len);
+    H5LTdtype_to_text(datatype.native_handle().native_handle().id(),0,H5LT_DDL,&len);
 
     std::vector<char> buffer(len);
 
-    H5LTdtype_to_text(datatype.native_handle().id(),buffer.data(),H5LT_DDL,&len);
+    H5LTdtype_to_text(datatype.native_handle().native_handle().id(),buffer.data(),H5LT_DDL,&len);
 
     return os << std::string(begin(buffer),end(buffer));
 }

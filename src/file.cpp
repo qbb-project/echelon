@@ -5,27 +5,28 @@
 
 #include <echelon/file.hpp>
 
+#include <utility>
+
 namespace echelon
 {
 file::file(const std::string& path, create_mode mode)
-: file_wrapper_(path,
-                mode == create_mode::truncate ? H5F_ACC_TRUNC : H5F_ACC_EXCL,
-                H5P_DEFAULT, H5P_DEFAULT),
-  root_group_(*this), attributes(root_group_)
+: file_handle_(path, mode == create_mode::truncate ? hdf5::file::create_mode::truncate
+                                                   : hdf5::file::create_mode::exclusive),
+  root_group_(*this)
 {
+    root_group_.attributes().create("echelon.library_version", "1.0");
+    root_group_.attributes().create("echelon.format_version", "1.0");
 }
 
 file::file(const std::string& path, open_mode mode)
-: file_wrapper_(path,
-                mode == open_mode::read_only ? H5F_ACC_RDONLY : H5F_ACC_RDWR,
-                H5P_DEFAULT),
-  root_group_(*this), attributes(root_group_)
+: file_handle_(path, mode == open_mode::read_only ? hdf5::file::open_mode::read_only
+                                                  : hdf5::file::open_mode::read_write),
+  root_group_(*this)
 {
 }
 
-file::file(hdf5::file file_wrapper_)
-: file_wrapper_(std::move(file_wrapper_)), root_group_(*this),
-  attributes(root_group_)
+file::file(file::native_handle_type native_handle_)
+: file_handle_(std::move(native_handle_)), root_group_(*this)
 {
 }
 
@@ -35,14 +36,12 @@ group file::create_group(const std::string& name)
 }
 
 dataset file::create_dataset(const std::string& name, const type& datatype,
-                             const std::vector<hsize_t>& dims,
-                             const dataset_options& options)
+                             const std::vector<hsize_t>& dims, const dataset_options& options)
 {
     return root_group_.create_dataset(name, datatype, dims, options);
 }
 
-scalar_dataset file::create_scalar_dataset(const std::string& name,
-                                           const type& datatype)
+scalar_dataset file::create_scalar_dataset(const std::string& name, const type& datatype)
 {
     return root_group_.create_scalar_dataset(name, datatype);
 }
@@ -63,14 +62,12 @@ group file::require_group(const std::string& name)
 }
 
 dataset file::require_dataset(const std::string& name, const type& datatype,
-                              const std::vector<hsize_t>& dims,
-                              const dataset_options& options)
+                              const std::vector<hsize_t>& dims, const dataset_options& options)
 {
     return root_group_.require_dataset(name, datatype, dims, options);
 }
 
-scalar_dataset file::require_scalar_dataset(const std::string& name,
-                                            const type& datatype)
+scalar_dataset file::require_scalar_dataset(const std::string& name, const type& datatype)
 {
     return root_group_.require_scalar_dataset(name, datatype);
 }
@@ -85,8 +82,7 @@ void file::visit_links(const std::function<void(const link&)>& visitor) const
     root_group_.visit_links(visitor);
 }
 
-void
-file::visit_objects(const std::function<void(const object&)>& visitor) const
+void file::visit_objects(const std::function<void(const object&)>& visitor) const
 {
     root_group_.visit_objects(visitor);
 }
@@ -96,21 +92,24 @@ object_reference file::ref() const
     return root_group_.ref();
 }
 
-const file::native_handle_type& file::native_handle() const
+file::native_handle_type file::native_handle() const
 {
-    return file_wrapper_;
+    return file_handle_;
+}
+
+attribute_repository<group> file::attributes() const
+{
+    return attribute_repository<group>(root_group_.native_handle());
 }
 
 group mount(const file& mounted_file, const group& mount_point)
 {
-    return group(hdf5::mount(mounted_file.native_handle(),
-                             mount_point.native_handle()));
+    return group(hdf5::mount(mounted_file.native_handle(), mount_point.native_handle()));
 }
 
 group mount(const file& mounted_file, const file& mount_point)
 {
-    return group(hdf5::mount(mounted_file.native_handle(),
-                             mount_point.native_handle()));
+    return group(hdf5::mount(mounted_file.native_handle(), mount_point.native_handle()));
 }
 
 void unmount(const group& mount_point)

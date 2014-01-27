@@ -4,27 +4,33 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <echelon/link.hpp>
+
 #include <utility>
+
 namespace echelon
 {
 
 link::link(object origin_, std::string name_)
-: origin_{std::move(origin_)}, name_{std::move(name_)}
+: native_link_{hdf5::link(origin_.native_handle(), std::move(name_))}
+{
+}
+
+link::link(hdf5::link native_link_) : native_link_{std::move(native_link_)}
 {
 }
 
 object link::destination() const
 {
-    return object(hdf5::object(origin_.native_handle().id(), name()));
+    return object(native_link_.destination());
 }
 
 object link::origin() const
 {
-    return origin_;
+    return object(native_link_.origin());
 }
 
 const std::string& link::name() const
 {
-    return name_;
+    return native_link_.name();
 }
 }

@@ -11,10 +11,10 @@
 
 namespace echelon
 {
-
+namespace hdf5
+{
 template <typename T>
-inline void reshape(std::vector<T>& container,
-                    const std::vector<std::size_t>& new_shape)
+inline void reshape(std::vector<T>& container, const std::vector<std::size_t>& new_shape)
 {
     assert(new_shape.size() == 1);
 
@@ -30,6 +30,7 @@ inline void fill(std::vector<T>& container, Iterator first, Iterator last)
     {
         container.push_back(*iter);
     }
+}
 }
 }
 

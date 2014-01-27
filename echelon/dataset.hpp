@@ -7,22 +7,16 @@
 #define ECHELON_DATASET_HPP
 
 #include <echelon/object.hpp>
-
 #include <echelon/type.hpp>
-#include <echelon/hdf5/dataset.hpp>
-#include <echelon/hdf5/dataspace.hpp>
-#include <echelon/hdf5/property_list.hpp>
-#include <echelon/type_factory.hpp>
 #include <echelon/object_reference.hpp>
-
 #include <echelon/slice.hpp>
 #include <echelon/range.hpp>
-
 #include <echelon/attribute_repository.hpp>
 #include <echelon/dataset_dimensions.hpp>
-#include <echelon/data_transfer_broker.hpp>
-
 #include <echelon/utility/macros.hpp>
+
+#include <echelon/hdf5/dataset.hpp>
+#include <echelon/hdf5/group.hpp>
 
 #include <vector>
 #include <tuple>
@@ -34,103 +28,14 @@
 namespace echelon
 {
 
-struct unbound_t
-{
-};
+using hdf5::_;
 
-static const unbound_t _ = {};
-
-namespace detail
-{
-
-template <std::size_t I, typename... Args>
-struct calculate_slice_boundaries;
-
-template <std::size_t I>
-struct calculate_slice_boundaries<I>
-{
-    static void eval(const std::vector<hsize_t>&,
-                     std::vector<totally_bound_range_t>&)
-    {
-    }
-};
-
-template <std::size_t I, typename Front, typename... Tail>
-struct calculate_slice_boundaries<I, Front, Tail...>
-{
-    static void eval(const std::vector<hsize_t>& current_shape,
-                     std::vector<totally_bound_range_t>& boundaries,
-                     Front front, Tail... tail)
-    {
-        boundaries.push_back(get_boundaries(current_shape[I], front));
-
-        calculate_slice_boundaries<I + 1, Tail...>::eval(current_shape,
-                                                         boundaries, tail...);
-    }
-
-private:
-    static totally_bound_range_t get_boundaries(hsize_t extend, unbound_t)
-    {
-        return range(0, extend);
-    }
-
-    template <typename Base>
-    static totally_bound_range_t get_boundaries(hsize_t extend,
-                                                range_t<Base, unbound_t> r)
-    {
-        //FIXME: add a bound check
-        
-        return range(r.base(), extend);
-    }
-
-    template <typename Bound>
-    static totally_bound_range_t get_boundaries(hsize_t,
-                                                range_t<unbound_t, Bound> r)
-    {
-        //FIXME: add a bound check
-        
-        return range(0, r.bound());
-    }
-
-    template <typename Base, typename Bound>
-    static totally_bound_range_t get_boundaries(hsize_t, range_t<Base, Bound> r)
-    {
-        static_assert(
-            std::is_integral<Base>::value && std::is_integral<Bound>::value,
-            "only integral values are allowed in slicing expressions");
-
-        //FIXME: add a bound check
-        
-        return r;
-    }
-
-    template <typename T>
-    static totally_bound_range_t get_boundaries(hsize_t ECHELON_UNUSED_RELEASE(extend), T value)
-    {
-        static_assert(
-            std::is_integral<T>::value,
-            "only integral values are allowed in slicing expressions");
-
-        assert(value < extend);
-
-        return range(value, value + 1);
-    }
-};
-}
-
-/** \brief A handle to an HDF5 dataset.
+/** \brief A handle to an echelon dataset.
  */
 class dataset
 {
 public:
-    /** \brief Type of the underlying HDF5 low-level handle
-     */
     using native_handle_type = hdf5::group;
-    
-    dataset(const object& parent, const std::string& name, const type& datatype,
-            const std::vector<hsize_t>& shape, int comp_level,
-            bool auto_chunking,
-            const std::vector<hsize_t> chunk_shape);
 
     explicit dataset(native_handle_type native_handle_);
 
@@ -147,19 +52,7 @@ public:
     template <typename T>
     friend void operator<<=(dataset& sink, const T& source)
     {
-        using std::begin;
-        
-        const auto& current_shape = detail::shape_adl(source);
-
-        std::vector<hsize_t> mem_shape(begin(current_shape),
-                                       end(current_shape));
-
-        hdf5::dataspace mem_space(mem_shape);
-        hdf5::dataspace file_space = sink.dataset_wrapper_.get_space();
-        hdf5::type datatype = sink.dataset_wrapper_.datatype();
-
-        ::echelon::write(sink.dataset_wrapper_, datatype, mem_space, file_space,
-                         source);
+        sink.dataset_handle_ <<= source;
     }
 
     /** \brief Reads the content of the dataset into a data sink.
@@ -173,19 +66,7 @@ public:
     template <typename T>
     friend void operator<<=(T& sink, const dataset& source)
     {
-        using std::begin;
-        
-        const auto& current_shape = detail::shape_adl(source);
-
-        std::vector<hsize_t> mem_shape(begin(current_shape),
-                                       end(current_shape));
-
-        hdf5::dataspace mem_space(mem_shape);
-        hdf5::dataspace file_space = source.dataset_wrapper_.get_space();
-        hdf5::type datatype = source.dataset_wrapper_.datatype();
-
-        ::echelon::read(source.dataset_wrapper_, datatype, mem_space,
-                        file_space, sink);
+        sink <<= source.dataset_handle_;
     }
 
     /** \brief The shape of the dataset.
@@ -217,8 +98,7 @@ public:
      *  _               | do not restrict the dimension, but use the full range of indices
      *
      *  Within the range syntax the wildcard _ can be used as the lower or upper
-     *  bound to
-     *  specifiy, that the dimension should not be restricted through this
+     *  bound to specifiy, that the dimension should not be restricted through this
      *  bound.
      *
      *  The number of index range specifiers must match the rank of the dataset.
@@ -259,39 +139,29 @@ public:
     template <typename... Args>
     slice operator()(Args... args) const
     {
-        std::vector<hsize_t> current_shape = shape();
-
-        std::vector<totally_bound_range_t> boundaries;
-
-        detail::calculate_slice_boundaries<0, Args...>::eval(
-            current_shape, boundaries, args...);
-
-        return ::echelon::slice(dataset_wrapper_, boundaries);
+        return slice(dataset_handle_(args...));
     }
 
-    /** \brief A HDF5 object reference to this dataset.
+    /** \brief A echelon object reference to this dataset.
      */
     object_reference ref() const;
-    
+
     /** \brief The underlying HDF5 low-level handle.
      */
-    const native_handle_type& native_handle() const;
-    
-    /** \brief The underlying HDF5 dataset handle.
-     */
-    const hdf5::dataset& data() const;
+    native_handle_type native_handle() const;
+
 private:
-    hdf5::group native_handle_;
-    hdf5::dataset dataset_wrapper_;
+    hdf5::group group_handle_;
+    hdf5::dataset dataset_handle_;
 
 public:
     /** \brief The attributes, which are attached to the dataset.
      */
-    attribute_repository<dataset> attributes;
+    attribute_repository<dataset> attributes() const;
 
     /** \brief The dimensions of the dataset
      */
-    dataset_dimensions dimensions;
+    dataset_dimensions dimensions() const;
 };
 }
 

@@ -20,5 +20,5 @@ BOOST_FIXTURE_TEST_CASE( require_api, basic_fixture )
       
       echelon::dataset ds1 = temp_file.create_dataset<double>("ds1",{ 10 , 10 });
       
-      BOOST_CHECK_THROW(ds1 = temp_file.require_dataset<double>("ds1",{ 20 , 10 }),echelon::broken_contract_exception);
+      BOOST_CHECK_THROW(ds1 = temp_file.require_dataset<double>("ds1",{ 20 , 10 }),echelon::hdf5::broken_contract_exception);
 }

@@ -17,7 +17,7 @@ BOOST_FIXTURE_TEST_CASE( basic_io_test, basic_fixture )
 {
       auto ds = temp_file.create_dataset<double>("dataset",{ 10 });
       auto sds = temp_file.create_scalar_dataset<int>("scalar_dataset");
-      auto attr = temp_file.attributes.create<int>("attribute");
+      auto attr = temp_file.attributes().create<int>("attribute");
       
       std::vector<double> data(10,2);
       
