@@ -178,10 +178,12 @@ public:
      *  \param datatype value type of the new dataset
      *  \param dims shape of the new dataset
      *  \param options additional dataset creation options
-     *         keyword             |          semantic
-     *         --------------------|-----------------------------------------
-     *         _compression_level  | level of the deflate compression (0 - 9)
-     *         _chunk_shape        | shape of a dataset chunk
+     *         keyword            |          semantic
+     *         -------------------|-----------------------------------------
+     *         compression_level  | level of the deflate compression (0 - 9)
+     *         shuffle_filter     | enable/disable the shuffle filter
+     *         auto_chunking      | enable/disable auto-chunking
+     *         chunk_shape        | shape of a dataset chunk
      *
      *  \return a handle to the new dataset
      */
@@ -193,10 +195,12 @@ public:
      *  \param name name of the new dataset
      *  \param dims shape of the new dataset
      *  \param options additional dataset creation options
-     *         keyword             |          semantic
-     *         --------------------|-----------------------------------------
-     *         _compression_level  | level of the deflate compression (0 - 9)
-     *         _chunk_shape        | shape of a dataset chunk
+     *         keyword            |          semantic
+     *         -------------------|-----------------------------------------
+     *         compression_level  | level of the deflate compression (0 - 9)
+     *         shuffle_filter     | enable/disable the shuffle filter
+     *         auto_chunking      | enable/disable auto-chunking
+     *         chunk_shape        | shape of a dataset chunk
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
      *            value type
@@ -297,10 +301,12 @@ public:
      *  \param datatype value type of the new dataset
      *  \param dims shape of the new dataset
      *  \param options additional dataset creation options
-     *         keyword             |          semantic
-     *         --------------------|-----------------------------------------
-     *         _compression_level  | level of the deflate compression (0 - 9)
-     *         _chunk_shape        | shape of a dataset chunk
+     *         keyword            |          semantic
+     *         -------------------|-----------------------------------------
+     *         compression_level  | level of the deflate compression (0 - 9)
+     *         shuffle_filter     | enable/disable the shuffle filter
+     *         auto_chunking      | enable/disable auto-chunking
+     *         chunk_shape        | shape of a dataset chunk
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
      *                                    fulfilled.
@@ -327,10 +333,12 @@ public:
      *  \param name name of the requested dataset
      *  \param dims shape of the new dataset
      *  \param options additional dataset creation options
-     *         keyword             |          semantic
-     *         --------------------|-----------------------------------------
-     *         _compression_level  | level of the deflate compression (0 - 9)
-     *         _chunk_shape        | shape of a dataset chunk
+     *         keyword            |          semantic
+     *         -------------------|-----------------------------------------
+     *         compression_level  | level of the deflate compression (0 - 9)
+     *         shuffle_filter     | enable/disable the shuffle filter
+     *         auto_chunking      | enable/disable auto-chunking
+     *         chunk_shape        | shape of a dataset chunk
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
      *            value type
