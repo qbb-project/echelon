@@ -14,6 +14,12 @@ namespace echelon
 namespace hdf5
 {
 template <typename T>
+inline std::vector<std::size_t> shape(const std::vector<T>& container)
+{
+    return {container.size()};
+}  
+    
+template <typename T>
 inline void reshape(std::vector<T>& container, const std::vector<std::size_t>& new_shape)
 {
     assert(new_shape.size() == 1);

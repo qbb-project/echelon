@@ -20,12 +20,6 @@ namespace echelon
 {
 namespace hdf5
 {
-template <typename T>
-inline std::vector<std::size_t> shape(const std::vector<T>& container)
-{
-    return {container.size()};
-}
-
 template <typename C>
 inline auto shape(const C& container) -> decltype(container.shape())
 {
