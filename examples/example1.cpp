@@ -375,6 +375,22 @@ int main()
             my_file.create_scalar_dataset("complex_number", c);
 
             my_file.attributes().create("sliteral", "test");
+
+            auto ds5 = my_file.require_group("bar").create_dataset<double>("my_data2", {10, 10}, {100, 100});
+            
+            ds5 <<= arr;
+            
+            multi_array<double> arr2({2, 10});
+            
+            for (std::size_t i = 0; i < 2; ++i)
+            {
+                for (std::size_t j = 0; j < 10; ++j)
+                {
+                    arr2(i, j) = 20.0;
+                }
+            }
+
+            ds5.extend_along(0,arr2);
         }
 
         /*{

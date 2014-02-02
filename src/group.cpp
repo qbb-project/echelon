@@ -29,13 +29,22 @@ group group::create_group(const std::string& name)
 dataset group::create_dataset(const std::string& name, const type& datatype,
                               const std::vector<hsize_t>& dims, const dataset_options& options)
 {
-    return create_dataset(name, datatype, dims, options.compression_level(),
+    return create_dataset(name, datatype, dims, dims, options);
+}
+
+dataset group::create_dataset(const std::string& name, const type& datatype,
+                              const std::vector<hsize_t>& dims,
+                              const std::vector<hsize_t>& max_dims, const dataset_options& options)
+{
+    return create_dataset(name, datatype, dims, max_dims, options.compression_level(),
                           options.auto_chunking(), options.shuffle_filter(), options.chunk_shape());
 }
 
 dataset group::create_dataset(const std::string& name, const type& datatype,
-                              const std::vector<hsize_t>& dims, int comp_level, bool auto_chunking,
-                              bool shuffle_filter, const std::vector<hsize_t> chunk_shape)
+                              const std::vector<hsize_t>& dims,
+                              const std::vector<hsize_t>& max_dims, int comp_level,
+                              bool auto_chunking, bool shuffle_filter,
+                              const std::vector<hsize_t> chunk_shape)
 {
     hdf5::dataset_options options;
 
@@ -45,7 +54,7 @@ dataset group::create_dataset(const std::string& name, const type& datatype,
         .shuffle_filter(shuffle_filter);
 
     auto containing_group = group_handle_.create_group(name);
-    containing_group.create_dataset("data", datatype.native_handle(), dims, options);
+    containing_group.create_dataset("data", datatype.native_handle(), dims, max_dims, options);
 
     containing_group.attributes().create("echelon.class", "dataset");
 

@@ -15,6 +15,9 @@ namespace hdf5
 {
 namespace precursor
 {
+
+constexpr auto unlimited = H5S_UNLIMITED;
+
 class hyperslab_block
 {
 public:

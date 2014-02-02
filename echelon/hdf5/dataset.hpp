@@ -32,6 +32,8 @@
 #include <type_traits>
 #include <cassert>
 #include <iterator>
+#include <exception>
+#include <utility>
 
 namespace echelon
 {
@@ -39,6 +41,22 @@ namespace hdf5
 {
 struct unbound_t
 {
+};
+
+class invalid_layout_exception : public std::exception
+{
+public:
+    explicit invalid_layout_exception(std::string what_) : what_{std::move(what_)}
+    {
+    }
+
+    const char* what() const noexcept override
+    {
+        return what_.c_str();
+    }
+
+private:
+    std::string what_;
 };
 
 static const unbound_t _ = {};
@@ -124,8 +142,8 @@ public:
     using native_handle_type = hdf5::precursor::dataset;
 
     dataset(const object& parent, const std::string& name, const type& datatype,
-            const std::vector<hsize_t>& shape, int comp_level, bool auto_chunking,
-            bool shuffle_filter, const std::vector<hsize_t> chunk_shape);
+            const std::vector<hsize_t>& shape, const std::vector<hsize_t>& max_dims, int comp_level,
+            bool auto_chunking, bool shuffle_filter, const std::vector<hsize_t> chunk_shape);
 
     explicit dataset(native_handle_type native_handle_);
 
@@ -177,6 +195,39 @@ public:
         hdf5::precursor::type datatype = source.dataset_handle_.datatype();
 
         read(source.dataset_handle_, datatype, mem_space, file_space, sink);
+    }
+    
+    template <typename Container>
+    void extend_along(std::size_t dimension_index, const Container& container) const
+    {
+        auto extent = shape();
+        auto new_extent = extent;
+        auto container_shape = shape_adl(container);
+
+        for (std::size_t i = 0; i < extent.size(); ++i)
+        {
+            if (i != dimension_index && container_shape[i] != extent[i])
+                throw invalid_layout_exception(
+                    "extent of non-extended dimension differs between container and dataset");
+        }
+
+        new_extent[dimension_index] += container_shape[dimension_index];
+
+        dataset_handle_.set_extent(new_extent);
+
+        // FIXME: extend slicing and refactor this code
+        std::vector<hsize_t> mem_shape(begin(container_shape), end(container_shape));
+
+        hdf5::precursor::dataspace mem_space(mem_shape);
+        hdf5::precursor::dataspace file_space = dataset_handle_.get_space();
+        hdf5::precursor::type datatype = dataset_handle_.datatype();
+
+        std::vector<hsize_t> offset(rank());
+        offset[dimension_index] = extent[dimension_index];
+
+        file_space.select_hyperslab(H5S_SELECT_SET, offset, mem_shape);
+
+        write(dataset_handle_, datatype, mem_space, file_space, container);
     }
 
     /** \brief The shape of the dataset.

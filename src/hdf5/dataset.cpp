@@ -17,14 +17,17 @@ namespace echelon
 namespace hdf5
 {
 dataset::dataset(const object& parent, const std::string& name, const type& datatype,
-                 const std::vector<hsize_t>& shape, int comp_level, bool auto_chunking,
-                 bool shuffle_filter, const std::vector<hsize_t> chunk_shape)
+                 const std::vector<hsize_t>& shape, const std::vector<hsize_t>& max_dims,
+                 int comp_level, bool auto_chunking, bool shuffle_filter,
+                 const std::vector<hsize_t> chunk_shape)
 : dataset_handle_(-1)
 {
     hdf5::precursor::property_list dataset_creation_properties(
         hdf5::precursor::property_list_class(H5P_DATASET_CREATE));
 
     bool uses_filters = false;
+    
+    bool is_extendible = shape != max_dims;
 
     if (comp_level > -1)
     {
@@ -42,7 +45,7 @@ dataset::dataset(const object& parent, const std::string& name, const type& data
     {
         dataset_creation_properties.set_chunk(chunk_shape);
     }
-    else if (uses_filters || auto_chunking)
+    else if (uses_filters || auto_chunking || is_extendible)
     {
         // perform auto-chunking
 
@@ -70,7 +73,6 @@ dataset::dataset(const object& parent, const std::string& name, const type& data
 
         for (std::size_t i = 0; i < dataset_rank; ++i)
         {
-            // FIXME: chunk_width < size of dim is only needed for fixed-sized datasets
             auto_chunk_shape.push_back(chunk_width < shape[i] ? chunk_width : shape[i]);
         }
 
@@ -81,9 +83,12 @@ dataset::dataset(const object& parent, const std::string& name, const type& data
         hdf5::precursor::property_list_class(H5P_LINK_CREATE));
     link_creation_properties.set_char_encoding(H5T_CSET_UTF8);
 
+    hdf5::precursor::dataspace dspace = is_extendible
+                                            ? hdf5::precursor::dataspace(shape, max_dims)
+                                            : hdf5::precursor::dataspace(shape);
     dataset_handle_ = hdf5::precursor::dataset(
         parent.native_handle().id(), name, datatype.native_handle(),
-        hdf5::precursor::dataspace(shape), link_creation_properties, dataset_creation_properties,
+        dspace, link_creation_properties, dataset_creation_properties,
         hdf5::precursor::default_property_list);
 }
 

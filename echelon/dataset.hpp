@@ -68,6 +68,12 @@ public:
     {
         sink <<= source.dataset_handle_;
     }
+    
+    template<typename Container>
+    void extend_along(std::size_t dimension_index, const Container& container)
+    {
+        dataset_handle_.extend_along(dimension_index, container);
+    }
 
     /** \brief The shape of the dataset.
      */
