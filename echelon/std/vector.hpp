@@ -13,6 +13,7 @@ namespace echelon
 {
 namespace hdf5
 {
+
 template <typename T>
 inline std::vector<std::size_t> shape(const std::vector<T>& container)
 {

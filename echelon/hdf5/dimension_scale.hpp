@@ -50,7 +50,7 @@ public:
     template <typename T>
     friend void operator<<=(dimension_scale& sink, const T& source)
     {
-        auto current_shape = detail::shape_adl(source);
+        auto current_shape = shape_adl(source);
 
         std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
 

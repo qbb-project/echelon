@@ -14,6 +14,7 @@
 
 #include <echelon/hdf5/slice.hpp>
 #include <echelon/hdf5/range.hpp>
+#include <echelon/hdf5/container_adaption.hpp>
 
 #include <echelon/hdf5/attribute_repository.hpp>
 #include <echelon/hdf5/dataset_dimensions.hpp>
@@ -143,7 +144,7 @@ public:
     {
         using std::begin;
 
-        const auto& current_shape = detail::shape_adl(source);
+        const auto& current_shape = shape_adl(source);
 
         std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
 
@@ -167,7 +168,7 @@ public:
     {
         using std::begin;
 
-        const auto& current_shape = detail::shape_adl(source);
+        const auto& current_shape = shape_adl(source);
 
         std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
 

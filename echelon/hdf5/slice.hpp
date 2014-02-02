@@ -9,7 +9,7 @@
 #include <echelon/hdf5/precursor/dataspace.hpp>
 #include <echelon/hdf5/precursor/dataset.hpp>
 #include <echelon/hdf5/data_transfer_broker.hpp>
-
+#include <echelon/hdf5/container_adaption.hpp>
 #include <echelon/hdf5/range.hpp>
 
 #include <cassert>
@@ -20,23 +20,6 @@ namespace echelon
 {
 namespace hdf5
 {
-template <typename C>
-inline auto shape(const C& container) -> decltype(container.shape())
-{
-    return container.shape();
-}
-
-namespace detail
-{
-// Function template which simply forwards its arguments to an overload of
-// shape.
-// Its sole purpose is to ensure that the correct overload can be found by ADL.
-template <typename C>
-inline auto shape_adl(const C& container) -> decltype(shape(container))
-{
-    return shape(container);
-}
-}
 
 /** \brief A slice (rectangular portion) of an HDF5 dataset.
  */
@@ -58,7 +41,7 @@ public:
     template <typename T>
     void operator<<=(const T& source)
     {
-        auto current_shape = detail::shape_adl(source);
+        auto current_shape = shape_adl(source);
 
         std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
 
