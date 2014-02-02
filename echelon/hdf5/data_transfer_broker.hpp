@@ -20,6 +20,7 @@
 #include <vector>
 #include <iterator>
 #include <algorithm>
+#include <cassert>
 
 #include <boost/iterator/transform_iterator.hpp>
 
@@ -27,6 +28,20 @@ namespace echelon
 {
 namespace hdf5
 {
+    
+namespace detail
+{
+   
+template<typename Container, typename Iterator>
+void fill(Container& container, Iterator first, Iterator last)
+{
+    assert(container.size() == std::distance(last,first));
+    
+    std::copy(first,last,container.data());
+}
+   
+}
+    
 template <typename T>
 struct remove_base_type_cv
 {
@@ -103,9 +118,14 @@ read(const Source& source, const hdf5::precursor::type& datatype,
 
     auto raise = std::bind(type_lowering_hook<T>::template raise_type<Source>,
                            std::placeholders::_1, std::cref(source));
-
-    fill(container, boost::make_transform_iterator(begin(lowered_data), raise),
-         boost::make_transform_iterator(end(lowered_data), raise));
+    
+    std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
+    std::vector<std::size_t> mem_shape_(begin(mem_shape), end(mem_shape));
+    
+    reshape(container, mem_shape_);
+    
+    detail::fill(container, boost::make_transform_iterator(begin(lowered_data), raise),
+                 boost::make_transform_iterator(end(lowered_data), raise));
 
     if (H5Tis_variable_str(datatype.id()) || H5Tget_class(datatype.id()) == H5T_VLEN)
     {

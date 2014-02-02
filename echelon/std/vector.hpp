@@ -27,16 +27,6 @@ inline void reshape(std::vector<T>& container, const std::vector<std::size_t>& n
     container.resize(new_shape[0]);
 }
 
-template <typename T, typename Iterator>
-inline void fill(std::vector<T>& container, Iterator first, Iterator last)
-{
-    container.clear();
-
-    for (Iterator iter = first; iter != last; ++iter)
-    {
-        container.push_back(*iter);
-    }
-}
 }
 }
 
