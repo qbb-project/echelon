@@ -77,7 +77,7 @@ struct type_lowering_hook<echelon::object_reference>
     template <typename Source>
     static original_type raise_type(lowered_type value, const Source& source)
     {
-        return object_reference(
+        return echelon::object_reference(
             type_lowering_hook<hdf5::object_reference>::raise_type(value, source));
     }
 };

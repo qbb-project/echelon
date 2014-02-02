@@ -17,7 +17,8 @@ namespace echelon
 {
 
 dataset::dataset(native_handle_type native_handle_)
-: group_handle_{std::move(native_handle_)}, dataset_handle_{group_handle_["data"]}
+: group_handle_{std::move(native_handle_)},
+  dataset_handle_{hdf5::dataset(group_handle_["data"])}
 {
 }
 

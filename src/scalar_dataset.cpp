@@ -12,7 +12,8 @@ namespace echelon
 {
 
 scalar_dataset::scalar_dataset(native_handle_type native_handle_)
-: group_handle_{std::move(native_handle_)}, scalar_dataset_handle_{group_handle_["data"]}
+: group_handle_{std::move(native_handle_)},
+  scalar_dataset_handle_{hdf5::scalar_dataset(group_handle_["data"])}
 {
 }
 
