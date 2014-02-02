@@ -32,7 +32,7 @@ inline auto data(C& container) -> decltype(container.data())
  *  \param new_shape new shape of the container
  */
 template <typename C>
-inline void reshape(C& container, const std::vector<std::size_t>& new_shape)
+inline auto reshape(C& container, const std::vector<std::size_t>& new_shape) -> decltype(container.reshape(new_shape))
 {
     container.reshape(new_shape);
 }
