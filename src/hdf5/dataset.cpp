@@ -73,7 +73,7 @@ dataset::dataset(const object& parent, const std::string& name, const type& data
 
         for (std::size_t i = 0; i < dataset_rank; ++i)
         {
-            auto_chunk_shape.push_back(chunk_width < shape[i] ? chunk_width : shape[i]);
+            auto_chunk_shape.push_back(max_dims[i] == unlimited || chunk_width < max_dims[i] ? chunk_width : max_dims[i]);
         }
 
         dataset_creation_properties.set_chunk(auto_chunk_shape);
