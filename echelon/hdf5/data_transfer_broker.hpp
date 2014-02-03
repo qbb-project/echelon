@@ -61,7 +61,7 @@ write(Sink& sink, const hdf5::precursor::type& datatype, const hdf5::precursor::
       const hdf5::precursor::dataspace& filespace, const C& container)
 {
     sink.write(datatype, memspace, filespace, hdf5::precursor::default_property_list,
-               data(container));
+               data_adl(container));
 }
 
 template <typename Sink, typename C>
@@ -94,10 +94,10 @@ read(const Source& source, const hdf5::precursor::type& datatype,
     std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
     std::vector<std::size_t> mem_shape_(begin(mem_shape), end(mem_shape));
 
-    reshape(container, mem_shape_);
+    reshape_adl(container, mem_shape_);
 
     source.read(datatype, memspace, filespace, hdf5::precursor::default_property_list,
-                data(container));
+                data_adl(container));
 }
 
 template <typename Source, typename C>
@@ -122,7 +122,7 @@ read(const Source& source, const hdf5::precursor::type& datatype,
     std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
     std::vector<std::size_t> mem_shape_(begin(mem_shape), end(mem_shape));
     
-    reshape(container, mem_shape_);
+    reshape_adl(container, mem_shape_);
     
     detail::fill(container, boost::make_transform_iterator(begin(lowered_data), raise),
                  boost::make_transform_iterator(end(lowered_data), raise));

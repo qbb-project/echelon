@@ -6,8 +6,6 @@
 #ifndef ECHELON_HDF5_CONTAINER_ADAPTION_HPP
 #define ECHELON_HDF5_CONTAINER_ADAPTION_HPP
 
-#include <echelon/std/stl_support.hpp>
-
 #include <type_traits>
 #include <utility>
 
@@ -15,7 +13,7 @@ namespace echelon
 {
 namespace hdf5
 {
-    
+
 template <typename C>
 inline auto data(const C& container) -> decltype(container.data())
 {
@@ -42,14 +40,40 @@ inline auto shape(const C& container) -> decltype(container.shape())
  *  \param new_shape new shape of the container
  */
 template <typename C>
-inline auto reshape(C& container, const std::vector<std::size_t>& new_shape) -> decltype(container.reshape(new_shape))
+inline auto reshape(C& container, const std::vector<std::size_t>& new_shape)
+    -> decltype(container.reshape(new_shape))
 {
-    container.reshape(new_shape);
+    return container.reshape(new_shape);
 }
 
 namespace detail
 {
-    struct function_not_overloaded {};
+struct function_not_overloaded
+{
+};
+}
+
+struct adl_enabler
+{
+};
+
+template <typename C>
+inline auto data(C& container, adl_enabler) -> decltype(data(container))
+{
+    return data(container);
+}
+
+template <typename C>
+inline auto shape(const C& container, adl_enabler) -> decltype(shape(container))
+{
+    return shape(container);
+}
+
+template <typename C>
+inline auto reshape(C& container, const std::vector<std::size_t>& new_shape, adl_enabler)
+    -> decltype(reshape(container, new_shape))
+{
+    return reshape(container, new_shape);
 }
 
 inline detail::function_not_overloaded data(...)
@@ -71,27 +95,44 @@ inline detail::function_not_overloaded reshape(...)
 // shape.
 // Its sole purpose is to ensure that the correct overload can be found by ADL.
 template <typename C>
-inline auto shape_adl(const C& container) -> decltype(shape(container))
+inline auto data_adl(C& container) -> decltype(data(container, adl_enabler{}))
 {
-    return shape(container);
+    return data(container, adl_enabler{});
 }
 
-template<typename T>
+template <typename C>
+inline auto shape_adl(const C& container) -> decltype(shape(container, adl_enabler{}))
+{
+    return shape(container, adl_enabler{});
+}
+
+template <typename C>
+inline auto reshape_adl(C& container, const std::vector<std::size_t>& new_shape)
+    -> decltype(reshape(container, new_shape, adl_enabler{}))
+{
+    return reshape(container, new_shape, adl_enabler{});
+}
+
+template <typename T>
 constexpr bool has_data_accessor()
 {
-    return !std::is_same<decltype(data(std::declval<T&>())), detail::function_not_overloaded>::value;
+    return !std::is_same<decltype(data(std::declval<T&>())),
+                         detail::function_not_overloaded>::value;
 }
 
-template<typename T>
+template <typename T>
 constexpr bool has_shape_property()
 {
-    return !std::is_same<decltype(shape(std::declval<T&>())), detail::function_not_overloaded>::value;
+    return !std::is_same<decltype(shape(std::declval<T&>())),
+                         detail::function_not_overloaded>::value;
 }
 
-template<typename T>
+template <typename T>
 constexpr bool has_reshape_member()
 {
-    return !std::is_same<decltype(reshape(std::declval<T&>(), std::declval<std::vector<std::size_t>>())), detail::function_not_overloaded>::value;
+    return !std::is_same<
+                decltype(reshape(std::declval<T&>(), std::declval<std::vector<std::size_t>>())),
+                detail::function_not_overloaded>::value;
 }
 
 template <typename T>
@@ -99,7 +140,6 @@ constexpr bool is_container()
 {
     return has_data_accessor<T>() && has_shape_property<T>() && has_reshape_member<T>();
 }
-
 }
 }
 
