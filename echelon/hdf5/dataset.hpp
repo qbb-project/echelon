@@ -197,6 +197,14 @@ public:
         read(source.dataset_handle_, datatype, mem_space, file_space, sink);
     }
     
+    /** \brief Extends the dataset along a given dimension
+     * 
+     *  \tparam Container type of the container; Container must satisfy the data sink
+     *  requirements.
+     *  
+     *  \param dimension_index index of the extended dimension
+     *  \param container       container, which is used to fill the new portions of the dataset
+     */
     template <typename Container>
     void extend_along(std::size_t dimension_index, const Container& container) const
     {
