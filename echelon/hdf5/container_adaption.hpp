@@ -116,14 +116,14 @@ inline auto reshape_adl(C& container, const std::vector<std::size_t>& new_shape)
 template <typename T>
 constexpr bool has_data_accessor()
 {
-    return !std::is_same<decltype(data(std::declval<T&>())),
+    return !std::is_same<decltype(data_adl(std::declval<T&>())),
                          detail::function_not_overloaded>::value;
 }
 
 template <typename T>
 constexpr bool has_shape_property()
 {
-    return !std::is_same<decltype(shape(std::declval<T&>())),
+    return !std::is_same<decltype(shape_adl(std::declval<T&>())),
                          detail::function_not_overloaded>::value;
 }
 
@@ -131,7 +131,7 @@ template <typename T>
 constexpr bool has_reshape_member()
 {
     return !std::is_same<
-                decltype(reshape(std::declval<T&>(), std::declval<std::vector<std::size_t>>())),
+                decltype(reshape_adl(std::declval<T&>(), std::declval<std::vector<std::size_t>>())),
                 detail::function_not_overloaded>::value;
 }
 
