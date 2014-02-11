@@ -196,10 +196,13 @@ public:
 
     /** \brief Creates a new HDF5 dataset within this group.
      *
+     *  If the maximal extent of the dataset is specified any value might be set to echelon::unlimited
+     *  to not restrict this dimension.
+     * 
      *  \param name name of the new dataset
      *  \param datatype value type of the new dataset
      *  \param dims shape of the new dataset
-     *  \param max_dims maximal extent of the dataset (each value might be 'unlimited')
+     *  \param max_dims maximal extent of the dataset (each value might be echelon::unlimited)
      *  \param options additional dataset creation options
      *         keyword            |          semantic
      *         -------------------|-----------------------------------------
@@ -209,6 +212,7 @@ public:
      *         chunk_shape        | shape of a dataset chunk
      *
      *  \return a handle to the new dataset
+     * 
      */
     dataset create_dataset(const std::string& name, const type& datatype,
                            const std::vector<hsize_t>& dims, const std::vector<hsize_t>& max_dims,
@@ -240,9 +244,12 @@ public:
 
     /** \brief Creates a new HDF5 dataset within this group.
      *
+     *  If the maximal extent of the dataset is specified any value might be set to echelon::unlimited
+     *  to not restrict this dimension.
+     * 
      *  \param name name of the new dataset
      *  \param dims shape of the new dataset
-     *  \param max_dims maximal extent of the dataset (each value might be 'unlimited')
+     *  \param max_dims maximal extent of the dataset (each value might be echelon::unlimited)
      *  \param options additional dataset creation options
      *         keyword            |          semantic
      *         -------------------|-----------------------------------------
@@ -255,6 +262,7 @@ public:
      *            value type
      *
      *  \return a handle to the new dataset
+     * 
      */
     template <typename T>
     dataset create_dataset(const std::string& name, const std::vector<hsize_t>& dims,

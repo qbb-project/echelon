@@ -160,6 +160,9 @@ public:
 
     /** \brief Creates a new HDF5 dataset within this group.
      *
+     *  If the maximal extent of the dataset is specified any value might be set to echelon::unlimited
+     *  to not restrict this dimension.
+     * 
      *  \param name name of the new dataset
      *  \param datatype value type of the new dataset
      *  \param dims shape of the new dataset
@@ -204,6 +207,9 @@ public:
 
     /** \brief Creates a new HDF5 dataset within this group.
      *
+     *  If the maximal extent of the dataset is specified any value might be set to echelon::unlimited
+     *  to not restrict this dimension.
+     * 
      *  \param name name of the new dataset
      *  \param dims shape of the new dataset
      *  \param max_dims maximal extent of the dataset (each value might be 'unlimited')
