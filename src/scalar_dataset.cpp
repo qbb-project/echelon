@@ -24,7 +24,7 @@ type scalar_dataset::datatype() const
 
 object_reference scalar_dataset::ref() const
 {
-    return object_reference(scalar_dataset_handle_.ref());
+    return object_reference(group_handle_.ref());
 }
 
 scalar_dataset::native_handle_type scalar_dataset::native_handle() const

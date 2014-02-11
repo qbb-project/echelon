@@ -39,7 +39,7 @@ type dataset::datatype() const
 
 object_reference dataset::ref() const
 {
-    return object_reference(dataset_handle_.ref());
+    return object_reference(group_handle_.ref());
 }
 
 dataset::native_handle_type dataset::native_handle() const

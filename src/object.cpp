@@ -76,7 +76,9 @@ object::operator dataset() const
 
 object::operator scalar_dataset() const
 {
-    return scalar_dataset(object_handle_);
+    // FIXME: add a more precise type test here
+    
+    return scalar_dataset(hdf5::group(object_handle_));
 }
 
 object_reference object::ref() const
