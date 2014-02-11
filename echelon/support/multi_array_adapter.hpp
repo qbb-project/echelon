@@ -3,8 +3,8 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef ECHELON_MULTI_ARRAY_ADAPTOR_HPP
-#define ECHELON_MULTI_ARRAY_ADAPTOR_HPP
+#ifndef ECHELON_MULTI_ARRAY_ADAPTER_HPP
+#define ECHELON_MULTI_ARRAY_ADAPTER_HPP
 
 #include <echelon/hdf5/container_adaption.hpp>
 #include <echelon/dataset.hpp>
@@ -18,20 +18,20 @@
 namespace echelon
 {
 
-/** \brief An adaptor, around a random-access sequence container, which
+/** \brief An adapter, around a random-access sequence container, which
  *         behaves like a multidimensional array.
  *
  *  \tparam Container the type of the wrapped container. Container should
  *          provide random access.
  */
 template <typename Container>
-class multi_array_adaptor
+class multi_array_adapter
 {
 public:
     /** \brief value type of the array */
     typedef typename Container::value_type value_type;
 
-    /** \brief Constructs a new adaptor around a given container
+    /** \brief Constructs a new adapter around a given container
      *         using a given shape.
      *
      *  \pre Let \f$ (s_1,...,s_{N}) \f$ be the requested shape and let
@@ -41,7 +41,7 @@ public:
      *  \param container_ the adapted container
      *  \param shape_ the shape of the array
      */
-    multi_array_adaptor(Container& container_, std::vector<std::size_t> shape_)
+    multi_array_adapter(Container& container_, std::vector<std::size_t> shape_)
     : container_(container_), shape_(std::move(shape_))
     {
     }
