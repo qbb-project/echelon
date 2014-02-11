@@ -19,6 +19,7 @@
 
 #include <echelon/support/multi_array_adaptor.hpp>
 #include <echelon/support/multi_array.hpp>
+#include <echelon/support/multi_array_view.hpp>
 #include <echelon/grid.hpp>
 
 #include <echelon/object_reference.hpp>
