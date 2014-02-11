@@ -10,7 +10,7 @@ add_subdirectory(hdf5)
 file(GLOB echelon_header_files ../echelon/*.hpp ../echelon/std/*.hpp ../echelon/detail/*.hpp ../echelon/utility/*.hpp)
 file(GLOB echelon_source_files ./*.cpp)
 
-add_library(echelon ${echelon_header_files} ${echelon_source_files})
+add_library(echelon SHARED ${echelon_header_files} ${echelon_source_files})
 
 target_include_directories(echelon PUBLIC ${Boost_INCLUDE_DIRS} ${ECHELON_ROOT_DIR})
 target_compile_options(echelon PUBLIC -std=c++11 -pedantic -Wall -Wextra)

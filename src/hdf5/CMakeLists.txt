@@ -8,7 +8,7 @@ file(GLOB echelon_hdf5_source_files ./*.cpp ./precursor/*.cpp)
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
-add_library(echelon_hdf5 ${echelon_hdf5_header_files} ${echelon_hdf5_source_files})
+add_library(echelon_hdf5 SHARED ${echelon_hdf5_header_files} ${echelon_hdf5_source_files})
 target_include_directories(echelon_hdf5 PUBLIC ${Boost_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS} PRIVATE ${ECHELON_ROOT_DIR})
 target_link_libraries(echelon_hdf5 ${hdf5_targets})
 
