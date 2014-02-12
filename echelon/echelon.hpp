@@ -17,7 +17,7 @@
 #include <echelon/scalar_dataset.hpp>
 #include <echelon/attribute.hpp>
 
-#include <echelon/support/multi_array_adaptor.hpp>
+#include <echelon/support/multi_array_adapter.hpp>
 #include <echelon/support/multi_array.hpp>
 #include <echelon/support/multi_array_view.hpp>
 #include <echelon/grid.hpp>
