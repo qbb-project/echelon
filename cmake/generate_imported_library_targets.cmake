@@ -35,13 +35,6 @@ list(APPEND imported_target_list_proxy imported_target_${target_name})
 else()
 
 #some sanity checks
-get_property(imported_location TARGET imported_target_${target_name} PROPERTY IMPORTED_LOCATION)
-
-if(NOT ${imported_location} STREQUAL ${lib_path})
-
-  message(SEND_ERROR "sanity check failed: library locations differ")
-
-endif()
 
 get_property(imported TARGET imported_target_${target_name} PROPERTY IMPORTED)
 
