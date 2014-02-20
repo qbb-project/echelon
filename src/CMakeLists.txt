@@ -32,6 +32,11 @@ target_link_libraries(echelon echelon_hdf5 ${boost_targets})
 # 
 # endif(COMPILER_ACCEPTS_GCC_CPP11_FLAG)
 
+if(NOT ECHELON_IS_A_SUBPROJECT)
+
 install(DIRECTORY ../echelon/ DESTINATION include/echelon
         FILES_MATCHING PATTERN "*.hpp")
+
+endif()
+
 install(TARGETS echelon DESTINATION lib)
