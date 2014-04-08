@@ -291,7 +291,7 @@ int main()
     {
 
         {
-            file my_file("test.hdf5", file::create_mode::truncate);
+            /*file my_file("test.hdf5", file::create_mode::truncate);
 
             auto foo = my_file.create_group("test").create_group("foo");
 
@@ -390,7 +390,43 @@ int main()
                 }
             }
 
-            ds5.extend_along(0,arr2);
+            ds5.extend_along(0,arr2);*/
+            
+            hsize_t dims[] = {10,10};
+            
+            auto hid = H5Screate_simple(2,dims,nullptr);
+
+            hsize_t start[] = {0,0};
+            hsize_t block[] = {1,1};
+            
+            hsize_t stride[] = {1,1};
+            hsize_t count[] = {1,1};
+            
+            /*if(H5Sselect_hyperslab(hid,H5S_SELECT_SET,start,stride,count,block) < 0)
+            {
+                echelon::hdf5::precursor::throw_on_hdf5_error();
+            }
+
+            for(int i = 0; i < 10000000;++i)
+            {
+            
+            if(H5Sselect_hyperslab(hid,H5S_SELECT_OR,start,nullptr,count,nullptr) < 0)
+            {
+                echelon::hdf5::precursor::throw_on_hdf5_error();
+            }
+            
+            }*/
+            
+            std::vector<hsize_t> coords(2*10000000);
+            for(int i = 0; i < 10000000;++i)
+            {
+                coords[2*i] = 0;
+                coords[2*i+1] = 0;
+            }
+            
+            H5Sselect_elements(hid,H5S_SELECT_SET,10000000,coords.data());
+            
+            H5Sclose(hid);
         }
 
         /*{

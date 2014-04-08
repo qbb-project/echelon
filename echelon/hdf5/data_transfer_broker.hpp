@@ -60,6 +60,8 @@ inline typename std::enable_if<
 write(Sink& sink, const hdf5::precursor::type& datatype, const hdf5::precursor::dataspace& memspace,
       const hdf5::precursor::dataspace& filespace, const C& container)
 {
+    static_assert(is_readable_container<C>(), "C does not fulfill the ReadableContainer requirements");
+    
     sink.write(datatype, memspace, filespace, hdf5::precursor::default_property_list,
                data_adl(container));
 }
@@ -70,6 +72,8 @@ inline typename std::enable_if<
 write(Sink& sink, const hdf5::precursor::type& datatype, const hdf5::precursor::dataspace& memspace,
       const hdf5::precursor::dataspace& filespace, const C& container)
 {
+    static_assert(is_readable_container<C>(), "C does not fulfill the ReadableContainer requirements");
+    
     typedef typename C::value_type T;
 
     typedef typename type_lowering_hook<T>::lowered_type lowered_type;
@@ -91,6 +95,8 @@ read(const Source& source, const hdf5::precursor::type& datatype,
      const hdf5::precursor::dataspace& memspace, const hdf5::precursor::dataspace& filespace,
      C& container)
 {
+    static_assert(is_container<C>(), "C does not fulfill the Container requirements");
+    
     std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
     std::vector<std::size_t> mem_shape_(begin(mem_shape), end(mem_shape));
 
@@ -107,6 +113,8 @@ read(const Source& source, const hdf5::precursor::type& datatype,
      const hdf5::precursor::dataspace& memspace, const hdf5::precursor::dataspace& filespace,
      C& container)
 {
+    static_assert(is_container<C>(), "C does not fulfill the Container requirements");
+    
     typedef typename C::value_type T;
 
     typedef typename remove_base_type_cv<typename type_lowering_hook<T>::lowered_type>::type

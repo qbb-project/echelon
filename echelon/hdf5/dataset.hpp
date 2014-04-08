@@ -186,7 +186,8 @@ public:
     {
         using std::begin;
 
-        const auto& current_shape = shape_adl(source);
+        //FIXME: The container should be resized here
+        const auto& current_shape = source.shape();
 
         std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
 
