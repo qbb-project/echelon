@@ -21,9 +21,7 @@ if (NOT CMAKE_BUILD_TYPE)
       FORCE)
 endif()
 
-if (NOT BUILD_SHARED_LIBS)
-    option(BUILD_SHARED_LIBS "Enable the build of shared libraries." OFF)
-endif()
+set(ECHELON_BUILD_STATIC OFF CACHE BOOL "Build static libraries if enabled.")
 
 include(generate_imported_library_targets)
 

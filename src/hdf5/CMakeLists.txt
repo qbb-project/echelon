@@ -6,9 +6,12 @@
 file(GLOB echelon_hdf5_header_files ../../echelon/hdf5/*.hpp ../../echelon/hdf5/precursor/*.hpp)
 file(GLOB echelon_hdf5_source_files ./*.cpp ./precursor/*.cpp)
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+if(NOT ${ECHELON_BUILD_STATIC})
+    add_library(echelon_hdf5 SHARED ${echelon_hdf5_header_files} ${echelon_hdf5_source_files})
+else()
+    add_library(echelon_hdf5 STATIC ${echelon_hdf5_header_files} ${echelon_hdf5_source_files})
+endif()
 
-add_library(echelon_hdf5 SHARED ${echelon_hdf5_header_files} ${echelon_hdf5_source_files})
 target_include_directories(echelon_hdf5 PUBLIC ${Boost_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS} PRIVATE ${ECHELON_ROOT_DIR})
 target_link_libraries(echelon_hdf5 ${hdf5_targets})
 
