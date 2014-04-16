@@ -8,7 +8,8 @@
 
 #include <echelon/hdf5/type.hpp>
 #include <echelon/hdf5/type_traits.hpp>
-#include <echelon/hdf5/object_reference.hpp>
+#include <echelon/hdf5/precursor/object_reference.hpp>
+#include <echelon/hdf5/customization_hooks.hpp>
 #include <echelon/hdf5/static_type_layout.hpp>
 
 #include <utility>
@@ -27,7 +28,12 @@ inline typename std::enable_if<is_hdf5_type<T>::value && !is_predefined_hdf5_typ
 get_hdf5_type();
 
 template <typename T>
-inline typename std::enable_if<!is_hdf5_type<T>::value, type>::type get_hdf5_type();
+inline typename std::enable_if<!is_hdf5_type<T>::value && !is_trivially_storable<T>(), type>::type
+get_hdf5_type();
+
+template <typename T>
+inline typename std::enable_if<!is_hdf5_type<T>::value && is_trivially_storable<T>(), type>::type
+get_hdf5_type();
 
 template <typename T>
 struct hdf5_type_selector
@@ -171,7 +177,7 @@ struct hdf5_type_selector<char[N]>
 };
 
 template <>
-struct hdf5_type_selector<object_reference>
+struct hdf5_type_selector<precursor::object_reference>
 {
     static type get()
     {
@@ -272,7 +278,18 @@ get_hdf5_type()
 }
 
 template <typename T>
-inline typename std::enable_if<!is_hdf5_type<T>::value, type>::type get_hdf5_type()
+inline typename std::enable_if<!is_hdf5_type<T>::value && !is_trivially_storable<T>(), type>::type
+get_hdf5_type()
+{
+    using lowered_type =
+        typename std::decay<decltype(lower_type_internal(std::declval<T>(), {}))>::type;
+
+    return get_hdf5_type<lowered_type>();
+}
+
+template <typename T>
+inline typename std::enable_if<!is_hdf5_type<T>::value && is_trivially_storable<T>(), type>::type
+get_hdf5_type()
 {
     static_assert(is_hdf5_type<T>::value, "T must be a valid HDF5 type");
 }

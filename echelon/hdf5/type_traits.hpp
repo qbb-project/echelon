@@ -6,7 +6,7 @@
 #ifndef ECHELON_HDF5_TYPE_TRAITS_HPP
 #define ECHELON_HDF5_TYPE_TRAITS_HPP
 
-#include <echelon/hdf5/object_reference.hpp>
+#include <echelon/hdf5/precursor/object_reference.hpp>
 
 #include <boost/mpl/bool.hpp>
 
@@ -96,8 +96,18 @@ struct is_predefined_hdf5_type<char[N]> : boost::mpl::true_
 {
 };
 
+template<>
+struct is_predefined_hdf5_type<char*> : boost::mpl::true_
+{
+};
+
+template<>
+struct is_predefined_hdf5_type<const char*> : boost::mpl::true_
+{
+};
+
 template <>
-struct is_predefined_hdf5_type<object_reference> : boost::mpl::true_
+struct is_predefined_hdf5_type<precursor::object_reference> : boost::mpl::true_
 {
 };
 

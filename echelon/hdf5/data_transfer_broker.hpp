@@ -7,7 +7,7 @@
 #define ECHELON_HDF5_DATA_TRANSFER_BROKER_HPP
 
 #include <echelon/hdf5/customization_hooks.hpp>
-#include <echelon/hdf5/object_reference.hpp>
+#include <echelon/hdf5/type_traits.hpp>
 
 #include <echelon/hdf5/container_adaption.hpp>
 
@@ -20,7 +20,9 @@
 #include <vector>
 #include <iterator>
 #include <algorithm>
+#include <numeric>
 #include <cassert>
+#include <type_traits>
 
 #include <boost/iterator/transform_iterator.hpp>
 
@@ -28,75 +30,85 @@ namespace echelon
 {
 namespace hdf5
 {
-    
-namespace detail
-{
-   
-template<typename Container, typename Iterator>
-void fill(Container& container, Iterator first, Iterator last)
-{
-    assert(container.size() == std::distance(last,first));
-    
-    std::copy(first,last,container.data());
-}
-   
-}
-    
-template <typename T>
-struct remove_base_type_cv
-{
-    typedef typename std::remove_volatile<typename std::remove_const<T>::type>::type type;
-};
-
-template <typename T>
-struct remove_base_type_cv<T*>
-{
-    typedef typename std::remove_volatile<typename std::remove_const<T>::type>::type* type;
-};
 
 template <typename Sink, typename C>
-inline typename std::enable_if<
-    is_identity_lowering_function<type_lowering_hook<typename C::value_type>>::value>::type
-write(Sink& sink, const hdf5::precursor::type& datatype, const hdf5::precursor::dataspace& memspace,
-      const hdf5::precursor::dataspace& filespace, const C& container)
+inline void write_impl(Sink& sink, const hdf5::precursor::type& datatype,
+                       const hdf5::precursor::dataspace& memspace,
+                       const hdf5::precursor::dataspace& filespace, const C& container,
+                       std::true_type)
 {
-    static_assert(is_readable_container<C>(), "C does not fulfill the ReadableContainer requirements");
-    
+    static_assert(is_readable_container<C>(),
+                  "C does not fulfill the ReadableContainer requirements");
+
+    using value_type = typename std::decay<decltype(*data_adl(container))>::type;
+
+    static_assert(is_hdf5_type<value_type>::value, "trivially storable types must be HDF5 types.");
+
     sink.write(datatype, memspace, filespace, hdf5::precursor::default_property_list,
                data_adl(container));
 }
 
 template <typename Sink, typename C>
-inline typename std::enable_if<
-    !is_identity_lowering_function<type_lowering_hook<typename C::value_type>>::value>::type
-write(Sink& sink, const hdf5::precursor::type& datatype, const hdf5::precursor::dataspace& memspace,
-      const hdf5::precursor::dataspace& filespace, const C& container)
+void write(Sink& sink, const hdf5::precursor::type& datatype,
+           const hdf5::precursor::dataspace& memspace, const hdf5::precursor::dataspace& filespace,
+           const C& container);
+
+template <typename Sink, typename C>
+inline void write_impl(Sink& sink, const hdf5::precursor::type& datatype,
+                       const hdf5::precursor::dataspace& memspace,
+                       const hdf5::precursor::dataspace& filespace, const C& container,
+                       std::false_type)
 {
-    static_assert(is_readable_container<C>(), "C does not fulfill the ReadableContainer requirements");
-    
-    typedef typename C::value_type T;
+    static_assert(is_readable_container<C>(),
+                  "C does not fulfill the ReadableContainer requirements");
 
-    typedef typename type_lowering_hook<T>::lowered_type lowered_type;
+    using lowered_type =
+        typename std::decay<decltype(lower_type_internal(*data_adl(container), {}))>::type;
 
-    std::vector<lowered_type> lowered_data;
+    std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
+    std::size_t buffer_size =
+        std::accumulate(begin(mem_shape), end(mem_shape), 1, std::multiplies<std::size_t>());
 
-    for (const T& value : container)
+    std::vector<lowered_type> lowered_buffer(buffer_size);
+
+    for (std::size_t i = 0; i < buffer_size; ++i)
     {
-        lowered_data.push_back(type_lowering_hook<T>::lower_type(value, sink));
+        lowered_buffer[i] = lower_type_internal(data_adl(container)[i], sink);
     }
 
-    write(sink, datatype, memspace, filespace, lowered_data);
+    write(sink, datatype, memspace, filespace, lowered_buffer);
+}
+
+template <typename Sink, typename C>
+inline void write(Sink& sink, const hdf5::precursor::type& datatype,
+                  const hdf5::precursor::dataspace& memspace,
+                  const hdf5::precursor::dataspace& filespace, const C& container)
+{
+    static_assert(is_readable_container<C>(),
+                  "C does not fulfill the ReadableContainer requirements");
+
+    using value_type = typename std::decay<decltype(*data_adl(container))>::type;
+
+    write_impl(sink, datatype, memspace, filespace, container,
+               std::integral_constant<bool, is_trivially_storable<value_type>()>{});
 }
 
 template <typename Source, typename C>
-inline typename std::enable_if<
-    is_identity_lowering_function<type_lowering_hook<typename C::value_type>>::value>::type
-read(const Source& source, const hdf5::precursor::type& datatype,
-     const hdf5::precursor::dataspace& memspace, const hdf5::precursor::dataspace& filespace,
-     C& container)
+void read(const Source& source, const hdf5::precursor::type& datatype,
+          const hdf5::precursor::dataspace& memspace, const hdf5::precursor::dataspace& filespace,
+          C& container);
+
+template <typename Source, typename C>
+inline void read_impl(const Source& source, const hdf5::precursor::type& datatype,
+                      const hdf5::precursor::dataspace& memspace,
+                      const hdf5::precursor::dataspace& filespace, C& container, std::true_type)
 {
     static_assert(is_container<C>(), "C does not fulfill the Container requirements");
-    
+
+    using value_type = typename std::decay<decltype(*data_adl(container))>::type;
+
+    static_assert(is_hdf5_type<value_type>::value, "trivially storable types must be HDF5 types.");
+
     std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
     std::vector<std::size_t> mem_shape_(begin(mem_shape), end(mem_shape));
 
@@ -107,98 +119,110 @@ read(const Source& source, const hdf5::precursor::type& datatype,
 }
 
 template <typename Source, typename C>
-inline typename std::enable_if<
-    !is_identity_lowering_function<type_lowering_hook<typename C::value_type>>::value>::type
-read(const Source& source, const hdf5::precursor::type& datatype,
-     const hdf5::precursor::dataspace& memspace, const hdf5::precursor::dataspace& filespace,
-     C& container)
+inline void read_impl(const Source& source, const hdf5::precursor::type& datatype,
+                      const hdf5::precursor::dataspace& memspace,
+                      const hdf5::precursor::dataspace& filespace, C& container, std::false_type)
 {
     static_assert(is_container<C>(), "C does not fulfill the Container requirements");
-    
-    typedef typename C::value_type T;
 
-    typedef typename remove_base_type_cv<typename type_lowering_hook<T>::lowered_type>::type
-    lowered_type;
-
-    std::vector<lowered_type> lowered_data;
-
-    read(source, datatype, memspace, filespace, lowered_data);
-
-    auto raise = std::bind(type_lowering_hook<T>::template raise_type<Source>,
-                           std::placeholders::_1, std::cref(source));
-    
     std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
     std::vector<std::size_t> mem_shape_(begin(mem_shape), end(mem_shape));
-    
+
     reshape_adl(container, mem_shape_);
-    
-    detail::fill(container, boost::make_transform_iterator(begin(lowered_data), raise),
-                 boost::make_transform_iterator(end(lowered_data), raise));
+
+    using lowered_type =
+        typename std::decay<decltype(lower_type_internal(*data_adl(container), {}))>::type;
+
+    std::size_t buffer_size =
+        std::accumulate(begin(mem_shape_), end(mem_shape_), 1, std::multiplies<std::size_t>());
+
+    std::vector<lowered_type> lowered_buffer(buffer_size);
+
+    read(source, datatype, memspace, filespace, lowered_buffer);
+
+    for (std::size_t i = 0; i < buffer_size; ++i)
+    {
+        data_adl(container)[i] = raise_type_internal(lowered_buffer[i], source);
+    }
 
     if (H5Tis_variable_str(datatype.id()) || H5Tget_class(datatype.id()) == H5T_VLEN)
     {
-
-        H5Dvlen_reclaim(datatype.id(), memspace.id(), H5P_DEFAULT, lowered_data.data());
+        H5Dvlen_reclaim(datatype.id(), memspace.id(), H5P_DEFAULT, lowered_buffer.data());
     }
 }
 
-template <typename Sink, typename T,
-          typename std::enable_if<is_identity_lowering_function<type_lowering_hook<T>>::value,
-                                  int>::type dummy = 0>
-inline void write(Sink& sink, const T& value)
+template <typename Source, typename C>
+inline void read(const Source& source, const hdf5::precursor::type& datatype,
+                 const hdf5::precursor::dataspace& memspace,
+                 const hdf5::precursor::dataspace& filespace, C& container)
 {
+    static_assert(is_container<C>(), "C does not fulfill the Container requirements");
+
+    using value_type = typename std::decay<decltype(*data_adl(container))>::type;
+
+    read_impl(source, datatype, memspace, filespace, container,
+              std::integral_constant<bool, is_trivially_storable<value_type>()>{});
+}
+
+template <typename Sink, typename T>
+void write(Sink& sink, const T& value);
+
+template <typename Sink, typename T>
+inline void write_impl(Sink& sink, const T& value, std::true_type)
+{
+    static_assert(is_hdf5_type<T>::value, "trivially storable types must be HDF5 types.");
+
     sink.write(&value);
 }
 
-// enforce array-to-pointer decay
-template <typename Sink, typename T, std::size_t N,
-          typename std::enable_if<is_identity_lowering_function<type_lowering_hook<T>>::value,
-                                  int>::type dummy = 0>
+template <typename Sink, typename T>
+inline void write_impl(Sink& sink, const T& value, std::false_type)
+{
+    auto lowered_value = lower_type_internal(value, sink);
+
+    write(sink, lowered_value);
+}
+
+template <typename Sink, typename T>
+inline void write(Sink& sink, const T& value)
+{
+    write_impl(sink, value, std::integral_constant<bool, is_trivially_storable<T>()>{});
+}
+
+template <typename Sink, typename T, int N>
 inline void write(Sink& sink, const T (&value)[N])
 {
+    using value_type = typename std::decay<T>::type;
+
+    static_assert(is_trivially_storable<value_type>(),
+                  "Storage of arrays of non-trivially storable types is not implemented.");
+
     const T* decayed_array = value;
+
     sink.write(&decayed_array);
 }
 
-template <typename Sink, typename T,
-          typename std::enable_if<!is_identity_lowering_function<type_lowering_hook<T>>::value,
-                                  int>::type dummy = 0>
-inline void write(Sink& sink, const T& value)
-{
-    write(sink, type_lowering_hook<T>::lower_type(value, sink));
-}
+template <typename Source, typename T>
+inline void read(Source& source, T& value);
 
-template <typename Source, typename T,
-          typename std::enable_if<is_identity_lowering_function<type_lowering_hook<T>>::value,
-                                  int>::type dummy = 0>
-inline void read(Source& source, T& value)
+template <typename Source, typename T>
+inline void read_impl(Source& source, T& value, std::true_type)
 {
+    static_assert(is_hdf5_type<T>::value, "trivially storable types must be HDF5 types.");
+
     source.read(&value);
 }
 
-// enforce array-to-pointer decay
-template <typename Source, typename T, std::size_t N,
-          typename std::enable_if<is_identity_lowering_function<type_lowering_hook<T>>::value,
-                                  int>::type dummy = 0>
-inline void read(Source& source, T (&value)[N])
+template <typename Source, typename T>
+inline void read_impl(Source& source, T& value, std::false_type)
 {
-    T* decayed_array = value;
-    source.read(&decayed_array);
-}
+    using lowered_value_type = typename std::decay<decltype(lower_type_internal(value, {}))>::type;
 
-template <typename Source, typename T,
-          typename std::enable_if<!is_identity_lowering_function<type_lowering_hook<T>>::value,
-                                  int>::type dummy = 0>
-inline void read(Source& source, T& value)
-{
-    typedef typename remove_base_type_cv<typename type_lowering_hook<T>::lowered_type>::type
-    lowered_type;
-
-    lowered_type lowered_value;
+    lowered_value_type lowered_value;
 
     read(source, lowered_value);
 
-    value = type_lowering_hook<T>::raise_type(lowered_value, source);
+    value = raise_type_internal(lowered_value, source);
 
     auto datatype = source.datatype();
 
@@ -208,6 +232,27 @@ inline void read(Source& source, T& value)
         H5Dvlen_reclaim(datatype.id(), hdf5::precursor::dataspace().id(), H5P_DEFAULT,
                         &lowered_value);
     }
+}
+
+template <typename Source, typename T>
+inline void read(Source& source, T& value)
+{
+    using value_type = typename std::decay<T>::type;
+
+    read_impl(source, value, std::integral_constant<bool, is_trivially_storable<value_type>()>{});
+}
+
+template <typename Source, typename T, int N>
+inline void read(Source& source, T (&value)[N])
+{
+    using value_type = typename std::decay<T>::type;
+
+    static_assert(is_trivially_storable<value_type>(),
+                  "Storage of arrays of non-trivially storable types is not implemented.");
+
+    T* decayed_array = value;
+
+    source.read(&decayed_array);
 }
 }
 }

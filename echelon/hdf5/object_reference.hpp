@@ -8,7 +8,6 @@
 
 #include <echelon/hdf5/precursor/object_reference.hpp>
 #include <echelon/hdf5/precursor/handle.hpp>
-#include <echelon/hdf5/customization_hooks.hpp>
 #include <echelon/hdf5/object.hpp>
 
 #include <string>
@@ -26,8 +25,6 @@ namespace hdf5
 class object_reference
 {
 public:
-    friend struct type_lowering_hook<object_reference>;
-
     /** \brief Creates a null reference.
      */
     object_reference();
@@ -64,24 +61,6 @@ private:
     hdf5::precursor::handle any_valid_handle_;
 };
 
-template <>
-struct type_lowering_hook<object_reference>
-{
-    typedef object_reference original_type;
-    typedef hdf5::precursor::object_reference lowered_type;
-
-    template <typename Sink>
-    static lowered_type lower_type(const original_type& value, const Sink&)
-    {
-        return value.raw_ref();
-    }
-
-    template <typename Source>
-    static original_type raise_type(lowered_type value, const Source& source)
-    {
-        return object_reference(value, hdf5::precursor::handle(source));
-    }
-};
 }
 }
 

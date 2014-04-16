@@ -23,6 +23,12 @@ target_link_libraries(string_support_test echelon)
 add_test(string_support_test ${CMAKE_CURRENT_BINARY_DIR}/string_support_test)
 add_dependencies(check string_support_test)
 
+add_executable(object_reference_handling EXCLUDE_FROM_ALL object_reference_handling.cpp)
+target_link_libraries(object_reference_handling echelon)
+
+add_test(object_reference_handling ${CMAKE_CURRENT_BINARY_DIR}/error_handling)
+add_dependencies(check object_reference_handling)
+
 add_executable(error_handling EXCLUDE_FROM_ALL error_handling.cpp)
 target_link_libraries(error_handling echelon)
 

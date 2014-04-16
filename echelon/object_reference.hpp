@@ -9,14 +9,8 @@
 #include <echelon/object.hpp>
 
 #include <echelon/hdf5/object_reference.hpp>
-#include <echelon/hdf5/customization_hooks.hpp>
-#include <echelon/hdf5/type_factory.hpp>
-#include <echelon/hdf5/type_traits_fwd.hpp>
-
-#include <boost/mpl/bool.hpp>
 
 #include <string>
-#include "hdf5/attribute.hpp"
 
 namespace echelon
 {
@@ -59,43 +53,6 @@ private:
     hdf5::object_reference reference_handle_;
 };
 
-namespace hdf5
-{
-
-template <>
-struct type_lowering_hook<echelon::object_reference>
-{
-    typedef echelon::object_reference original_type;
-    typedef hdf5::precursor::object_reference lowered_type;
-
-    template <typename Sink>
-    static lowered_type lower_type(const original_type& value, const Sink& sink)
-    {
-        return type_lowering_hook<hdf5::object_reference>::lower_type(value.raw_ref(), sink);
-    }
-
-    template <typename Source>
-    static original_type raise_type(lowered_type value, const Source& source)
-    {
-        return echelon::object_reference(
-            type_lowering_hook<hdf5::object_reference>::raise_type(value, source));
-    }
-};
-
-template <>
-struct hdf5_type_selector<echelon::object_reference>
-{
-    static type get()
-    {
-        return type::object_reference();
-    }
-};
-
-template <>
-struct is_predefined_hdf5_type<echelon::object_reference> : boost::mpl::true_
-{
-};
-}
 }
 
 #endif
