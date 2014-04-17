@@ -65,9 +65,7 @@ inline void write_impl(Sink& sink, const hdf5::precursor::type& datatype,
     using lowered_type =
         typename std::decay<decltype(lower_type_internal(*data_adl(container), {}))>::type;
 
-    std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
-    std::size_t buffer_size =
-        std::accumulate(begin(mem_shape), end(mem_shape), 1, std::multiplies<std::size_t>());
+    std::size_t buffer_size = memspace.select_npoints();
 
     std::vector<lowered_type> lowered_buffer(buffer_size);
 
@@ -133,8 +131,7 @@ inline void read_impl(const Source& source, const hdf5::precursor::type& datatyp
     using lowered_type =
         typename std::decay<decltype(lower_type_internal(*data_adl(container), {}))>::type;
 
-    std::size_t buffer_size =
-        std::accumulate(begin(mem_shape_), end(mem_shape_), 1, std::multiplies<std::size_t>());
+    std::size_t buffer_size = memspace.select_npoints();
 
     std::vector<lowered_type> lowered_buffer(buffer_size);
 
