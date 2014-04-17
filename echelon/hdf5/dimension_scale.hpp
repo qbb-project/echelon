@@ -6,8 +6,8 @@
 #ifndef ECHELON_HDF5_DIMENSION_SCALE_HPP
 #define ECHELON_HDF5_DIMENSION_SCALE_HPP
 
-#include <echelon/hdf5/data_transfer_broker.hpp>
-#include <echelon/hdf5/slice.hpp> //for shape_adl
+#include <echelon/hdf5/storage_layer.hpp>
+#include <echelon/hdf5/container_adaption.hpp> //for shape_adl
 #include <echelon/object.hpp>
 
 #include <echelon/hdf5/precursor/dimension_scale.hpp>

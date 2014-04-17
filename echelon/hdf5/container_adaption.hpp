@@ -7,7 +7,6 @@
 #define ECHELON_HDF5_CONTAINER_ADAPTION_HPP
 
 #include <utility>
-#include "data_transfer_broker.hpp"
 
 namespace echelon
 {

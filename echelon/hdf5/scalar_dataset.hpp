@@ -16,7 +16,7 @@
 #include <echelon/hdf5/object_reference.hpp>
 #include <echelon/hdf5/attribute_repository.hpp>
 
-#include <echelon/hdf5/data_transfer_broker.hpp>
+#include <echelon/hdf5/storage_layer.hpp>
 
 namespace echelon
 {

@@ -18,7 +18,7 @@
 
 #include <echelon/hdf5/attribute_repository.hpp>
 #include <echelon/hdf5/dataset_dimensions.hpp>
-#include <echelon/hdf5/data_transfer_broker.hpp>
+#include <echelon/hdf5/storage_layer.hpp>
 
 #include <echelon/hdf5/precursor/dataset.hpp>
 #include <echelon/hdf5/precursor/dataspace.hpp>

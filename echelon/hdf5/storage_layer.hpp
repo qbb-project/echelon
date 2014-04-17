@@ -3,8 +3,8 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef ECHELON_HDF5_DATA_TRANSFER_BROKER_HPP
-#define ECHELON_HDF5_DATA_TRANSFER_BROKER_HPP
+#ifndef ECHELON_HDF5_STORAGE_LAYER_HPP
+#define ECHELON_HDF5_STORAGE_LAYER_HPP
 
 #include <echelon/hdf5/customization_hooks.hpp>
 #include <echelon/hdf5/type_traits.hpp>
