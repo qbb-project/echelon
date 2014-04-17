@@ -72,9 +72,11 @@ public:
     template <typename T>
     friend void operator<<=(T& sink, const dimension_scale& source)
     {
-        std::vector<hsize_t> file_shape = source.shape();
+        auto current_shape = shape_adl(sink);
 
-        hdf5::precursor::dataspace mem_space(file_shape);
+        std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
+
+        hdf5::precursor::dataspace mem_space(mem_shape);
         hdf5::precursor::dataspace file_space = source.dim_scale_.get_space();
         hdf5::precursor::type datatype = source.dim_scale_.datatype();
 

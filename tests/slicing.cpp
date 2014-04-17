@@ -24,22 +24,22 @@ BOOST_FIXTURE_TEST_CASE( slicing_test, basic_fixture )
       
       ds <<= data;
       
-      std::vector<double> subrange1;
+      std::vector<double> subrange1(4);
       
       subrange1 <<= ds(range(3,7));
       
       
-      std::vector<double> subrange2;
+      std::vector<double> subrange2(5);
       
       subrange2 <<= ds(range(_,5));
       
       
-      std::vector<double> subrange3;
+      std::vector<double> subrange3(5);
       
       subrange3 <<= ds(range(5,_));
       
       
-      std::vector<double> subrange4;
+      std::vector<double> subrange4(10);
       
       subrange4 <<= ds(_);    
        

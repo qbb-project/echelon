@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE( std_string_support_test )
       sds <<= foo;
       attr <<= bar;
       
-      std::vector<std::string> ds_value;
+      std::vector<std::string> ds_value(2);
       std::string sds_value;
       std::string attr_value;
       

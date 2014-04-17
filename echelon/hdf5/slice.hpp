@@ -63,9 +63,11 @@ public:
     template <typename T>
     friend void operator<<=(T& sink, const slice& source)
     {
-        std::vector<hsize_t> slice_shape = source.shape();
+        auto current_shape = shape_adl(sink);
+        
+        std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
 
-        hdf5::precursor::dataspace mem_space(slice_shape);
+        hdf5::precursor::dataspace mem_space(mem_shape);
         hdf5::precursor::dataspace file_space = source.selected_dataspace_;
         hdf5::precursor::type datatype = source.sliced_dataset_.datatype();
 

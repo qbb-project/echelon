@@ -23,13 +23,32 @@
 #include <numeric>
 #include <cassert>
 #include <type_traits>
+#include <exception>
 
-#include <boost/iterator/transform_iterator.hpp>
+#include <boost/format.hpp>
+
 
 namespace echelon
 {
 namespace hdf5
 {
+
+class inconsistent_selection_size_exception : public std::exception
+{
+public:
+    explicit inconsistent_selection_size_exception(hssize_t mem_selection_size_, hssize_t file_selection_size_)
+    {
+        what_ = str(boost::format("The number of selected elements in the memory space (%1%) and the file space (%2%) differs.") % mem_selection_size_ % file_selection_size_);
+    }
+
+    const char* what() const noexcept override
+    {
+        return what_.c_str();
+    }
+
+private:
+    std::string what_;
+};
 
 template <typename Sink, typename C>
 inline void write_impl(Sink& sink, const hdf5::precursor::type& datatype,
@@ -107,10 +126,11 @@ inline void read_impl(const Source& source, const hdf5::precursor::type& datatyp
 
     static_assert(is_hdf5_type<value_type>::value, "trivially storable types must be HDF5 types.");
 
-    std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
-    std::vector<std::size_t> mem_shape_(begin(mem_shape), end(mem_shape));
-
-    reshape_adl(container, mem_shape_);
+    auto memory_selection_size = memspace.select_npoints();
+    auto file_selection_size = filespace.select_npoints(); 
+    
+    if(memory_selection_size != file_selection_size)
+        throw inconsistent_selection_size_exception(memory_selection_size, file_selection_size);
 
     source.read(datatype, memspace, filespace, hdf5::precursor::default_property_list,
                 data_adl(container));
@@ -126,18 +146,20 @@ inline void read_impl(const Source& source, const hdf5::precursor::type& datatyp
     std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
     std::vector<std::size_t> mem_shape_(begin(mem_shape), end(mem_shape));
 
-    reshape_adl(container, mem_shape_);
-
     using lowered_type =
         typename std::decay<decltype(lower_type_internal(*data_adl(container), {}))>::type;
 
-    std::size_t buffer_size = memspace.select_npoints();
+    std::size_t memory_selection_size = memspace.select_npoints();
+    auto file_selection_size = filespace.select_npoints(); 
 
-    std::vector<lowered_type> lowered_buffer(buffer_size);
+    if(memory_selection_size != file_selection_size)
+        throw inconsistent_selection_size_exception(memory_selection_size, file_selection_size);
+    
+    std::vector<lowered_type> lowered_buffer(memory_selection_size);
 
     read(source, datatype, memspace, filespace, lowered_buffer);
 
-    for (std::size_t i = 0; i < buffer_size; ++i)
+    for (std::size_t i = 0; i < memory_selection_size; ++i)
     {
         data_adl(container)[i] = raise_type_internal(lowered_buffer[i], source);
     }

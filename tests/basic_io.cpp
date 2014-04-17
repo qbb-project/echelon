@@ -25,7 +25,7 @@ BOOST_FIXTURE_TEST_CASE( basic_io_test, basic_fixture )
       sds <<= 42;
       attr <<= 7;
       
-      std::vector<double> ds_value;
+      std::vector<double> ds_value(10);
       int sds_value;
       int attr_value;
       
