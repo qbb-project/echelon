@@ -79,3 +79,18 @@ Manually link against echelon
 If you use a different build system than CMake (or good old manual compilation), you need to link manually against
 the libraries echelon and echelon_hdf5, together with the HDF5 libraries hdf5 and hdf5_hl.
 In addition, the compiler's C++11 support has to be enabled.
+
+****************
+Breaking changes
+****************
+
+This section contains a compilation of breaking changes which you may encounter while porting your code the newer versions of echelon
+and suitably fixes.
+
+Automatic reshape of arrays
+===========================
+  **Change**: echelon does not reshape arrays while reading data anymore. The array has to be properly shaped prior to the read or the operation will throw an exception.
+
+  **Possible symptoms**: An inconsistent_selection_size_exception is thrown.
+
+  **Fix**: Reshape the array prior to the read with the proper shape. A new mechanism allowing automatic reshaping for convenience will be added in the future.
