@@ -7,7 +7,7 @@ echelon is written using modern C++ to enable easy, versatile and save access to
 Prerequisites
 -------------
 
-- CMake 2.8.0 or above
+- CMake 2.8.12 or above
 - HDF5 1.8.0 or above
 - Boost 1.50.0 or above
 - A C++11 - compatible compiler (tested with gcc 4.7 and clang 3.1)
