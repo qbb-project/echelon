@@ -52,3 +52,9 @@ target_link_libraries(require_api echelon)
 
 add_test(require_api ${CMAKE_CURRENT_BINARY_DIR}/require_api)
 add_dependencies(check require_api)
+
+add_executable(sink_adaptors EXCLUDE_FROM_ALL sink_adaptors.cpp)
+target_link_libraries(sink_adaptors echelon)
+
+add_test(sink_adaptors ${CMAKE_CURRENT_BINARY_DIR}/sink_adaptors)
+add_dependencies(check sink_adaptors)

@@ -26,4 +26,6 @@
 
 #include <echelon/std/stl_support.hpp>
 
+#include <echelon/sink_adaptors.hpp>
+
 #endif
