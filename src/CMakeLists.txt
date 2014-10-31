@@ -38,9 +38,13 @@ target_link_libraries(echelon echelon_hdf5 ${boost_targets})
 
 if(NOT ECHELON_IS_A_SUBPROJECT)
 
-install(DIRECTORY ../echelon/ DESTINATION include/echelon
-        FILES_MATCHING PATTERN "*.hpp")
+    install(DIRECTORY ../echelon/ DESTINATION include/echelon
+            FILES_MATCHING PATTERN "*.hpp")
 
 endif()
 
-install(TARGETS echelon DESTINATION lib)
+if(NOT ECHELON_IS_A_SUBPROJECT)
+    install(TARGETS echelon DESTINATION lib)
+else()
+    install(TARGETS echelon OPTIONAL DESTINATION lib)
+endif()
