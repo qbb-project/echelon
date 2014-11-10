@@ -6,9 +6,9 @@
 cmake_minimum_required (VERSION 2.8.12)
 enable_testing()
 
-project (echelon)
+project(echelon)
 
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "echelon is a HDF5 based library for the structured sotrage of scientific data.")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "echelon is a HDF5-based library for the structured storage of scientific data.")
 SET(CPACK_PACKAGE_VENDOR "Christopher Hinz")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Readme.md")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE_1_0.txt")
@@ -29,7 +29,7 @@ endif()
 
 set(CMAKE_MODULE_PATH ${echelon_SOURCE_DIR}/cmake)
 
-if (NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, default to Release")
     SET(CMAKE_BUILD_TYPE Release CACHE STRING
       "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
@@ -38,8 +38,6 @@ endif()
 
 set(ECHELON_BUILD_STATIC OFF CACHE BOOL "Build static libraries if enabled.")
 
-include(generate_imported_library_targets)
-
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
   set(ECHELON_IS_A_SUBPROJECT 0)
 else()
@@ -47,25 +45,6 @@ else()
 endif()
 
 set(ECHELON_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
-find_package(Boost 1.50.0 COMPONENTS serialization unit_test_framework REQUIRED)
-find_package(HDF5 COMPONENTS C HL REQUIRED)
-
-################################################################################################################################
-## create imported targets for all non-system libraries                                                                       ##
-##                                                                                                                            ##
-## Rational: CMake treats all libraries in implicit system locations as system libraries,                                     ##
-##           even if they are 'normal' libraries. (see http://www.cmake.org/Wiki/CMake_2.6_Notes#Linking_to_System_Libraries  ##
-##           for a more detailed explanation)                                                                                 ##
-##                                                                                                                            ##
-##           Due to this the linker might link against the wrong libraries, if several versions of a library are installed,   ##
-##           which in turn might be out-dated or incompatible with the header files found by find_package.                    ##
-##           The imported target forces the linker to use the libraries found by find_package.                                ##
-##                                                                                                                            ##
-################################################################################################################################
-
-generate_imported_library_targets(Boost_LIBRARIES boost_targets)
-generate_imported_library_targets(HDF5_LIBRARIES hdf5_targets)
 
 add_subdirectory(src)
 
@@ -76,81 +55,72 @@ if(NOT ECHELON_IS_A_SUBPROJECT)
 
 endif()
 
-if(ECHELON_IS_A_SUBPROJECT)
+if(NOT ECHELON_IS_A_SUBPROJECT)
 
-    set(Echelon_DEFINITIONS PARENT_SCOPE)
-    set(ECHELON_FOUND TRUE PARENT_SCOPE)
-    set(Echelon_LIBRARIES echelon echelon_hdf5 PARENT_SCOPE)
-    set(Echelon_INCLUDE_DIRS PARENT_SCOPE)
+  # add a target to generate API documentation with Doxygen
+  find_package(Doxygen)
+  find_package(Sphinx)
+	  
+  if(DOXYGEN_FOUND)
+	  
+      configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
+
+      file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html)
+      file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/latex)
+	      
+      add_custom_target(api_doc
+	  ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
+	  COMMAND 
+	  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
+	  COMMENT "Generating API documentation with Doxygen." VERBATIM)
+
+      list(APPEND ECHELON_DOC_TARGETS api_doc)
+    
+      if(SPHINX_FOUND)
+      
+	if(NOT DEFINED SPHINX_THEME)
+	  set(SPHINX_THEME default)
+	endif()
+	if(NOT DEFINED SPHINX_THEME_DIR)
+	  set(SPHINX_THEME_DIR)
+	endif()
+
+	set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")
+
+	set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
+
+	set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/html/user_guide")
+	set(SPHINX_LATEX_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/latex/user_guide")
+	configure_file(
+	      "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide/conf.py.in"
+	      "${BINARY_BUILD_DIR}/conf.py"
+	      @ONLY)
+
+	add_custom_target(user_guide
+	      ${SPHINX_EXECUTABLE}
+	      -q -b html
+	      -c "${BINARY_BUILD_DIR}"
+	      -d "${SPHINX_CACHE_DIR}"
+	      "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide"
+	      "${SPHINX_HTML_DIR}"
+	      COMMENT "Building user guide with Sphinx."
+	      DEPENDS api_doc)
+
+	list(APPEND ECHELON_DOC_TARGETS user_guide)
+	
+	add_custom_target(user_guide_latex
+	      ${SPHINX_EXECUTABLE}
+	      -q -b latex
+	      -c "${BINARY_BUILD_DIR}"
+	      -d "${SPHINX_CACHE_DIR}"
+	      "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide"
+	      "${SPHINX_LATEX_DIR}"
+	      COMMENT "Building user guide (latex version) with Sphinx.")
+
+      endif(SPHINX_FOUND)
+
+  endif(DOXYGEN_FOUND)
+
+add_custom_target(doc DEPENDS ${ECHELON_DOC_TARGETS} COMMENT "Generating the documentation.")
 
 endif()
-
-# add a target to generate API documentation with Doxygen
-find_package(Doxygen)
-find_package(Sphinx)
-        
-if(DOXYGEN_FOUND)
-        
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
-
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html)
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/latex)
-            
-    add_custom_target(api_doc
-        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
-        COMMAND 
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
-        COMMENT "Generating API documentation with Doxygen." VERBATIM)
-
-    list(APPEND ECHELON_DOC_TARGETS api_doc)
-  
-    if(SPHINX_FOUND)
-     
-      if(NOT DEFINED SPHINX_THEME)
-        set(SPHINX_THEME default)
-      endif()
-      if(NOT DEFINED SPHINX_THEME_DIR)
-        set(SPHINX_THEME_DIR)
-      endif()
-
-      set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")
-
-      set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
-
-      set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/html/user_guide")
-      set(SPHINX_LATEX_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/latex/user_guide")
-      configure_file(
-            "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide/conf.py.in"
-            "${BINARY_BUILD_DIR}/conf.py"
-            @ONLY)
-
-      add_custom_target(user_guide
-            ${SPHINX_EXECUTABLE}
-            -q -b html
-            -c "${BINARY_BUILD_DIR}"
-            -d "${SPHINX_CACHE_DIR}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide"
-            "${SPHINX_HTML_DIR}"
-            COMMENT "Building user guide with Sphinx."
-            DEPENDS api_doc)
-
-      list(APPEND ECHELON_DOC_TARGETS user_guide)
-      
-      add_custom_target(user_guide_latex
-            ${SPHINX_EXECUTABLE}
-            -q -b latex
-            -c "${BINARY_BUILD_DIR}"
-            -d "${SPHINX_CACHE_DIR}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/doc/user-guide"
-            "${SPHINX_LATEX_DIR}"
-            COMMENT "Building user guide (latex version) with Sphinx.")
-
-    endif(SPHINX_FOUND)
-
-endif(DOXYGEN_FOUND)
-
-if(NOT ECHELON_IS_A_SUBPROJECT)
-    add_custom_target(doc DEPENDS ${ECHELON_DOC_TARGETS} COMMENT "Generating the documentation.")
-else(NOT ECHELON_IS_A_SUBPROJECT)
-    add_custom_target(echelon-doc DEPENDS ${ECHELON_DOC_TARGETS} COMMENT "Generating the documentation.")
-endif(NOT ECHELON_IS_A_SUBPROJECT)
