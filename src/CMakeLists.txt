@@ -6,7 +6,7 @@
 include(TestCXXAcceptsFlag)
 include(GenerateExportHeader)
 
-find_package(Boost 1.50.0 COMPONENTS serialization unit_test_framework REQUIRED)
+find_package(Boost 1.50.0 COMPONENTS serialization REQUIRED)
 
 add_subdirectory(hdf5)
 

@@ -31,7 +31,7 @@ set(CMAKE_MODULE_PATH ${echelon_SOURCE_DIR}/cmake)
 
 if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, default to Release")
-    SET(CMAKE_BUILD_TYPE Release CACHE STRING
+    set(CMAKE_BUILD_TYPE Release CACHE STRING
       "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
       FORCE)
 endif()
