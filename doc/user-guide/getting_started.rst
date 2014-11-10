@@ -55,9 +55,12 @@ compiler/build system to find echelon for you.
 Using echelon as an external dependency
 =======================================
 
-After you have build and installed echelon somewhere, you can use echelon's find module
-to find and configure the library. Just copy FindEchelon.cmake from cmake/ to some
-directory in CMake's module path and use the standard find_package syntax.
+After you have build and installed echelon somewhere, you can use CMake's find_package mechanism
+to obtain an imported target for echelon. Afterwards you can simply call ::
+
+    target_link_libraries(your-target echelon::echelon)
+    
+to the link against the library via the imported target echelon::echelon.
 
 Using echelon as a subproject
 =============================
@@ -69,7 +72,7 @@ by adding ::
     add_subdirectory(echelon's-root-directory)
 
 If used as a subproject, echelon defines the same
-variables, as if it would have done in the external dependency case, which makes both approaches quite interchangeable.
+targets, as if it would have done in the external dependency case, which makes both approaches quite interchangeable.
 The big advantage of the subproject approach is, that echelon is automatically build alongside your project
 and you don't have to bother with a second manual compilation.
 
