@@ -18,6 +18,7 @@ Contents:
    about_echelon
    getting_started
    tutorial_introduction
+   file_format_specification
    style_guide
 
 
