@@ -43,11 +43,22 @@ private:
 
 /** \brief Add an adaptor to the sink which automatically reshapes the sink if needed.
  *
+ *  Example:
+ * 
+ *  \code{.cpp}
+ *  
+ *  std::vector<double> my_array;
+ * 
+ *  echelon::auto_reshape(my_array) <<= my_dataset;
+ * 
+ *  \endcode
+ * 
  *  \tparam ResizeableSink type of the sink
  *
  *  \param sink the adapted sink
  * 
  *  \returns the corresponding sink adaptor.
+
  */
 template <typename ResizeableSink>
 auto_reshaper<ResizeableSink> auto_reshape(ResizeableSink& sink)

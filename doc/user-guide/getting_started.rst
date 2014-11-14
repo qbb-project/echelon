@@ -96,4 +96,4 @@ Automatic reshape of arrays
 
   **Possible symptoms**: An inconsistent_selection_size_exception is thrown.
 
-  **Fix**: Reshape the array prior to the read with the proper shape. A new mechanism allowing automatic reshaping for convenience will be added in the future.
+  **Fix**: Reshape the array prior to the read with the proper shape. You can use the new :echelon:`echelon::auto_reshape <echelon::auto_reshape>` sink adaptor to do this automatically.
