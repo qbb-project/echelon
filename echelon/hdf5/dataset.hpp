@@ -141,6 +141,10 @@ public:
      */
     using native_handle_type = hdf5::precursor::dataset;
 
+    /** \brief Initializes the handle with its null state.
+     */
+    dataset() = default;
+    
     dataset(const object& parent, const std::string& name, const type& datatype,
             const std::vector<hsize_t>& shape, const std::vector<hsize_t>& max_dims, int comp_level,
             bool auto_chunking, bool shuffle_filter, const std::vector<hsize_t> chunk_shape);
@@ -324,7 +328,10 @@ public:
     /** \brief The underlying HDF5 low-level handle.
      */
     const native_handle_type& native_handle() const;
-
+    
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     hdf5::precursor::dataset dataset_handle_;
 

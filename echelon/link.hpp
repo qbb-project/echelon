@@ -22,6 +22,8 @@ class link
 public:
     link(object origin_, std::string name_);
 
+    link() = default;
+    
     explicit link(hdf5::link native_link_);
 
     /** \brief Returns the destination of the link.

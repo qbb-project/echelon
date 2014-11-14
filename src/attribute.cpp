@@ -19,4 +19,14 @@ type attribute::datatype() const
 {
     return type(attribute_handle_.datatype());
 }
+
+attribute::native_handle_type attribute::native_handle() const
+{
+    return attribute_handle_;
+}
+
+attribute::operator bool() const
+{
+    return static_cast<bool>(native_handle());
+}
 }

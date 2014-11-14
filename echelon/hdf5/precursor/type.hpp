@@ -19,6 +19,7 @@ namespace precursor
 class type
 {
 public:
+    type();
     explicit type(hid_t type_id_, bool is_transient_ = false);
     ~type();
 
@@ -55,6 +56,7 @@ public:
 
     hid_t id() const;
 
+    explicit operator bool() const;
 private:
     hid_t type_id_;
     bool is_transient_;

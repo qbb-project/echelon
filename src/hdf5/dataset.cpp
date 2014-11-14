@@ -130,5 +130,10 @@ dataset_dimensions dataset::dimensions() const
 {
     return dataset_dimensions(*this, shape().size());
 }
+
+dataset::operator bool() const
+{
+    return static_cast<bool>(native_handle());
+}
 }
 }

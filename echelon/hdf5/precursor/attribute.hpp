@@ -26,6 +26,7 @@ namespace precursor
 class attribute
 {
 public:
+    attribute();
     explicit attribute(hid_t attribute_id_);
     attribute(hid_t loc_id_, const std::string& name_, const type& attr_type_,
               const property_list& acpl, const property_list& aapl);
@@ -44,6 +45,7 @@ public:
 
     hid_t id() const;
 
+    explicit operator bool() const;
 private:
     hid_t attribute_id_;
 };

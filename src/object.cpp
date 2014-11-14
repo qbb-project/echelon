@@ -90,4 +90,9 @@ object::native_handle_type object::native_handle() const
 {
     return object_handle_;
 }
+
+object::operator bool() const
+{
+    return static_cast<bool>(native_handle());
+}
 }

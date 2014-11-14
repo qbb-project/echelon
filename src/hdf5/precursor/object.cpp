@@ -105,6 +105,11 @@ hid_t object::id() const
     return object_id_;
 }
 
+object::operator bool() const
+{
+    return object_id_ != -1;
+}
+
 bool exists(const object& loc, const std::string& name)
 {
     ECHELON_ASSERT_MSG(H5Iis_valid(loc.id()) > 0, "invalid object ID");

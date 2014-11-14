@@ -31,6 +31,10 @@ public:
      */
     using native_handle_type = hdf5::precursor::dataset;
 
+    /** \brief Initializes the handle with its null state.
+     */
+    scalar_dataset() = default;
+    
     scalar_dataset(const object& parent, const std::string& name, const type& datatype);
 
     explicit scalar_dataset(native_handle_type dataset_wrapper_);
@@ -73,6 +77,9 @@ public:
      */
     const native_handle_type& native_handle() const;
 
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     hdf5::precursor::dataset dataset_wrapper_;
 

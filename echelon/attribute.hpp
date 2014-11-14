@@ -23,6 +23,10 @@ class attribute
 public:
     using native_handle_type = hdf5::attribute;
 
+    /** \brief Initializes the handle with its null state.
+     */
+    attribute() = default;
+    
     explicit attribute(native_handle_type native_handle_);
 
     /** \brief Writes the content of a variable into the attribute.
@@ -55,6 +59,13 @@ public:
      */
     type datatype() const;
 
+    /** \brief The underlying HDF5 low-level handle.
+     */
+    native_handle_type native_handle() const;
+    
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     hdf5::attribute attribute_handle_;
 };

@@ -27,5 +27,6 @@ const std::string& link::name() const
 {
     return name_;
 }
+
 }
 }

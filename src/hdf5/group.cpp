@@ -184,6 +184,11 @@ const group::native_handle_type& group::native_handle() const
     return group_wrapper_;
 }
 
+group::operator bool() const
+{
+    return static_cast<bool>(native_handle());
+}
+
 attribute_repository<group> group::attributes() const
 {
     return attribute_repository<group>(*this);

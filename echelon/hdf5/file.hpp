@@ -48,6 +48,10 @@ public:
 
     // file interface
 
+    /** \brief Initializes the handle with its null state.
+     */
+    file() = default;
+    
     /** \brief Creates a new HDF5 file using the given path and creation mode.
      *
      *  \param path path of the new HDF5 file
@@ -364,6 +368,9 @@ public:
      */
     const native_handle_type& native_handle() const;
 
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     hdf5::precursor::file file_wrapper_;
     group root_group_;

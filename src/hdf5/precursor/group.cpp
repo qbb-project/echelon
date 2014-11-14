@@ -221,6 +221,11 @@ hid_t group::id() const
 {
     return group_id_;
 }
+
+group::operator bool() const
+{
+    return group_id_ != -1;
+}
 }
 }
 }

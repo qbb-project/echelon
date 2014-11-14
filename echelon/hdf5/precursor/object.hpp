@@ -46,6 +46,7 @@ public:
 
     hid_t id() const;
 
+    explicit operator bool() const;
 private:
     hid_t object_id_;
 };

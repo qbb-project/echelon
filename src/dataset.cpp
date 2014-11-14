@@ -47,6 +47,11 @@ dataset::native_handle_type dataset::native_handle() const
     return group_handle_;
 }
 
+dataset::operator bool() const
+{
+    return static_cast<bool>(native_handle());
+}
+
 attribute_repository<dataset> dataset::attributes() const
 {
     return attribute_repository<dataset>(native_handle());

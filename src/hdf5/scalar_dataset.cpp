@@ -39,6 +39,11 @@ const scalar_dataset::native_handle_type& scalar_dataset::native_handle() const
     return dataset_wrapper_;
 }
 
+scalar_dataset::operator bool() const
+{
+    return static_cast<bool>(native_handle());
+}
+
 attribute_repository<scalar_dataset> scalar_dataset::attributes() const
 {
     return attribute_repository<scalar_dataset>(*this);

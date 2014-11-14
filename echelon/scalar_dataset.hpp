@@ -27,6 +27,10 @@ public:
      */
     using native_handle_type = hdf5::group;
 
+    /** \brief Initializes the handle with its null state.
+     */
+    scalar_dataset() = default;
+    
     explicit scalar_dataset(native_handle_type native_handle_);
 
     /** \brief Writes the content of a variable into the scalar dataset.
@@ -67,6 +71,9 @@ public:
      */
     native_handle_type native_handle() const;
 
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     hdf5::group group_handle_;
     hdf5::scalar_dataset scalar_dataset_handle_;

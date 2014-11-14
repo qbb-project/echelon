@@ -29,6 +29,10 @@ public:
      */
     using native_handle_type = hdf5::object;
 
+    /** \brief Initializes the handle with its null state.
+     */
+    object() = default;
+    
     explicit object(native_handle_type native_handle_);
 
     /** \brief Constructs a handle from an pre-existing group handle.
@@ -114,6 +118,9 @@ public:
      */
     native_handle_type native_handle() const;
 
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     hdf5::object object_handle_;
 };

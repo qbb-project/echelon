@@ -37,6 +37,10 @@ class dataset
 public:
     using native_handle_type = hdf5::group;
 
+    /** \brief Initializes the handle with its null state.
+     */
+    dataset() = default;
+    
     explicit dataset(native_handle_type native_handle_);
 
     /** \brief Writes the content of a data source into the dataset.
@@ -164,6 +168,9 @@ public:
      */
     native_handle_type native_handle() const;
 
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     hdf5::group group_handle_;
     hdf5::dataset dataset_handle_;

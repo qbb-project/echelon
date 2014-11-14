@@ -63,6 +63,7 @@ public:
 
     hid_t id() const;
 
+    explicit operator bool() const;
 private:
     hid_t dataset_id_;
 };

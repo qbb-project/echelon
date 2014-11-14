@@ -110,6 +110,11 @@ const type::native_handle_type& type::native_handle() const
     return type_wrapper_;
 }
 
+type::operator bool() const
+{
+    return static_cast<bool>(native_handle());
+}
+
 bool operator==(const type& lhs, const type& rhs)
 {
     return lhs.native_handle() == rhs.native_handle();

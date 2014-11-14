@@ -20,6 +20,7 @@ namespace precursor
 class file
 {
 public:
+    file();
     explicit file(hid_t file_id_);
     file(const std::string& name_, unsigned flags_, hid_t fcpl_id_, hid_t fapl_id_);
     file(const std::string& name_, unsigned flags_, hid_t fapl_id_);
@@ -34,6 +35,7 @@ public:
 
     hid_t id() const noexcept;
 
+    explicit operator bool() const;
 private:
     hid_t file_id_;
 };

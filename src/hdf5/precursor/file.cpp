@@ -15,6 +15,10 @@ namespace hdf5
 {
 namespace precursor
 {
+file::file() : file_id_(-1)
+{
+}
+
 file::file(hid_t file_id_) : file_id_(file_id_)
 {
     ECHELON_ASSERT_MSG(id() == -1 || H5Iget_type(id()) == H5I_FILE, "ID does not refer to a file");
@@ -81,6 +85,11 @@ file& file::operator=(file&& other)
 hid_t file::id() const noexcept
 {
     return file_id_;
+}
+
+file::operator bool() const
+{
+    return file_id_ != -1;
 }
 
 group mount(const file& mounted_file, const group& mount_point)

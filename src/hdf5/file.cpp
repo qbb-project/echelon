@@ -94,6 +94,11 @@ const file::native_handle_type& file::native_handle() const
     return file_wrapper_;
 }
 
+file::operator bool() const
+{
+    return static_cast<bool>(native_handle());
+}
+
 attribute_repository<group> file::attributes() const
 {
     return attribute_repository<group>(root_group_);

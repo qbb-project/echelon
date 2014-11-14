@@ -53,4 +53,8 @@ if(ECHELON_BUILD_TESTS)
   target_link_libraries(sink_adaptors echelon ${Boost_LIBRARIES})
   add_test(sink_adaptors ${CMAKE_CURRENT_BINARY_DIR}/sink_adaptors)
 
+  add_executable(null_state null_state.cpp)
+  target_include_directories(null_state PUBLIC ${Boost_INCLUDE_DIRS})
+  target_link_libraries(null_state echelon ${Boost_LIBRARIES})
+  add_test(null_state ${CMAKE_CURRENT_BINARY_DIR}/null_state)
 endif()

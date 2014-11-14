@@ -14,6 +14,10 @@ namespace hdf5
 {
 namespace precursor
 {
+type::type() : type_id_(-1)
+{
+}
+   
 type::type(hid_t type_id_, bool is_transient_) : type_id_(type_id_), is_transient_(is_transient_)
 {
     ECHELON_ASSERT_MSG(id() == -1 || H5Iis_valid(id()) > 0 || !is_transient_, "invalid object ID");
@@ -188,6 +192,11 @@ type type::clone() const
 hid_t type::id() const
 {
     return type_id_;
+}
+
+type::operator bool() const
+{
+    return type_id_ != -1;
 }
 
 bool operator==(const type& lhs, const type& rhs)

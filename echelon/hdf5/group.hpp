@@ -167,6 +167,10 @@ public:
 
     friend class file;
 
+    /** \brief Initializes the handle with its null state.
+     */
+    group() = default;
+    
     explicit group(native_handle_type group_wrapper_);
 
     /** \brief Creates a new HDF5 group within this group.
@@ -550,6 +554,9 @@ public:
      */
     const native_handle_type& native_handle() const;
 
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     friend class constructor_access;
     friend class object;

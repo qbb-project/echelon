@@ -35,5 +35,10 @@ const attribute::native_handle_type& attribute::native_handle() const
 {
     return attribute_wrapper_;
 }
+
+attribute::operator bool() const
+{
+    return static_cast<bool>(native_handle());
+}
 }
 }

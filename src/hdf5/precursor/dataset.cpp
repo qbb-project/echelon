@@ -201,6 +201,11 @@ hid_t dataset::id() const
 {
     return dataset_id_;
 }
+
+dataset::operator bool() const
+{
+    return dataset_id_ != -1;
+}
 }
 }
 }

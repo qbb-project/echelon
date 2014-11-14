@@ -27,6 +27,10 @@ public:
     /** \brief Type of the underlying HDF5 low-level handle
      */
     using native_handle_type = hdf5::precursor::attribute;
+    
+    /** \brief Initializes the handle with its null state.
+     */
+    attribute() = default;
 
     attribute(const object& parent, const std::string& name, const type& datatype);
     attribute(const object& parent, const std::string& name);
@@ -65,6 +69,9 @@ public:
      */
     const native_handle_type& native_handle() const;
 
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     hdf5::precursor::attribute attribute_wrapper_;
 };

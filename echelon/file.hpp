@@ -31,6 +31,10 @@ public:
      */
     using native_handle_type = hdf5::file;
 
+    /** \brief Initializes the handle with its null state.
+     */
+    file() = default;
+    
     /** Enum containing possible creation modes for a file handle.
      */
     enum class create_mode
@@ -365,6 +369,9 @@ public:
      */
     native_handle_type native_handle() const;
 
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     hdf5::file file_handle_;
     group root_group_;

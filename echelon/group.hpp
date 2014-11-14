@@ -130,6 +130,10 @@ public:
     using native_handle_type = hdf5::group;
 
     friend class file;
+    
+    /** \brief Initializes the handle with its null state.
+     */
+    group() = default;
 
     explicit group(native_handle_type native_handle_);
 
@@ -492,6 +496,9 @@ public:
      */
     native_handle_type native_handle() const;
 
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     friend class constructor_access;
     friend class object;

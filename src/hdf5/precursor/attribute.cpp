@@ -14,6 +14,10 @@ namespace hdf5
 {
 namespace precursor
 {
+attribute::attribute() : attribute_id_(-1)
+{
+}
+    
 attribute::attribute(hid_t attribute_id_) : attribute_id_(attribute_id_)
 {
     ECHELON_ASSERT_MSG(id() == -1 || H5Iget_type(id()) == H5I_ATTR,
@@ -105,6 +109,11 @@ type attribute::datatype() const
 hid_t attribute::id() const
 {
     return attribute_id_;
+}
+
+attribute::operator bool() const
+{
+    return attribute_id_ != -1;
 }
 
 bool is_attribute_existing(const object& loc, const std::string& name)

@@ -27,6 +27,10 @@ public:
      */
     using native_handle_type = hdf5::precursor::type;
 
+    /** \brief Initializes the handle with its null state.
+     */
+    type() = default;
+    
     explicit type(native_handle_type type_wrapper_);
 
     /** \brief Returns a handle to the primitive type 'char'.
@@ -107,6 +111,9 @@ public:
      */
     const native_handle_type& native_handle() const;
 
+    /** \brief Tests the validity of the handle.
+     */
+    explicit operator bool() const;
 private:
     hdf5::precursor::type type_wrapper_;
 };

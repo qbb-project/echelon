@@ -18,6 +18,8 @@ namespace hdf5
 class link
 {
 public:
+    link() = default;
+    
     link(object origin_, std::string name_);
 
     /** \brief Returns the destination of the link.
@@ -37,6 +39,7 @@ public:
      */
     const std::string& name() const;
 
+    explicit operator bool() const;
 private:
     object origin_;
     std::string name_;
