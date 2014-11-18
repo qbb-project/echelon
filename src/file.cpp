@@ -41,6 +41,13 @@ dataset file::create_dataset(const std::string& name, const type& datatype,
     return root_group_.create_dataset(name, datatype, dims, options);
 }
 
+dataset file::create_dataset(const std::string& name, const type& datatype,
+                             const std::vector<hsize_t>& dims, const std::vector<hsize_t>& max_dims,
+                             const dataset_options& options)
+{
+    return root_group_.create_dataset(name, datatype, dims, max_dims, options);
+}
+
 scalar_dataset file::create_scalar_dataset(const std::string& name, const type& datatype)
 {
     return root_group_.create_scalar_dataset(name, datatype);

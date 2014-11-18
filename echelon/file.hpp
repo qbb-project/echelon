@@ -97,6 +97,29 @@ public:
 
     /** \brief Creates a new HDF5 dataset within the root group.
      *
+     *  If the maximal extent of the dataset is specified any value might be set to echelon::unlimited
+     *  to not restrict this dimension.
+     * 
+     *  \param name name of the new dataset
+     *  \param datatype value type of the new dataset
+     *  \param dims shape of the new dataset
+     *  \param max_dims maximal extent of the dataset (each value might be 'unlimited')
+     *  \param options additional dataset creation options
+     *         keyword            |          semantic
+     *         -------------------|-----------------------------------------
+     *         compression_level  | level of the deflate compression (0 - 9)
+     *         shuffle_filter     | enable/disable the shuffle filter
+     *         auto_chunking      | enable/disable auto-chunking
+     *         chunk_shape        | shape of a dataset chunk
+     *
+     *  \return a handle to the new dataset
+     */
+    dataset create_dataset(const std::string& name, const type& datatype,
+                           const std::vector<hsize_t>& dims, const std::vector<hsize_t>& max_dims,
+                           const dataset_options& options = {});
+    
+    /** \brief Creates a new HDF5 dataset within the root group.
+     *
      *  \param name name of the new dataset
      *  \param dims shape of the new dataset
      *  \param options additional dataset creation options
@@ -117,6 +140,35 @@ public:
         return root_group_.create_dataset<T>(name, dims, options);
     }
 
+    /** \brief Creates a new HDF5 dataset within the root group.
+     *
+     *  If the maximal extent of the dataset is specified any value might be set to echelon::unlimited
+     *  to not restrict this dimension.
+     * 
+     *  \param name name of the new dataset
+     *  \param dims shape of the new dataset
+     *  \param max_dims maximal extent of the dataset (each value might be 'unlimited')
+     *  \param options additional dataset creation options
+     *         keyword            |          semantic
+     *         -------------------|-----------------------------------------
+     *         compression_level  | level of the deflate compression (0 - 9)
+     *         shuffle_filter     | enable/disable the shuffle filter
+     *         auto_chunking      | enable/disable auto-chunking
+     *         chunk_shape        | shape of a dataset chunk
+     *
+     *  \tparam T C++ type, which should be used to determine the dataset's
+     *            value type
+     *
+     *  \return a handle to the new dataset
+     */
+    template <typename T>
+    dataset create_dataset(const std::string& name, const std::vector<hsize_t>& dims,
+                           const std::vector<hsize_t>& max_dims,
+                           const dataset_options& options = {})
+    {
+        return create_dataset(name, type(hdf5::get_hdf5_type<T>()), dims, max_dims, options);
+    }
+    
     /** \brief Creates a new HDF5 scalar dataset within the root group.
      *
      *  \param name name of the new dataset
