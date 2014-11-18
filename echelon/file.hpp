@@ -18,9 +18,9 @@
 namespace echelon
 {
 
-/** \brief A handle to an HDF5 file object.
+/** \brief A handle to a file object.
  *
- *  It can be used to access all properties of an HDF5 file.
+ *  It can be used to access all properties of an echelon file.
  *  In addition it implements the same interface as group to cover the symmetry
  *  between a file (or more precise it's root group) and any other group.
  */
@@ -53,17 +53,17 @@ public:
 
     // file interface
 
-    /** \brief Creates a new HDF5 file using the given path and creation mode.
+    /** \brief Creates a new file using the given path and creation mode.
      *
-     *  \param path path of the new HDF5 file
+     *  \param path path of the new echelon file
      *  \param mode creation mode, which is used during the file creation.
      */
     file(const std::string& path, create_mode mode);
 
-    /** \brief Opens a pre-existing HDF5 file using the given path and open
+    /** \brief Opens a pre-existing file using the given path and open
      *         mode.
      *
-     *  \param path path of the pre-existing HDF5 file
+     *  \param path path of the pre-existing echelon file
      *  \param mode open mode, which is used to open the file
      */
     file(const std::string& path, open_mode mode);
@@ -72,30 +72,32 @@ public:
 
     // group interface
 
-    /** \brief Creates a new HDF5 group within the root group.
+    /** \brief Creates a new group within the root group.
      *
      *  \param name name of the new group
      *  \return a handle to the new group
      */
     group create_group(const std::string& name);
 
-    /** \brief Creates a new HDF5 dataset within the root group.
+    /** \brief Creates a new dataset within the root group.
      *
      *  \param name name of the new dataset
      *  \param datatype value type of the new dataset
      *  \param dims shape of the new dataset
      *  \param options additional dataset creation options
-     *         keyword             |          semantic
-     *         --------------------|-----------------------------------------
-     *         _compression_level  | level of the deflate compression (0 - 9)
-     *         _chunk_shape        | shape of a dataset chunk
+     *         keyword            |          semantic
+     *         -------------------|-----------------------------------------
+     *         compression_level  | level of the deflate compression (0 - 9)
+     *         shuffle_filter     | enable/disable the shuffle filter
+     *         auto_chunking      | enable/disable auto-chunking
+     *         chunk_shape        | shape of a dataset chunk
      *
      *  \return a handle to the new dataset
      */
     dataset create_dataset(const std::string& name, const type& datatype,
                            const std::vector<hsize_t>& dims, const dataset_options& options = {});
 
-    /** \brief Creates a new HDF5 dataset within the root group.
+    /** \brief Creates a new dataset within the root group.
      *
      *  If the maximal extent of the dataset is specified any value might be set to echelon::unlimited
      *  to not restrict this dimension.
@@ -118,15 +120,17 @@ public:
                            const std::vector<hsize_t>& dims, const std::vector<hsize_t>& max_dims,
                            const dataset_options& options = {});
     
-    /** \brief Creates a new HDF5 dataset within the root group.
+    /** \brief Creates a new dataset within the root group.
      *
      *  \param name name of the new dataset
      *  \param dims shape of the new dataset
      *  \param options additional dataset creation options
-     *         keyword             |          semantic
-     *         --------------------|-----------------------------------------
-     *         _compression_level  | level of the deflate compression (0 - 9)
-     *         _chunk_shape        | shape of a dataset chunk
+     *         keyword            |          semantic
+     *         -------------------|-----------------------------------------
+     *         compression_level  | level of the deflate compression (0 - 9)
+     *         shuffle_filter     | enable/disable the shuffle filter
+     *         auto_chunking      | enable/disable auto-chunking
+     *         chunk_shape        | shape of a dataset chunk
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
      *            value type
@@ -140,7 +144,7 @@ public:
         return root_group_.create_dataset<T>(name, dims, options);
     }
 
-    /** \brief Creates a new HDF5 dataset within the root group.
+    /** \brief Creates a new dataset within the root group.
      *
      *  If the maximal extent of the dataset is specified any value might be set to echelon::unlimited
      *  to not restrict this dimension.
@@ -169,7 +173,7 @@ public:
         return create_dataset(name, type(hdf5::get_hdf5_type<T>()), dims, max_dims, options);
     }
     
-    /** \brief Creates a new HDF5 scalar dataset within the root group.
+    /** \brief Creates a new scalar dataset within the root group.
      *
      *  \param name name of the new dataset
      *  \param datatype value type of the new dataset
@@ -178,7 +182,7 @@ public:
      */
     scalar_dataset create_scalar_dataset(const std::string& name, const type& datatype);
 
-    /** \brief Creates a new HDF5 scalar dataset within the root group.
+    /** \brief Creates a new scalar dataset within the root group.
      *
      *  \param name name of the new dataset
      *
@@ -193,7 +197,7 @@ public:
         return root_group_.create_scalar_dataset<T>(name);
     }
 
-    /** \brief Creates a new HDF5 scalar dataset within the root group and
+    /** \brief Creates a new scalar dataset within the root group and
      *         initializes it with a given value.
      *
      *  \param name name of the new dataset
@@ -252,10 +256,12 @@ public:
      *  \param datatype value type of the new dataset
      *  \param dims shape of the new dataset
      *  \param options additional dataset creation options
-     *         keyword             |          semantic
-     *         --------------------|-----------------------------------------
-     *         _compression_level  | level of the deflate compression (0 - 9)
-     *         _chunk_shape        | shape of a dataset chunk
+     *         keyword            |          semantic
+     *         -------------------|-----------------------------------------
+     *         compression_level  | level of the deflate compression (0 - 9)
+     *         shuffle_filter     | enable/disable the shuffle filter
+     *         auto_chunking      | enable/disable auto-chunking
+     *         chunk_shape        | shape of a dataset chunk
      *
      *  \throws broken_contract_exception is thrown, if the contract can't be
      *                                    fulfilled.
@@ -282,10 +288,12 @@ public:
      *  \param name name of the requested dataset
      *  \param dims shape of the new dataset
      *  \param options additional dataset creation options
-     *         keyword             |          semantic
-     *         --------------------|-----------------------------------------
-     *         _compression_level  | level of the deflate compression (0 - 9)
-     *         _chunk_shape        | shape of a dataset chunk
+     *         keyword            |          semantic
+     *         -------------------|-----------------------------------------
+     *         compression_level  | level of the deflate compression (0 - 9)
+     *         shuffle_filter     | enable/disable the shuffle filter
+     *         auto_chunking      | enable/disable auto-chunking
+     *         chunk_shape        | shape of a dataset chunk
      *
      *  \tparam T C++ type, which should be used to determine the dataset's
      *            value type
@@ -411,7 +419,7 @@ public:
      */
     void visit_objects(const std::function<void(const object&)>& visitor) const;
 
-    /** \brief A HDF5 object reference to the root group.
+    /** \brief A object reference to the root group.
      */
     object_reference ref() const;
 

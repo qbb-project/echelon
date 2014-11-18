@@ -119,7 +119,7 @@ private:
     std::vector<hsize_t> chunk_shape_ = {};
 };
 
-/** \brief A handle to an HDF5 group object.
+/** \brief A handle to a group object.
  *
  */
 class group
@@ -137,14 +137,14 @@ public:
 
     explicit group(native_handle_type native_handle_);
 
-    /** \brief Creates a new HDF5 group within this group.
+    /** \brief Creates a new group within this group.
      *
      *  \param name name of the new group
      *  \return a handle to the new group
      */
     group create_group(const std::string& name);
 
-    /** \brief Creates a new HDF5 dataset within this group.
+    /** \brief Creates a new dataset within this group.
      *
      *  \param name name of the new dataset
      *  \param datatype value type of the new dataset
@@ -162,7 +162,7 @@ public:
     dataset create_dataset(const std::string& name, const type& datatype,
                            const std::vector<hsize_t>& dims, const dataset_options& options = {});
 
-    /** \brief Creates a new HDF5 dataset within this group.
+    /** \brief Creates a new dataset within this group.
      *
      *  If the maximal extent of the dataset is specified any value might be set to echelon::unlimited
      *  to not restrict this dimension.
@@ -185,7 +185,7 @@ public:
                            const std::vector<hsize_t>& dims, const std::vector<hsize_t>& max_dims,
                            const dataset_options& options = {});
     
-    /** \brief Creates a new HDF5 dataset within this group.
+    /** \brief Creates a new dataset within this group.
      *
      *  \param name name of the new dataset
      *  \param dims shape of the new dataset
@@ -209,7 +209,7 @@ public:
         return create_dataset(name, type(hdf5::get_hdf5_type<T>()), dims, options);
     }
 
-    /** \brief Creates a new HDF5 dataset within this group.
+    /** \brief Creates a new dataset within this group.
      *
      *  If the maximal extent of the dataset is specified any value might be set to echelon::unlimited
      *  to not restrict this dimension.
@@ -238,7 +238,7 @@ public:
         return create_dataset(name, type(hdf5::get_hdf5_type<T>()), dims, max_dims, options);
     }
     
-    /** \brief Creates a new HDF5 scalar dataset within this group.
+    /** \brief Creates a new scalar dataset within this group.
      *
      *  \param name name of the new dataset
      *  \param datatype value type of the new dataset
@@ -247,7 +247,7 @@ public:
      */
     scalar_dataset create_scalar_dataset(const std::string& name, const type& datatype);
 
-    /** \brief Creates a new HDF5 scalar dataset within this group.
+    /** \brief Creates a new scalar dataset within this group.
      *
      *  \param name name of the new dataset
      *
@@ -262,7 +262,7 @@ public:
         return create_scalar_dataset(name, type(hdf5::get_hdf5_type<T>()));
     }
 
-    /** \brief Creates a new HDF5 scalar dataset within this group and
+    /** \brief Creates a new scalar dataset within this group and
      *initializes it with a given value.
      *
      *  \param name name of the new dataset
@@ -488,7 +488,7 @@ public:
      */
     void visit_objects(const std::function<void(const object&)>& visitor) const;
 
-    /** \brief A HDF5 object reference to this group.
+    /** \brief An object reference to this group.
      */
     object_reference ref() const;
 
