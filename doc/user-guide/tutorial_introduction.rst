@@ -117,10 +117,14 @@ It is now straightforward to acquire a handle to the dataset ::
 
 using the same syntax and to load the data into the std::vector<double> container v using ::
 
-    v <<= ds;
+    auto_reshape(v) <<= ds;
 
 While the container is automatically resized to hold the data if necessary, the value type of the dataset and
 the value type of the container must match again. Otherwise an exception is thrown.
+
+.. note::
+  In general, echelon will not resize your containers, since they might not support this operation.
+  To enable this functionality, you have to wrap your container in a call to auto_reshape as shown above.
 
 The following code summarizes the second example and prints the content of the container
 using the standard output stream: ::
@@ -141,7 +145,7 @@ using the standard output stream: ::
 
         std::vector<double> v;
 
-        v <<= ds;
+        auto_reshape(v) <<= ds;
 
         for(auto value : v)
             std::cout << value << "  ";
