@@ -20,7 +20,10 @@ Contents:
    tutorial_introduction
    file_format_specification
 
+Further documentation
+=====================
 
+`API reference <../api_doc/index.html>`_
 
 Indices and tables
 ==================
