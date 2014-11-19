@@ -19,7 +19,6 @@ Contents:
    getting_started
    tutorial_introduction
    file_format_specification
-   style_guide
 
 
 
@@ -27,6 +26,5 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 
