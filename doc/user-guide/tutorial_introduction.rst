@@ -1,8 +1,8 @@
 .. highlight:: c++
 
-########
-Tutorial
-########
+#########
+Tutorials
+#########
 
 *************************
 Tutorial 1 - Introduction
