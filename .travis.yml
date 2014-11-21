@@ -24,7 +24,7 @@ install:
   - cmake --version
   - cd $BOOST_ROOT
   - ./bootstrap.sh
-  - b2 toolset=$CC
+  - ./b2 toolset=$CC
   - cd $TRAVIS_BUILD_DIR
   - cd cmake-2.8.12.2
   - ./bootstrap --prefix=/tmp/cmake
