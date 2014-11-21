@@ -13,7 +13,7 @@ before_install:
   - tar jxf boost.tar.bz2
   - export BOOST_ROOT="$PWD/boost_1_55_0"
   - wget http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz -O cmake.tar.gz
-  - tar jxf cmake.tar.gz
+  - tar zxf cmake.tar.gz
 install:
   - sudo apt-get install libhdf5-serial-dev
   - sudo apt-get install cmake
