@@ -16,22 +16,22 @@ before_install:
   - tar zxf cmake.tar.gz
 install:
   - sudo apt-get install libhdf5-serial-dev
-  - sudo apt-get install cmake
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-  - if [ "$CXX" = "g++" ]; then g++ --version; fi
-  - if [ "$CXX" = "clang++" ]; then clang++ --version; fi
+  - $CXX --version
   - cmake --version
   - cd $BOOST_ROOT
   - ./bootstrap.sh
-  - ./b2 toolset=$CC
+  - ./b2 toolset=$CC -q -d0 variant=release link=shared serialization unit_test_framework system exception
+  - ./b2 install --prefix=/tmp/boost
   - cd $TRAVIS_BUILD_DIR
   - cd cmake-2.8.12.2
   - ./bootstrap --prefix=/tmp/cmake
   - make install
+  - cd $TRAVIS_BUILD_DIR
 
 script:
   - mkdir build && cd build
-  - /tmp/cmake -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=$BOOST_ROOT ../
+  - /tmp/cmake/bin/cmake -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost ../
   - make
   - make test
