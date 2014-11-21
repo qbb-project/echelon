@@ -10,7 +10,7 @@ Prerequisites
 -------------
 
 - CMake 2.8.12 or above
-- HDF5 1.8.0 or above
+- HDF5 1.8.10 or above
 - Boost 1.50.0 or above
 - A C++11 - compatible compiler (tested with gcc 4.7 and clang 3.1)
 - Doxygen 1.8.3.1 or above (optional)

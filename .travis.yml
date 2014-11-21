@@ -14,6 +14,8 @@ before_install:
   - export BOOST_ROOT="$PWD/boost_1_55_0"
   - wget http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz -O cmake.tar.gz
   - tar zxf cmake.tar.gz
+  - wget http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.10/src/hdf5-1.8.10.tar.bz2 -O hdf5.tar.bz2
+  - tar jxf hdf5.tar.bz2
 install:
   - sudo apt-get install libhdf5-serial-dev
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
@@ -28,9 +30,13 @@ install:
   - ./bootstrap --prefix=/tmp/cmake
   - make install
   - cd $TRAVIS_BUILD_DIR
+  - cd hdf5-1.8.10
+  - ./configure -- --prefix=/tmp/hdf5 --disable-static --enable-hl --enable-threadsafe --enable-linux-lfs --enable-production --with-pic --with-pthread --disable-sharedlib-rpath
+  - make install
+  - cd $TRAVIS_BUILD_DIR
 
 script:
   - mkdir build && cd build
-  - /tmp/cmake/bin/cmake -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost ../
+  - /tmp/cmake/bin/cmake -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost -DHDF5_DIR=/tmp/hdf5 ../
   - make
   - make test
