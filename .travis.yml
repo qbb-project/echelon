@@ -17,7 +17,6 @@ before_install:
   - wget http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.10/src/hdf5-1.8.10.tar.bz2 -O hdf5.tar.bz2
   - tar jxf hdf5.tar.bz2
 install:
-  - sudo apt-get install libhdf5-serial-dev
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
   - $CXX --version
