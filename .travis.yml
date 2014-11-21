@@ -36,6 +36,4 @@ install:
 
 script:
   - mkdir build && cd build
-  - /tmp/cmake/bin/cmake -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost -DHDF5_DIR=/tmp/hdf5 ../
-  - make
-  - make test
+  - /tmp/cmake/bin/cmake -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost -DHDF5_ROOT=/tmp/hdf5 ../ && make && make test
