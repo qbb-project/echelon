@@ -3,11 +3,11 @@ os:
 - linux
 compiler:
 - gcc
-# deactivate clang until the tests run smoothly under gcc
-#- clang
+- clang
 
 before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo add-apt-repository ppa:h-rayflood/llvm -y
   - sudo apt-get update -qq
   - wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download -O boost.tar.bz2
   - tar jxf boost.tar.bz2
@@ -19,6 +19,8 @@ before_install:
 install:
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+  - if [ "$CXX" = "clang++" ]; then sudo apt-get install clang-3.5; fi
+  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.5" CC="clang-3.5"; fi
   - $CXX --version
   - cmake --version
   - cd $BOOST_ROOT
