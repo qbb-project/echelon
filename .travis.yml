@@ -31,8 +31,8 @@ install:
   - make install
   - cd $TRAVIS_BUILD_DIR
   - cd hdf5-1.8.10
-  - ./configure --prefix=/tmp/hdf5 --disable-static --enable-hl --enable-threadsafe --enable-linux-lfs --enable-production --with-pic --with-pthread --disable-sharedlib-rpath --enable-silent-rules
-  - make install
+  - ./configure --prefix=/tmp/hdf5 --disable-static --enable-hl --enable-threadsafe --enable-linux-lfs --enable-production --with-pic --with-pthread --disable-sharedlib-rpath
+  - make install 2> /dev/null
   - cd $TRAVIS_BUILD_DIR
 
 script:
