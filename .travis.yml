@@ -32,8 +32,9 @@ install:
   - cd hdf5-1.8.12
   - ./configure --prefix=/tmp/hdf5 --disable-static --enable-hl --enable-threadsafe --enable-linux-lfs --enable-production --with-pic --with-pthread --disable-sharedlib-rpath
   - make install 2> /dev/null
+  - export HDF5_ROOT=/tmp/hdf5
   - cd $TRAVIS_BUILD_DIR
 
 script:
   - mkdir build && cd build
-  - /tmp/cmake/bin/cmake -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost -DHDF5_ROOT=/tmp/hdf5 ../ && make && make test
+  - /tmp/cmake/bin/cmake -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost ../ && make && make test
