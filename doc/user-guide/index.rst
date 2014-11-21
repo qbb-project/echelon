@@ -7,7 +7,7 @@ Welcome to echelon's documentation!
 ===================================
 
 .. warning::
-   While I have spent much time to stabilize the API and improve the overall quality of the library,
+   While we have spent much time to stabilize the API and improve the overall quality of the library,
    echelon is still considered alpha stage software. API changes may happen at any time. You have been warned.
 
 Contents:
