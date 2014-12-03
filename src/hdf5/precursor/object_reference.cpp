@@ -20,7 +20,7 @@ namespace hdf5
 {
 namespace precursor
 {
-#if defined(__clang__)
+#if defined(__clang__) || defined(__ICC) || defined(__INTEL_COMPILER)
 
 static_assert(std::is_trivial<object_reference>::value &&
                   std::is_standard_layout<object_reference>::value,

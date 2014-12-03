@@ -17,16 +17,19 @@ struct adl_enabler
 {
 };
 
-template <typename C>
-inline auto data(C&& container) -> decltype(container.data())
-{
-    return container.data();
-}
+// Note: Due to a bug in the Intel compiler, it is important that the overloads are
+//       declared in this specific order.
 
 template <typename C>
 inline auto data(C&& container) -> decltype(data(container, adl_enabler{}))
 {
     return data(container, adl_enabler{});
+}
+
+template <typename C>
+inline auto data(C&& container) -> decltype(container.data())
+{
+    return container.data();
 }
 
 // Function template which simply forwards its arguments to an overload of
@@ -39,21 +42,28 @@ inline auto data_adl(C&& container) -> decltype(data(container))
 }
 
 template <typename C>
-inline auto shape(const C& container) -> decltype(container.shape())
-{
-    return container.shape();
-}
-
-template <typename C>
 inline auto shape(const C& container) -> decltype(shape(container, adl_enabler{}))
 {
     return shape(container, adl_enabler{});
 }
 
 template <typename C>
+inline auto shape(const C& container) -> decltype(container.shape())
+{
+    return container.shape();
+}
+
+template <typename C>
 inline auto shape_adl(const C& container) -> decltype(shape(container))
 {
     return shape(container);
+}
+
+template <typename C>
+inline auto reshape(C& container, const std::vector<std::size_t>& new_shape)
+    -> decltype(reshape(container, new_shape, adl_enabler{}))
+{
+    return reshape(container, new_shape, adl_enabler{});
 }
 
 /** \brief Reshapes the container.
@@ -71,25 +81,17 @@ inline auto reshape(C& container, const std::vector<std::size_t>& new_shape)
 }
 
 template <typename C>
-inline auto reshape(C& container, const std::vector<std::size_t>& new_shape)
-    -> decltype(reshape(container, new_shape, adl_enabler{}))
-{
-    return reshape(container, new_shape, adl_enabler{});
-}
-
-template <typename C>
 inline auto reshape_adl(C& container, const std::vector<std::size_t>& new_shape)
     -> decltype(reshape(container, new_shape))
 {
     return reshape(container, new_shape);
 }
 
-
 namespace detail
 {
 
 template <typename T>
-constexpr auto has_data_accessor_impl(int) -> decltype((data_adl(std::declval<T>()),bool{}))
+constexpr auto has_data_accessor_impl(int) -> decltype((data_adl(std::declval<T>()), bool{}))
 {
     return true;
 }
@@ -101,7 +103,7 @@ constexpr bool has_data_accessor_impl(...)
 }
 
 template <typename T>
-constexpr auto has_shape_property_impl(int) -> decltype((shape(std::declval<T>()),bool{}))
+constexpr auto has_shape_property_impl(int) -> decltype((shape(std::declval<T>()), bool{}))
 {
     return true;
 }
@@ -113,7 +115,8 @@ constexpr bool has_shape_property_impl(...)
 }
 
 template <typename T>
-constexpr auto has_reshape_member_impl(int) -> decltype((reshape(std::declval<T&>(), std::vector<std::size_t>{}),bool{}))
+constexpr auto has_reshape_member_impl(int)
+    -> decltype((reshape(std::declval<T&>(), std::vector<std::size_t>{}), bool{}))
 {
     return true;
 }
@@ -123,7 +126,6 @@ constexpr bool has_reshape_member_impl(...)
 {
     return false;
 }
-
 }
 
 template <typename T>

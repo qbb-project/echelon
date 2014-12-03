@@ -165,6 +165,7 @@ public:
     friend void operator<<=(dataset& sink, const T& source)
     {
         using std::begin;
+	using std::end;
 
         const auto& current_shape = shape_adl(source);
 
@@ -189,6 +190,7 @@ public:
     friend void operator<<=(T& sink, const dataset& source)
     {
         using std::begin;
+	using std::end;
 
         const auto& current_shape = shape_adl(sink);
 
@@ -212,6 +214,9 @@ public:
     template <typename Container>
     void extend_along(std::size_t dimension_index, const Container& container) const
     {
+        using std::begin;
+	using std::end;
+      
         auto extent = shape();
         auto new_extent = extent;
         auto container_shape = shape_adl(container);

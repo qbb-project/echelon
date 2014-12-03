@@ -72,7 +72,7 @@ public:
     template <typename T>
     attribute create(const std::string& name, const T& value)
     {
-        return attribute(native_parent_.attributes().template create(name, value));
+        return attribute(native_parent_.attributes().create(name, value));
     }
 
     /** \brief Accessor function for this attribute repository.
