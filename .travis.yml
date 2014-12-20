@@ -24,6 +24,7 @@ before_install:
   - tar jxf hdf5.tar.bz2
 install:
   - if [ "$TEST_COVERAGE" = true ]; then sudo pip install cpp-coveralls; fi
+  - if [ "$TEST_COVERAGE" = true ]; then gcov-4.9 --version; fi
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
   - $CXX --version
@@ -48,4 +49,4 @@ script:
   - if [ "$TEST_COVERAGE" = true ]; then /tmp/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE_ENABLE=ON -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost ../ && make && make test; fi
   
 after_success:
-  - if [ "$TEST_COVERAGE" = true ]; then coveralls --gcov-options '\-lp'; fi
+  - if [ "$TEST_COVERAGE" = true ]; then coveralls --gcov gcov-4.9 --gcov-options '\-lp'; fi
