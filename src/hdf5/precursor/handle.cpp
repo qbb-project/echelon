@@ -35,70 +35,97 @@ handle::handle(hid_t id_) : id_(id_)
 
 handle::handle(const attribute& other) : id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    if (id() != -1)
+    {
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    }
 }
 
 handle::handle(const dataset& other) : id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    if (id() != -1)
+    {
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    }
 }
 
 handle::handle(const dataspace& other) : id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    if (id() != -1)
+    {
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    }
 }
 
 handle::handle(const file& other) : id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    if (id() != -1)
+    {
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    }
 }
 
 handle::handle(const group& other) : id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    if (id() != -1)
+    {
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    }
 }
 
 handle::handle(const object& other) : id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    if (id() != -1)
+    {
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    }
 }
 
 handle::handle(const property_list& other) : id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    if (id() != -1)
+    {
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    }
 }
 
 handle::handle(const type& other) : id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    if (id() != -1)
+    {
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    }
 }
 
 handle::handle(const handle& other) : id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    if (id() != -1)
+    {
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    }
 }
 
 handle::handle(handle&& other) : id_(other.id_)
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
     other.id_ = -1;
 }

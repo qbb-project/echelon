@@ -51,14 +51,17 @@ file::~file()
 
 file::file(const file& other) : file_id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    if (id() != -1)
+    {
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    }
 }
 
 file::file(file&& other) : file_id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
     other.file_id_ = -1;
 }

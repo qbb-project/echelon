@@ -67,14 +67,17 @@ dataset::~dataset()
 
 dataset::dataset(const dataset& other) : dataset_id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-    ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    if (id() != -1)
+    {
+        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+    }
 }
 
 dataset::dataset(dataset&& other) : dataset_id_(other.id())
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
     other.dataset_id_ = -1;
 }

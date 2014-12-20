@@ -17,7 +17,7 @@ namespace precursor
 type::type() : type_id_(-1)
 {
 }
-   
+
 type::type(hid_t type_id_, bool is_transient_) : type_id_(type_id_), is_transient_(is_transient_)
 {
     ECHELON_ASSERT_MSG(id() == -1 || H5Iis_valid(id()) > 0 || !is_transient_, "invalid object ID");
@@ -37,15 +37,18 @@ type::type(const type& other) : type_id_(other.id()), is_transient_(other.is_tra
 {
     if (is_transient_)
     {
-        ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0, "invalid object ID");
+        ECHELON_ASSERT_MSG(H5Iis_valid(id()) > 0 || id() == -1, "invalid object ID");
 
-        ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+        if (id() != -1)
+        {
+            ECHELON_VERIFY_MSG(H5Iinc_ref(id()) > 0, "unable to increment the reference count");
+        }
     }
 }
 
 type::type(type&& other) : type_id_(other.id()), is_transient_(other.is_transient_)
 {
-    ECHELON_ASSERT_MSG(H5Iis_valid(id()) || !is_transient_, "invalid object ID");
+    ECHELON_ASSERT_MSG(H5Iis_valid(id()) || !is_transient_ || id() == -1, "invalid object ID");
 
     other.type_id_ = -1;
 }
