@@ -50,4 +50,4 @@ script:
   
 after_success:
   - cd $TRAVIS_BUILD_DIR
-  - if [ "$TEST_COVERAGE" = true ]; then coveralls -E '.*\.h' -E '.*CMakeCXXCompilerId\.cpp' -E '.*CMakeCCompilerId\.c' --gcov-options '\-lp' --gcov /usr/bin/gcov-4.9; fi
+  - if [ "$TEST_COVERAGE" = true ]; then coveralls --verbose -e boost -e hdf5 -e cmake -E '.*\.h' -E '.*CMakeCXXCompilerId\.cpp' -E '.*CMakeCCompilerId\.c' --gcov-options '\-lp' --gcov /usr/bin/gcov-4.9; fi
