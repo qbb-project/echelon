@@ -49,7 +49,5 @@ script:
   - if [ "$TEST_COVERAGE" = true ]; then /tmp/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE_ENABLE=ON -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost ../ && make && make test; fi
   
 after_success:
-  - pwd
   - cd $TRAVIS_BUILD_DIR
-  - pwd
-  - if [ "$TEST_COVERAGE" = true ]; then coveralls --gcov gcov-4.9 --gcov-options '\-lp'; fi
+  - if [ "$TEST_COVERAGE" = true ]; then coveralls -E '.*\.h' -E '.*CMakeCXXCompilerId\.cpp' -E '.*CMakeCCompilerId\.c' --gcov-options '\-lp' --gcov /usr/bin/gcov-4.9; fi
