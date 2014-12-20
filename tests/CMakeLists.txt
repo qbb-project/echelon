@@ -10,7 +10,8 @@ if(ECHELON_BUILD_TESTS)
 
   add_executable(creation_and_access_test creation_and_access.cpp)
   target_include_directories(creation_and_access_test PUBLIC ${Boost_INCLUDE_DIRS})
-  target_link_libraries(creation_and_access_test echelon ${Boost_LIBRARIES})
+  target_compile_options(creation_and_access_test PRIVATE ${COVERAGE_FLAGS})
+  target_link_libraries(creation_and_access_test echelon ${Boost_LIBRARIES} ${COVERAGE_LINKER_FLAGS})
   add_test(creation_and_access_test ${CMAKE_CURRENT_BINARY_DIR}/creation_and_access_test)
 
   add_executable(basic_io_test basic_io.cpp)

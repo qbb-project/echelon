@@ -22,8 +22,8 @@ endif()
 generate_export_header(echelon)
 
 target_include_directories(echelon PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${ECHELON_ROOT_DIR}>)
-target_compile_options(echelon PUBLIC -std=c++11 PRIVATE -pedantic -Wall -Wextra)
-target_link_libraries(echelon PUBLIC echelon_hdf5 ${Boost_LIBRARIES})
+target_compile_options(echelon PUBLIC -std=c++11 PRIVATE -pedantic -Wall -Wextra ${COVERAGE_FLAGS})
+target_link_libraries(echelon PUBLIC echelon_hdf5 ${Boost_LIBRARIES} ${COVERAGE_LINKER_FLAGS})
 
 set_property(TARGET echelon PROPERTY VERSION 0.7.0)
 set_property(TARGET echelon PROPERTY SOVERSION 0)

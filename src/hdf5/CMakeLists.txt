@@ -22,8 +22,8 @@ set_property(TARGET echelon_hdf5 PROPERTY INTERFACE_echelon_hdf5_MINOR_VERSION 5
 set_property(TARGET echelon_hdf5 APPEND PROPERTY COMPATIBLE_INTERFACE_STRING echelon_hdf5_MINOR_VERSION)
 
 target_include_directories(echelon_hdf5 PUBLIC ${Boost_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS} $<BUILD_INTERFACE:${ECHELON_ROOT_DIR}>)
-target_link_libraries(echelon_hdf5 PUBLIC ${HDF5_LIBRARIES})
-target_compile_options(echelon_hdf5 PUBLIC -std=c++11 PRIVATE -pedantic -Wall -Wextra)
+target_link_libraries(echelon_hdf5 PUBLIC ${HDF5_LIBRARIES} ${COVERAGE_LINKER_FLAGS})
+target_compile_options(echelon_hdf5 PUBLIC -std=c++11 PRIVATE -pedantic -Wall -Wextra ${COVERAGE_FLAGS})
 
 if(NOT ECHELON_IS_A_SUBPROJECT)
     install(TARGETS echelon_hdf5 EXPORT echelon-targets

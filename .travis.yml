@@ -4,6 +4,13 @@ os:
 compiler:
 - gcc
 - clang
+env:
+- TEST_COVERAGE=false
+
+matrix:
+  include:
+    - compiler: gcc
+      env: TEST_COVERAGE=true
 
 before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
@@ -16,6 +23,7 @@ before_install:
   - wget http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.12/src/hdf5-1.8.12.tar.bz2 -O hdf5.tar.bz2
   - tar jxf hdf5.tar.bz2
 install:
+  - if [ "$TEST_COVERAGE" = true ]; then sudo pip install cpp-coveralls; fi
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
   - $CXX --version
@@ -36,4 +44,8 @@ install:
 
 script:
   - mkdir build && cd build
-  - /tmp/cmake/bin/cmake -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost ../ && make && make test
+  - if [ "$TEST_COVERAGE" = false ]; then /tmp/cmake/bin/cmake -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost ../ && make && make test; fi
+  - if [ "$TEST_COVERAGE" = true ]; then /tmp/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE_ENABLE=ON -DECHELON_BUILD_TESTS=ON -DBOOST_ROOT=/tmp/boost ../ && make && make test; fi
+  
+after_success:
+  - if [ "$TEST_COVERAGE" = true ]; then coveralls --gcov-options '\-lp'; fi
