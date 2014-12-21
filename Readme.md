@@ -5,6 +5,7 @@ echelon is an HDF5-based library for saving and managing scientific data.
 echelon is written using modern C++ to enable easy, versatile and save access to your data.
 
 [![Build Status](https://travis-ci.org/qbb-project/echelon.svg)](https://travis-ci.org/qbb-project/echelon)
+[![Coverage Status](https://img.shields.io/coveralls/qbb-project/echelon.svg)](https://coveralls.io/r/qbb-project/echelon?branch=master)
 
 Prerequisites
 -------------
