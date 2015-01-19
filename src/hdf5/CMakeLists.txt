@@ -18,7 +18,7 @@ set_property(TARGET echelon_hdf5 PROPERTY VERSION 0.7.0)
 set_property(TARGET echelon_hdf5 PROPERTY SOVERSION 0)
 set_property(TARGET echelon_hdf5 PROPERTY INTERFACE_echelon_hdf5_MAJOR_VERSION 0)
 set_property(TARGET echelon_hdf5 APPEND PROPERTY COMPATIBLE_INTERFACE_STRING echelon_hdf5_MAJOR_VERSION)
-set_property(TARGET echelon_hdf5 PROPERTY INTERFACE_echelon_hdf5_MINOR_VERSION 5)
+set_property(TARGET echelon_hdf5 PROPERTY INTERFACE_echelon_hdf5_MINOR_VERSION 7)
 set_property(TARGET echelon_hdf5 APPEND PROPERTY COMPATIBLE_INTERFACE_STRING echelon_hdf5_MINOR_VERSION)
 
 target_include_directories(echelon_hdf5 PUBLIC ${Boost_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS} $<BUILD_INTERFACE:${ECHELON_ROOT_DIR}>)
