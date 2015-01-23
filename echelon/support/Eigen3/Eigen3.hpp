@@ -38,7 +38,7 @@ inline void reshape(Eigen::Matrix<Scalar, Eigen::Dynamic, Cols, Options, MaxRows
 {
     assert(new_shape.size() == 1);
 
-    container.resize(Eigen::NoChange, new_shape[0]);
+    container.resize(new_shape[0], Eigen::NoChange);
 }
 
 template <typename Scalar, int Rows, int Options, int MaxRows, int MaxCols>
@@ -47,7 +47,7 @@ inline void reshape(Eigen::Matrix<Scalar, Rows, Eigen::Dynamic, Options, MaxRows
 {
     assert(new_shape.size() == 1);
 
-    container.resize(new_shape[0], Eigen::NoChange);
+    container.resize(Eigen::NoChange, new_shape[0]);
 }
 
 }
