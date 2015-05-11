@@ -72,7 +72,7 @@ write_basic_package_version_file(
 
 configure_file(../cmake/echelon-config.cmake
   "${CMAKE_CURRENT_BINARY_DIR}/echelon/echelon-config.cmake"
-  COPY_ONLY
+  COPYONLY
 )
 
 set(ConfigPackageLocation lib/cmake/echelon)
