@@ -67,10 +67,12 @@ if(ECHELON_BUILD_TESTS)
   target_compile_options(null_state PRIVATE ${COVERAGE_FLAGS})
   target_link_libraries(null_state echelon ${Boost_LIBRARIES}  ${COVERAGE_LINKER_FLAGS})
   add_test(null_state ${CMAKE_CURRENT_BINARY_DIR}/null_state)
-  
+
   add_executable(dynamic_shape dynamic_shape.cpp)
   target_include_directories(dynamic_shape PUBLIC ${Boost_INCLUDE_DIRS})
   target_compile_options(dynamic_shape PRIVATE ${COVERAGE_FLAGS})
   target_link_libraries(dynamic_shape echelon ${Boost_LIBRARIES}  ${COVERAGE_LINKER_FLAGS})
   add_test(dynamic_shape ${CMAKE_CURRENT_BINARY_DIR}/dynamic_shape)
 endif()
+
+add_subdirectory(regression)
