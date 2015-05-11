@@ -1,5 +1,5 @@
 language: cpp
-sudo: required
+sudo: false
 os:
 - linux
 compiler:
@@ -13,9 +13,14 @@ matrix:
     - compiler: gcc
       env: TEST_COVERAGE=true
 
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.9
+      
 before_install:
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-  - sudo apt-get update -qq
   - wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download -O boost.tar.bz2
   - tar jxf boost.tar.bz2
   - wget http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz -O cmake.tar.gz
@@ -23,8 +28,7 @@ before_install:
   - wget http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.12/src/hdf5-1.8.12.tar.bz2 -O hdf5.tar.bz2
   - tar jxf hdf5.tar.bz2
 install:
-  - if [ "$TEST_COVERAGE" = true ]; then sudo pip install cpp-coveralls; fi
-  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
+  - if [ "$TEST_COVERAGE" = true ]; then pip install --install-option="--prefix=/tmp/cpp-coveralls" cpp-coveralls; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
   - $CXX --version
   - if [ "$TEST_COVERAGE" = true ]; then gcov-4.9 --version; fi
@@ -50,4 +54,4 @@ script:
   
 after_success:
   - cd $TRAVIS_BUILD_DIR
-  - if [ "$TEST_COVERAGE" = true ]; then coveralls -e boost_1_55_0 -e hdf5-1.8.12 -e cmake-2.8.12.2 -e ./build/src/echelon_export.h -e tests -E '.*CMakeCXXCompilerId\.cpp' -E '.*CMakeCCompilerId\.c' --gcov-options '\-lp' --gcov /usr/bin/gcov-4.9; fi
+  - if [ "$TEST_COVERAGE" = true ]; then /tmp/cpp-coveralls/bin/coveralls -e boost_1_55_0 -e hdf5-1.8.12 -e cmake-2.8.12.2 -e ./build/src/echelon_export.h -e tests -E '.*CMakeCXXCompilerId\.cpp' -E '.*CMakeCCompilerId\.c' --gcov-options '\-lp' --gcov /usr/bin/gcov-4.9; fi
