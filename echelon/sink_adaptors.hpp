@@ -15,6 +15,9 @@ template <typename ResizeableSink>
 class auto_reshaper
 {
 public:
+    static_assert(hdf5::has_reshape_member<ResizeableSink>(),
+                  "ResizeableSink does not fulfill the ResizeableSink requirements");
+
     explicit auto_reshaper(ResizeableSink& underlying_sink_) : underlying_sink_{&underlying_sink_}
     {
     }

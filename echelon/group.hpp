@@ -160,7 +160,7 @@ public:
      *  \return a handle to the new dataset
      */
     dataset create_dataset(const std::string& name, const type& datatype,
-                           const std::vector<hsize_t>& dims, const dataset_options& options = {});
+                           const std::vector<hsize_t>& dims, const dataset_options& options = dataset_options());
 
     /** \brief Creates a new dataset within this group.
      *
@@ -183,7 +183,7 @@ public:
      */
     dataset create_dataset(const std::string& name, const type& datatype,
                            const std::vector<hsize_t>& dims, const std::vector<hsize_t>& max_dims,
-                           const dataset_options& options = {});
+                           const dataset_options& options = dataset_options());
     
     /** \brief Creates a new dataset within this group.
      *
@@ -204,7 +204,7 @@ public:
      */
     template <typename T>
     dataset create_dataset(const std::string& name, const std::vector<hsize_t>& dims,
-                           const dataset_options& options = {})
+                           const dataset_options& options = dataset_options())
     {
         return create_dataset(name, type(hdf5::get_hdf5_type<T>()), dims, options);
     }
@@ -233,7 +233,7 @@ public:
     template <typename T>
     dataset create_dataset(const std::string& name, const std::vector<hsize_t>& dims,
                            const std::vector<hsize_t>& max_dims,
-                           const dataset_options& options = {})
+                           const dataset_options& options = dataset_options())
     {
         return create_dataset(name, type(hdf5::get_hdf5_type<T>()), dims, max_dims, options);
     }
@@ -339,7 +339,7 @@ public:
      *          dataset otherwise
      */
     dataset require_dataset(const std::string& name, const type& datatype,
-                            const std::vector<hsize_t>& dims, const dataset_options& options = {});
+                            const std::vector<hsize_t>& dims, const dataset_options& options = dataset_options());
 
     /** \brief Returns the requested dataset, if it already exists, otherwise a
      *         new dataset is created.
@@ -375,7 +375,7 @@ public:
      */
     template <typename T>
     dataset require_dataset(const std::string& name, const std::vector<hsize_t>& dims,
-                            const dataset_options& options = {})
+                            const dataset_options& options = dataset_options())
     {
         return require_dataset(name, type(hdf5::get_hdf5_type<T>()), dims, options);
     }
