@@ -155,7 +155,7 @@ constexpr bool is_readable_container()
 template <typename T>
 constexpr bool is_container()
 {
-    return has_data_accessor<T>() && has_shape_property<T>() && has_reshape_member<T>();
+    return has_data_accessor<T>() && has_shape_property<T>();
 }
 }
 }
