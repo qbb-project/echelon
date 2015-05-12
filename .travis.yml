@@ -18,7 +18,7 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - g++-4.9
+    - g++-5
       
 before_install:
   - wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download -O boost.tar.bz2
@@ -29,9 +29,9 @@ before_install:
   - tar jxf hdf5.tar.bz2
 install:
   - if [ "$TEST_COVERAGE" = true ]; then pip install --install-option="--prefix=/tmp/cpp-coveralls" cpp-coveralls; fi
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
   - $CXX --version
-  - if [ "$TEST_COVERAGE" = true ]; then gcov-4.9 --version; fi
+  - if [ "$TEST_COVERAGE" = true ]; then gcov-5 --version; fi
   - cmake --version
   - cd boost_1_55_0
   - ./bootstrap.sh
@@ -54,4 +54,5 @@ script:
   
 after_success:
   - cd $TRAVIS_BUILD_DIR
-  - if [ "$TEST_COVERAGE" = true ]; then /tmp/cpp-coveralls/bin/coveralls -e boost_1_55_0 -e hdf5-1.8.12 -e cmake-2.8.12.2 -e ./build/src/echelon_export.h -e tests -E '.*CMakeCXXCompilerId\.cpp' -E '.*CMakeCCompilerId\.c' --gcov-options '\-lp' --gcov /usr/bin/gcov-4.9; fi
+  - if [ "$TEST_COVERAGE" = true ]; then /tmp/cpp-coveralls/bin/coveralls -e boost_1_55_0 -e hdf5-1.8.12 -e 
+cmake-2.8.12.2 -e ./build/src/echelon_export.h -e tests -E '.*CMakeCXXCompilerId\.cpp' -E '.*CMakeCCompilerId\.c' --gcov-options '\-lp' --gcov /usr/bin/gcov-5; fi
