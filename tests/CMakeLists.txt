@@ -30,7 +30,7 @@ if(ECHELON_BUILD_TESTS)
   target_include_directories(object_reference_handling PUBLIC ${Boost_INCLUDE_DIRS})
   target_compile_options(object_reference_handling PRIVATE ${COVERAGE_FLAGS})
   target_link_libraries(object_reference_handling echelon ${Boost_LIBRARIES}  ${COVERAGE_LINKER_FLAGS})
-  add_test(object_reference_handling ${CMAKE_CURRENT_BINARY_DIR}/error_handling)
+  add_test(object_reference_handling ${CMAKE_CURRENT_BINARY_DIR}/object_reference_handling)
 
   add_executable(error_handling error_handling.cpp)
   target_include_directories(error_handling PUBLIC ${Boost_INCLUDE_DIRS})

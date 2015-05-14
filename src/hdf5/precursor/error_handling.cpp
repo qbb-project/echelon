@@ -1,4 +1,4 @@
-//  Copyright (c) 2012-2014 Christopher Hinz
+//  Copyright (c) 2012-2015 Christopher Hinz
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -11,6 +11,7 @@
 #include <utility>
 #include <functional>
 #include <cassert>
+#include <vector>
 
 namespace echelon
 {
@@ -18,80 +19,88 @@ namespace hdf5
 {
 namespace precursor
 {
+
+const char* hdf5_category::name() const noexcept
+{
+    return "echelon.hdf5";
+}
+
+std::string hdf5_category::message(int condition) const
+{
+    H5E_type_t msg_type;
+    auto msg_size = H5Eget_msg(condition, &msg_type, nullptr, 0);
+
+    std::vector<char> buffer(msg_size + 1);
+
+    H5Eget_msg(condition, &msg_type, buffer.data(), buffer.size());
+
+    return std::string(buffer.data(), buffer.size());
+}
+
+const std::error_category& get_hdf5_category()
+{
+    static hdf5_category instance;
+
+    return instance;
+}
+
+exception::exception(int ev_) : std::system_error(ev_, get_hdf5_category())
+{
+}
+
+exception::exception(int ev_, std::string what_)
+: std::system_error(ev_, get_hdf5_category(), std::move(what_))
+{
+}
+
+hdf5_error::hdf5_error(hid_t major_num_, hid_t minor_num_)
+: exception(major_num_), minor_num_(minor_num_)
+{
+}
+
+hdf5_error::hdf5_error(hid_t major_num_, hid_t minor_num_, std::string what_)
+: exception(major_num_, std::move(what_)), minor_num_(minor_num_)
+{
+}
+
+hid_t hdf5_error::minor_num() const
+{
+    return minor_num_;
+}
+
+error_class::error_class(hid_t id_) : id_(id_)
+{
+}
+
+error_class::~error_class()
+{
+    if (id_ > 0)
+    {
+        H5Eunregister_class(id_);
+    }
+}
+
+hid_t error_class::id() const
+{
+    return id_;
+}
+
+error_message::error_message(hid_t id_) : id_(id_)
+{
+}
+
+error_message::~error_message()
+{
+    H5Eclose_msg(id_);
+}
+
+hid_t error_message::id() const
+{
+    return id_;
+}
+
 namespace
 {
-
-template <typename E>
-struct error_translator
-{
-    void operator()(const std::exception_ptr& current_exception, const H5E_error2_t* err_desc) const
-    {
-        if (current_exception)
-        {
-            try
-            {
-                std::rethrow_exception(current_exception);
-            }
-            catch (...)
-            {
-                std::throw_with_nested(E(err_desc->desc, err_desc->min_num));
-            }
-        }
-        else
-        {
-            throw E(err_desc->desc, err_desc->min_num);
-        }
-    }
-};
-
-std::map<hid_t, std::function<void(const std::exception_ptr&, const H5E_error2_t*)>>
-minor_error_translation_map = {{H5E_NOTFOUND, error_translator<not_found_exception>()},
-                               {H5E_CANTOPENOBJ, error_translator<can_not_open_object_exception>()},
-                               {H5E_EXISTS, error_translator<exists_exception>()},
-                               {H5E_ALREADYEXISTS, error_translator<already_exists_exception>()},
-                               {H5E_CANTOPENFILE, error_translator<cant_open_file_exception>()},
-                               {H5E_CANTCREATE, error_translator<cant_open_file_exception>()},
-                               {H5E_NOTHDF5, error_translator<invalid_hdf5_file_exception>()},
-                               {H5E_UNSUPPORTED, error_translator<unsupported_feature_exception>()},
-                               {H5E_BADRANGE, error_translator<out_of_range_exception>()},
-                               {H5E_BADVALUE, error_translator<bad_value_exception>()},
-                               {H5E_BADTYPE, error_translator<invalid_type_exception>()}};
-
-std::map<std::pair<hid_t, hid_t>,
-         std::function<void(const std::exception_ptr&, const H5E_error2_t*)>>
-overwrite_error_translation_map = {
-    {{H5E_SYM, H5E_CANTINIT}, error_translator<symbol_already_exists_exception>()}};
-
-std::map<hid_t, std::function<void(const std::exception_ptr&, const H5E_error2_t*)>>
-error_translation_map = {{H5E_DATASET, error_translator<dataset_exception>()},
-                         {H5E_FUNC, error_translator<function_entry_exit_exception>()},
-                         {H5E_STORAGE, error_translator<storage_exception>()},
-                         {H5E_FILE, error_translator<file_exception>()},
-                         {H5E_SOHM, error_translator<shared_object_header_message_exception>()},
-                         {H5E_SYM, error_translator<symbol_table_exception>()},
-                         {H5E_VFL, error_translator<virtual_file_layer_exception>()},
-                         {H5E_INTERNAL, error_translator<internal_exception>()},
-                         {H5E_BTREE, error_translator<Btree_exception>()},
-                         {H5E_REFERENCE, error_translator<reference_exception>()},
-                         {H5E_DATASPACE, error_translator<dataspace_exception>()},
-                         {H5E_RESOURCE, error_translator<resource_exception>()},
-                         {H5E_PLIST, error_translator<property_list_exception>()},
-                         {H5E_LINK, error_translator<link_exception>()},
-                         {H5E_DATATYPE, error_translator<type_exception>()},
-                         {H5E_RS, error_translator<reference_counted_string_exception>()},
-                         {H5E_HEAP, error_translator<heap_exception>()},
-                         {H5E_OHDR, error_translator<object_header_exception>()},
-                         {H5E_ATOM, error_translator<atom_exception>()},
-                         {H5E_ATTR, error_translator<attribute_exception>()},
-                         {H5E_IO, error_translator<io_exception>()},
-                         {H5E_SLIST, error_translator<skip_list_exception>()},
-                         {H5E_EFL, error_translator<external_file_list_exception>()},
-                         {H5E_TST, error_translator<ternary_search_tree_exception>()},
-                         {H5E_ARGS, error_translator<invalid_argument_exception>()},
-                         {H5E_ERROR, error_translator<error_exception>()},
-                         {H5E_PLINE, error_translator<data_filter_exception>()},
-                         {H5E_FSPACE, error_translator<free_space_manager_exception>()},
-                         {H5E_CACHE, error_translator<metadata_cache_exception>()}};
 
 extern "C" {
 
@@ -100,37 +109,29 @@ static herr_t kubus_hdf5_translate_error_stack(unsigned, const H5E_error2_t* err
 {
     std::exception_ptr& current_exception = *static_cast<std::exception_ptr*>(client_data);
 
-    try
+    if (current_exception)
     {
-        auto iter = overwrite_error_translation_map.find(
-            std::make_pair(err_desc->maj_num, err_desc->min_num));
-
-        if (iter != end(overwrite_error_translation_map))
+        try
         {
-            iter->second(current_exception, err_desc);
+            try
+            {
+                std::rethrow_exception(current_exception);
+            }
+            catch (...)
+            {
+                std::throw_with_nested(
+                    hdf5_error(err_desc->maj_num, err_desc->min_num, err_desc->desc));
+            }
         }
-        else
+        catch (...)
         {
-            auto iter = minor_error_translation_map.find(err_desc->min_num);
-
-            if (iter != end(minor_error_translation_map))
-            {
-                iter->second(current_exception, err_desc);
-            }
-            else
-            {
-                auto iter = error_translation_map.find(err_desc->maj_num);
-
-                ECHELON_ASSERT_MSG(iter != end(error_translation_map),
-                                   "no valid error translation found");
-
-                iter->second(current_exception, err_desc);
-            }
+            current_exception = std::current_exception();
         }
     }
-    catch (...)
+    else
     {
-        current_exception = std::current_exception();
+        current_exception = std::make_exception_ptr(
+            hdf5_error(err_desc->maj_num, err_desc->min_num, err_desc->desc));
     }
 
     return 0;
@@ -162,8 +163,45 @@ void throw_on_hdf5_error()
         std::rethrow_exception(nested_exception);
 }
 
+const error_class& get_echelon_error_class()
+{
+    static error_class echelon_error_class(H5Eregister_class("generic", "echelon", nullptr));
+
+    if (echelon_error_class.id() < 0)
+        throw_on_hdf5_error();
+
+    return echelon_error_class;
+}
+
+const error_message& get_unable_to_obtain_ref_msg()
+{
+    static error_message unable_to_obtain_ref__msg(
+        H5Ecreate_msg(get_echelon_error_class().id(), H5E_MAJOR, "Unable to obtain a reference."));
+
+    return unable_to_obtain_ref__msg;
+}
+
+const error_message& get_no_associated_name_msg()
+{
+    static error_message no_associated_name_msg(
+        H5Ecreate_msg(get_echelon_error_class().id(), H5E_MINOR, "No associated name is found."));
+
+    return no_associated_name_msg;
+}
+
+void push_error_onto_stack(const char* file, const char* func, unsigned line,
+                           const error_class& err_class, const error_message& major_msg,
+                           const error_message& minor_msg, const std::string& desc)
+{
+    if (H5Epush2(H5E_DEFAULT, file, func, line, err_class.id(), major_msg.id(), minor_msg.id(),
+                 desc.c_str()) < 0)
+        throw_on_hdf5_error();
+}
+
 void enable_error_handling()
 {
+    // TODO: Make this function thread-safe.
+
     H5Eset_auto2(H5E_DEFAULT, nullptr, nullptr);
 }
 }
