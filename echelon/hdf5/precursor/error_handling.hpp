@@ -1,4 +1,4 @@
-//  Copyright (c) 2012-2014 Christopher Hinz
+//  Copyright (c) 2012-2015 Christopher Hinz
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -8,6 +8,7 @@
 
 #include <hdf5.h>
 #include <stdexcept>
+#include <system_error>
 #include <utility>
 
 #include <boost/assert.hpp>
@@ -30,485 +31,90 @@ namespace hdf5
 {
 namespace precursor
 {
-class exception : public std::exception
+
+class hdf5_category : public std::error_category
 {
 public:
-    explicit exception(std::string what_) : what_(std::move(what_))
-    {
-    }
+    virtual ~hdf5_category() = default;
 
-    virtual ~exception() noexcept {};
+    const char* name() const noexcept override;
 
-    const char* what() const noexcept override
-    {
-        return what_.c_str();
-    }
+    std::string message(int condition) const override;
+};
 
-private:
-    std::string what_;
+const std::error_category& get_hdf5_category();
+
+class exception : public std::system_error
+{
+public:
+    explicit exception(int ev_);
+
+    explicit exception(int ev_, std::string what_);
+
+    virtual ~exception() noexcept = default;
 };
 
 class hdf5_error : public exception
 {
 public:
-    hdf5_error(const std::string& what_, hid_t minor_num_)
-    : exception(what_), minor_num_(minor_num_)
-    {
-    }
+    hdf5_error(hid_t major_num_, hid_t minor_num_);
 
-    virtual ~hdf5_error() noexcept {};
+    hdf5_error(hid_t major_num_, hid_t minor_num_, std::string what_);
 
-    hid_t minor_num() const
-    {
-        return minor_num_;
-    }
+    virtual ~hdf5_error() noexcept = default;
+
+    hid_t minor_num() const;
 
 private:
     hid_t minor_num_;
 };
 
-class dataset_exception : public hdf5_error
+class error_class
 {
 public:
-    dataset_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
+    explicit error_class(hid_t id_);
 
-    virtual ~dataset_exception() noexcept {};
-};
+    ~error_class();
 
-class function_entry_exit_exception : public hdf5_error
-{
-public:
-    function_entry_exit_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
+    error_class(const error_class&) = delete;
+    error_class(error_class&&) = default;
 
-    virtual ~function_entry_exit_exception() noexcept {};
-};
+    error_class& operator=(const error_class&) = delete;
+    error_class& operator=(error_class&&) = default;
 
-class storage_exception : public hdf5_error
-{
-public:
-    storage_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~storage_exception() noexcept {};
-};
-
-class file_exception : public hdf5_error
-{
-public:
-    file_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~file_exception() noexcept {};
-};
-
-class shared_object_header_message_exception : public hdf5_error
-{
-public:
-    shared_object_header_message_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~shared_object_header_message_exception() noexcept {};
-};
-
-class symbol_table_exception : public hdf5_error
-{
-public:
-    symbol_table_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~symbol_table_exception() noexcept {};
-};
-
-class virtual_file_layer_exception : public hdf5_error
-{
-public:
-    virtual_file_layer_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~virtual_file_layer_exception() noexcept {};
-};
-
-class internal_exception : public hdf5_error
-{
-public:
-    internal_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~internal_exception() noexcept {};
-};
-
-class Btree_exception : public hdf5_error
-{
-public:
-    Btree_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~Btree_exception() noexcept {};
-};
-
-class reference_exception : public hdf5_error
-{
-public:
-    reference_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~reference_exception() noexcept {};
-};
-
-class dataspace_exception : public hdf5_error
-{
-public:
-    dataspace_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~dataspace_exception() noexcept {};
-};
-
-class resource_exception : public hdf5_error
-{
-public:
-    resource_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~resource_exception() noexcept {};
-};
-
-class property_list_exception : public hdf5_error
-{
-public:
-    property_list_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~property_list_exception() noexcept {};
-};
-
-class link_exception : public hdf5_error
-{
-public:
-    link_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~link_exception() noexcept {};
-};
-
-class type_exception : public hdf5_error
-{
-public:
-    type_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~type_exception() noexcept {};
-};
-
-class reference_counted_string_exception : public hdf5_error
-{
-public:
-    reference_counted_string_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~reference_counted_string_exception() noexcept {};
-};
-
-class heap_exception : public hdf5_error
-{
-public:
-    heap_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~heap_exception() noexcept {};
-};
-
-class object_header_exception : public hdf5_error
-{
-public:
-    object_header_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~object_header_exception() noexcept {};
-};
-
-class atom_exception : public hdf5_error
-{
-public:
-    atom_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~atom_exception() noexcept {};
-};
-
-class attribute_exception : public hdf5_error
-{
-public:
-    attribute_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~attribute_exception() noexcept {};
-};
-
-class io_exception : public hdf5_error
-{
-public:
-    io_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~io_exception() noexcept {};
-};
-
-class skip_list_exception : public hdf5_error
-{
-public:
-    skip_list_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~skip_list_exception() noexcept {};
-};
-
-class external_file_list_exception : public hdf5_error
-{
-public:
-    external_file_list_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~external_file_list_exception() noexcept {};
-};
-
-class ternary_search_tree_exception : public hdf5_error
-{
-public:
-    ternary_search_tree_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~ternary_search_tree_exception() noexcept {};
-};
-
-class invalid_argument_exception : public hdf5_error
-{
-public:
-    invalid_argument_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~invalid_argument_exception() noexcept {};
-};
-
-class error_exception : public hdf5_error
-{
-public:
-    error_exception(const std::string& what_, hid_t minor_num_) : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~error_exception() noexcept {};
-};
-
-class data_filter_exception : public hdf5_error
-{
-public:
-    data_filter_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~data_filter_exception() noexcept {};
-};
-
-class free_space_manager_exception : public hdf5_error
-{
-public:
-    free_space_manager_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~free_space_manager_exception() noexcept {};
-};
-
-class metadata_cache_exception : public hdf5_error
-{
-public:
-    metadata_cache_exception(const std::string& what_, hid_t minor_num_)
-    : hdf5_error(what_, minor_num_)
-    {
-    }
-
-    virtual ~metadata_cache_exception() noexcept {};
-};
-
-class no_associated_name_exception : public exception
-{
-public:
-    no_associated_name_exception(const std::string& what_, hid_t obj_id_)
-    : exception(what_), obj_id_(obj_id_)
-    {
-    }
-
-    hid_t obj_id() const
-    {
-        return obj_id_;
-    }
-
-    virtual ~no_associated_name_exception() noexcept {};
+    hid_t id() const;
 
 private:
-    hid_t obj_id_;
+    hid_t id_;
 };
 
-class not_found_exception : public symbol_table_exception
+class error_message
 {
 public:
-    not_found_exception(const std::string& what_, hid_t minor_num_)
-    : symbol_table_exception(what_, minor_num_)
-    {
-    }
+    explicit error_message(hid_t id_);
 
-    virtual ~not_found_exception() noexcept {};
+    error_message(const error_message&) = delete;
+    error_message(error_message&&) = default;
+
+    error_message& operator=(const error_message&) = delete;
+    error_message& operator=(error_message&&) = default;
+
+    ~error_message();
+
+    hid_t id() const;
+
+private:
+    hid_t id_;
 };
 
-class can_not_open_object_exception : public symbol_table_exception
-{
-public:
-    can_not_open_object_exception(const std::string& what_, hid_t minor_num_)
-    : symbol_table_exception(what_, minor_num_)
-    {
-    }
+const error_class& get_echelon_error_class();
 
-    virtual ~can_not_open_object_exception() noexcept {};
-};
+const error_message& get_unable_to_obtain_ref_msg();
+const error_message& get_no_associated_name_msg();
 
-class exists_exception : public Btree_exception
-{
-public:
-    exists_exception(const std::string& what_, hid_t minor_num_)
-    : Btree_exception(what_, minor_num_)
-    {
-    }
-
-    virtual ~exists_exception() noexcept {};
-};
-
-class already_exists_exception : public resource_exception
-{
-public:
-    already_exists_exception(const std::string& what_, hid_t minor_num_)
-    : resource_exception(what_, minor_num_)
-    {
-    }
-
-    virtual ~already_exists_exception() noexcept {};
-};
-
-class symbol_already_exists_exception : public symbol_table_exception
-{
-public:
-    symbol_already_exists_exception(const std::string& what_, hid_t minor_num_)
-    : symbol_table_exception(what_, minor_num_)
-    {
-    }
-
-    virtual ~symbol_already_exists_exception() noexcept {};
-};
-
-class cant_open_file_exception : public file_exception
-{
-public:
-    cant_open_file_exception(const std::string& what_, hid_t minor_num_)
-    : file_exception(what_, minor_num_)
-    {
-    }
-
-    virtual ~cant_open_file_exception() noexcept {};
-};
-
-class invalid_hdf5_file_exception : public file_exception
-{
-public:
-    invalid_hdf5_file_exception(const std::string& what_, hid_t minor_num_)
-    : file_exception(what_, minor_num_)
-    {
-    }
-
-    virtual ~invalid_hdf5_file_exception() noexcept {};
-};
-
-class unsupported_feature_exception : public invalid_argument_exception
-{
-public:
-    unsupported_feature_exception(const std::string& what_, hid_t minor_num_)
-    : invalid_argument_exception(what_, minor_num_)
-    {
-    }
-
-    virtual ~unsupported_feature_exception() noexcept {};
-};
-
-class out_of_range_exception : public invalid_argument_exception
-{
-public:
-    out_of_range_exception(const std::string& what_, hid_t minor_num_)
-    : invalid_argument_exception(what_, minor_num_)
-    {
-    }
-
-    virtual ~out_of_range_exception() noexcept {};
-};
-
-class bad_value_exception : public invalid_argument_exception
-{
-public:
-    bad_value_exception(const std::string& what_, hid_t minor_num_)
-    : invalid_argument_exception(what_, minor_num_)
-    {
-    }
-
-    virtual ~bad_value_exception() noexcept {};
-};
-
-class invalid_type_exception : public invalid_argument_exception
-{
-public:
-    invalid_type_exception(const std::string& what_, hid_t minor_num_)
-    : invalid_argument_exception(what_, minor_num_)
-    {
-    }
-
-    virtual ~invalid_type_exception() noexcept {};
-};
+void push_error_onto_stack(const char* file, const char* func, unsigned line,
+                           const error_class& err_class, const error_message& major_msg,
+                           const error_message& minor_msg, const std::string& desc);
 
 void throw_on_hdf5_error();
 

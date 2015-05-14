@@ -41,9 +41,9 @@ object_reference::object_reference(hid_t obj_id_)
 
     if (expected_len == 0)
     {
-        throw no_associated_name_exception("unable to obtain a reference;"
-                                           "no associated name is found",
-                                           obj_id_);
+        push_error_onto_stack(__FILE__, __FUNCTION__, __LINE__, get_echelon_error_class(),
+                              get_unable_to_obtain_ref_msg(), get_no_associated_name_msg(),
+                              "Unable to obtain a reference. No associated name is found.");
     }
     else if (expected_len < 0)
     {
