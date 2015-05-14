@@ -23,10 +23,10 @@ BOOST_AUTO_TEST_CASE( scalar_object_reference_handling_test )
       auto sd3 = temp_file.create_scalar_dataset("scalar_dataset3", 3);
       auto sd4 = temp_file.create_scalar_dataset("scalar_dataset4", 4);
       
-      auto sd1_ref = temp_file.create_scalar_dataset("scalar_dataset1", sd1.ref());
-      auto sd2_ref = temp_file.create_scalar_dataset("scalar_dataset2", sd2.ref());
-      auto sd3_ref = temp_file.create_scalar_dataset("scalar_dataset3", sd3.ref());
-      auto sd4_ref = temp_file.create_scalar_dataset("scalar_dataset4", sd4.ref());
+      auto sd1_ref = temp_file.create_scalar_dataset("scalar_dataset_ref1", sd1.ref());
+      auto sd2_ref = temp_file.create_scalar_dataset("scalar_dataset_ref2", sd2.ref());
+      auto sd3_ref = temp_file.create_scalar_dataset("scalar_dataset_ref3", sd3.ref());
+      auto sd4_ref = temp_file.create_scalar_dataset("scalar_dataset_ref4", sd4.ref());
       
       echelon::object_reference ref1, ref2, ref3 ,ref4;
       
