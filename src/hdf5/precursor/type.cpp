@@ -209,7 +209,7 @@ bool operator==(const type& lhs, const type& rhs)
     if (result < 0)
         throw_on_hdf5_error();
 
-    return result > 0 ? true : false;
+    return result > 0;
 }
 
 bool operator!=(const type& lhs, const type& rhs)

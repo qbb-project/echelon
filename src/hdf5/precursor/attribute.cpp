@@ -126,7 +126,7 @@ bool is_attribute_existing(const object& loc, const std::string& name)
     if (result < 0)
         throw_on_hdf5_error();
 
-    return result > 0 ? true : false;
+    return result > 0;
 }
 }
 }

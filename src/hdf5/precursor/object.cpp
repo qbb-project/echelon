@@ -136,7 +136,7 @@ bool exists(const object& loc, const std::string& name)
     if (result2 < 0)
         throw_on_hdf5_error();
 
-    return result2 > 0 ? true : false;
+    return result2 > 0;
 }
 
 std::string get_name(const object& loc)
