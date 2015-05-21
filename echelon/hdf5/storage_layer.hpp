@@ -149,7 +149,7 @@ inline void read_impl(const Source& source, const hdf5::precursor::type& datatyp
     using lowered_type =
         typename std::decay<decltype(lower_type_internal(*data_adl(container), {}))>::type;
 
-    std::size_t memory_selection_size = memspace.select_npoints();
+    auto memory_selection_size = memspace.select_npoints();
     auto file_selection_size = filespace.select_npoints(); 
 
     if(memory_selection_size != file_selection_size)
@@ -159,7 +159,7 @@ inline void read_impl(const Source& source, const hdf5::precursor::type& datatyp
 
     read(source, datatype, memspace, filespace, lowered_buffer);
 
-    for (std::size_t i = 0; i < memory_selection_size; ++i)
+    for (decltype(memory_selection_size) i = 0; i < memory_selection_size; ++i)
     {
         data_adl(container)[i] = raise_type_internal(lowered_buffer[i], source);
     }
