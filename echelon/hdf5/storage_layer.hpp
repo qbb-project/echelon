@@ -144,7 +144,6 @@ inline void read_impl(const Source& source, const hdf5::precursor::type& datatyp
     static_assert(is_container<C>(), "C does not fulfill the Container requirements");
 
     std::vector<hsize_t> mem_shape = memspace.get_simple_extent_dims();
-    std::vector<std::size_t> mem_shape_(begin(mem_shape), end(mem_shape));
 
     using lowered_type =
         typename std::decay<decltype(lower_type_internal(*data_adl(container), {}))>::type;
