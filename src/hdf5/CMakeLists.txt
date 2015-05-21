@@ -23,7 +23,18 @@ set_property(TARGET echelon_hdf5 APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ech
 
 target_include_directories(echelon_hdf5 PUBLIC ${Boost_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS} $<BUILD_INTERFACE:${ECHELON_ROOT_DIR}>)
 target_link_libraries(echelon_hdf5 PUBLIC ${HDF5_LIBRARIES} ${COVERAGE_LINKER_FLAGS})
-target_compile_options(echelon_hdf5 PUBLIC -std=c++11 PRIVATE -pedantic -Wall -Wextra ${COVERAGE_FLAGS})
+target_compile_options(echelon_hdf5 PRIVATE -pedantic -Wall -Wextra ${COVERAGE_FLAGS})
+
+if(CMAKE_VERSION VERSION_LESS "3.1.0")
+    target_compile_options(echelon_hdf5 PUBLIC -std=c++11)
+else()
+    target_compile_features(echelon_hdf5 PUBLIC cxx_variadic_templates cxx_auto_type cxx_decltype
+                                                cxx_defaulted_functions cxx_deleted_functions
+                                                cxx_explicit_conversions cxx_lambdas cxx_noexcept
+                                                cxx_nullptr cxx_override cxx_final cxx_range_for
+                                                cxx_right_angle_brackets cxx_rvalue_references cxx_static_assert
+                                                cxx_strong_enums cxx_trailing_return_types)
+endif()
 
 if(NOT ECHELON_IS_A_SUBPROJECT)
     install(TARGETS echelon_hdf5 EXPORT echelon-targets

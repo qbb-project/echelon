@@ -22,8 +22,20 @@ endif()
 generate_export_header(echelon)
 
 target_include_directories(echelon PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${ECHELON_ROOT_DIR}>)
-target_compile_options(echelon PUBLIC -std=c++11 PRIVATE -pedantic -Wall -Wextra ${COVERAGE_FLAGS})
+target_compile_options(echelon PRIVATE -pedantic -Wall -Wextra ${COVERAGE_FLAGS})
 target_link_libraries(echelon PUBLIC echelon_hdf5 ${Boost_LIBRARIES} ${COVERAGE_LINKER_FLAGS})
+
+# TODO: Document this
+if(CMAKE_VERSION VERSION_LESS "3.1.0")
+    target_compile_options(echelon PUBLIC -std=c++11)
+else()
+    target_compile_features(echelon PUBLIC cxx_variadic_templates cxx_auto_type cxx_decltype
+                                           cxx_defaulted_functions cxx_deleted_functions
+                                           cxx_explicit_conversions cxx_lambdas cxx_noexcept
+                                           cxx_nullptr cxx_override cxx_final cxx_range_for
+                                           cxx_right_angle_brackets cxx_rvalue_references cxx_static_assert
+                                           cxx_strong_enums cxx_trailing_return_types)
+endif()
 
 set_property(TARGET echelon PROPERTY VERSION 0.7.0)
 set_property(TARGET echelon PROPERTY SOVERSION 0)
