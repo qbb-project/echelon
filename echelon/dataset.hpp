@@ -28,8 +28,6 @@
 namespace echelon
 {
 
-using hdf5::_;
-
 /** \brief A handle to an echelon dataset.
  */
 class dataset
@@ -72,7 +70,13 @@ public:
     {
         sink <<= source.dataset_handle_;
     }
-    
+
+    template <typename T>
+    friend void operator<<=(const hdf5::array_slice<T>& sink, const dataset& source)
+    {
+        sink <<= source.dataset_handle_;
+    }
+
     /** \brief Extends the dataset along a given dimension
      * 
      *  \tparam Container type of the container; Container must satisfy the data sink

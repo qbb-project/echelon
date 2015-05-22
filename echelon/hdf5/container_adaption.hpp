@@ -7,6 +7,7 @@
 #define ECHELON_HDF5_CONTAINER_ADAPTION_HPP
 
 #include <utility>
+#include <type_traits>
 
 namespace echelon
 {
@@ -157,6 +158,16 @@ constexpr bool is_container()
 {
     return has_data_accessor<T>() && has_shape_property<T>();
 }
+
+
+template <typename C>
+struct container_trait
+{
+    static_assert(is_container<C>(), "C does not fulfill the Container requirements.");
+
+    using value_type = typename std::decay<decltype(*data_adl(std::declval<const C>()))>::type;
+};
+
 }
 }
 

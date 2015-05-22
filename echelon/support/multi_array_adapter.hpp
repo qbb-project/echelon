@@ -6,6 +6,8 @@
 #ifndef ECHELON_MULTI_ARRAY_ADAPTER_HPP
 #define ECHELON_MULTI_ARRAY_ADAPTER_HPP
 
+#include <echelon/range.hpp>
+
 #include <echelon/hdf5/container_adaption.hpp>
 #include <echelon/dataset.hpp>
 #include <echelon/detail/map_indices.hpp>
@@ -14,6 +16,8 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
+#include <utility>
+#include <type_traits>
 
 namespace echelon
 {
@@ -61,7 +65,8 @@ public:
      *
      *  \return the specified element
      */
-    template <typename... Indices>
+    template <typename... Indices, typename Enabler = typename std::enable_if<
+                                       detail::all_integral<Indices...>::value>::type>
     const value_type& operator()(Indices... indices) const
     {
         static_assert(detail::all_integral<Indices...>::value,
@@ -84,13 +89,29 @@ public:
      *
      *  \return the specified element
      */
-    template <typename... Indices>
+    template <typename... Indices, typename Enabler = typename std::enable_if<
+                                       detail::all_integral<Indices...>::value>::type>
     value_type& operator()(Indices... indices)
     {
         static_assert(detail::all_integral<Indices...>::value,
                       "All indices must be of integral type.");
 
         return container_[detail::map_indices(shape_, indices...)];
+    }
+
+    /** \brief Slice the array.
+     *
+     *  \tparam Args types of the index range specifiers
+     *
+     *  \param args index range specifiers
+     *
+     *  \return the specified slice.
+     */
+    template <typename... Args, typename Enabler = typename std::enable_if<
+                                    !detail::all_integral<Args...>::value>::type>
+    echelon::hdf5::array_slice<value_type> operator()(Args... args)
+    {
+        return echelon::make_slice(*this, std::forward<Args>(args)...);
     }
 
     /** \brief Returns an iterator, which points to the first element of the

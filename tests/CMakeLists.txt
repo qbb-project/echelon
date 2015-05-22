@@ -73,6 +73,12 @@ if(ECHELON_BUILD_TESTS)
   target_compile_options(dynamic_shape PRIVATE ${COVERAGE_FLAGS})
   target_link_libraries(dynamic_shape echelon ${Boost_LIBRARIES}  ${COVERAGE_LINKER_FLAGS})
   add_test(dynamic_shape ${CMAKE_CURRENT_BINARY_DIR}/dynamic_shape)
+
+  add_executable(array_slicing array_slicing.cpp)
+  target_include_directories(array_slicing PUBLIC ${Boost_INCLUDE_DIRS})
+  target_compile_options(array_slicing PRIVATE ${COVERAGE_FLAGS})
+  target_link_libraries(array_slicing echelon ${Boost_LIBRARIES}  ${COVERAGE_LINKER_FLAGS})
+  add_test(array_slicing ${CMAKE_CURRENT_BINARY_DIR}/array_slicing)
 endif()
 
 add_subdirectory(regression)
