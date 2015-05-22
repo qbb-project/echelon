@@ -61,7 +61,7 @@ public:
      *  \return the specified element
      */
     template <typename... Indices, typename Enabler = typename std::enable_if<
-            detail::all_integral<Indices...>::value>::type>
+                                       detail::all_integral<Indices...>::value>::type>
     const value_type& operator()(Indices... indices) const
     {
         static_assert(detail::all_integral<Indices...>::value,
@@ -85,7 +85,7 @@ public:
      *  \return the specified element
      */
     template <typename... Indices, typename Enabler = typename std::enable_if<
-            detail::all_integral<Indices...>::value>::type>
+                                       detail::all_integral<Indices...>::value>::type>
     value_type& operator()(Indices... indices)
     {
         static_assert(detail::all_integral<Indices...>::value,
@@ -102,7 +102,8 @@ public:
      *
      *  \return the specified slice.
      */
-    template <typename... Args>
+    template <typename... Args, typename Enabler = typename std::enable_if<
+                                    !detail::all_integral<Args...>::value>::type>
     echelon::hdf5::array_slice<T> operator()(Args... args)
     {
         return echelon::make_slice(*this, std::forward<Args>(args)...);
