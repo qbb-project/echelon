@@ -37,10 +37,10 @@ else()
                                            cxx_strong_enums cxx_trailing_return_types)
 endif()
 
-set_property(TARGET echelon PROPERTY VERSION 0.7.0)
+set_property(TARGET echelon PROPERTY VERSION 0.8.0)
 set_property(TARGET echelon PROPERTY SOVERSION 0)
 set_property(TARGET echelon PROPERTY INTERFACE_echelon_MAJOR_VERSION 0)
-set_property(TARGET echelon PROPERTY INTERFACE_echelon_MINOR_VERSION 7)
+set_property(TARGET echelon PROPERTY INTERFACE_echelon_MINOR_VERSION 8)
 set_property(TARGET echelon APPEND PROPERTY COMPATIBLE_INTERFACE_STRING echelon_MAJOR_VERSION)
 set_property(TARGET echelon APPEND PROPERTY COMPATIBLE_INTERFACE_STRING echelon_MINOR_VERSION)
 
@@ -71,7 +71,7 @@ include(CMakePackageConfigHelpers)
 
 write_basic_package_version_file(
   "${CMAKE_CURRENT_BINARY_DIR}/echelon/echelon-config-version.cmake"
-  VERSION 0.7.0
+  VERSION 0.8.0
   COMPATIBILITY AnyNewerVersion
 )
 
