@@ -53,6 +53,12 @@ public:
         sink <<= source.native_slice_;
     }
 
+    template <typename T>
+    friend void operator<<=(const hdf5::array_slice<T>& sink, const slice& source)
+    {
+        sink <<= source.native_slice_;
+    }
+
     /** \brief The shape of the slice.
      */
     const std::vector<hsize_t>& shape() const;

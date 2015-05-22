@@ -11,6 +11,7 @@
 #include <echelon/hdf5/storage_layer.hpp>
 #include <echelon/hdf5/container_adaption.hpp>
 #include <echelon/hdf5/range.hpp>
+#include <echelon/hdf5/array_slice.hpp>
 
 #include <cassert>
 #include <vector>
@@ -70,6 +71,70 @@ public:
         hdf5::precursor::dataspace mem_space(mem_shape);
         hdf5::precursor::dataspace file_space = source.selected_dataspace_;
         hdf5::precursor::type datatype = source.sliced_dataset_.datatype();
+
+        read(source.sliced_dataset_, datatype, mem_space, file_space, sink);
+    }
+
+    /** \brief Writes the content of an array slice into the slice.
+     *
+     *  The shape of the array must match the shape of the slice.
+     *
+     *  \tparam T value type of the array slice
+     *
+     *  \param source the array slice
+     */
+    template <typename T>
+    void operator<<=(const array_slice<T>& source)
+    {
+        auto current_shape = source.original_shape();
+
+        std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
+
+        hdf5::precursor::dataspace mem_space(mem_shape);
+        hdf5::precursor::dataspace file_space = selected_dataspace_;
+        hdf5::precursor::type datatype = sliced_dataset_.datatype();
+
+        auto slice_shape = source.shape();
+        std::vector<hsize_t> count;
+
+        for (std::size_t i = 0; i < slice_shape.size(); ++i)
+        {
+            count.push_back(slice_shape[i] / source.stride()[i]);
+        }
+
+        mem_space.select_hyperslab(H5S_SELECT_SET, source.offset(), source.stride(), count);
+
+        write(sliced_dataset_, datatype, mem_space, file_space, source);
+    }
+
+    /** \brief Reads the content of the slice into an array slice.
+     *
+     *  \tparam T type of the container; T must satisfy the data sink
+     *            requirements.
+     *
+     *  \param sink the data sink
+     *  \param source the slice, which is used as a source
+     */
+    template <typename T>
+    friend void operator<<=(const array_slice<T>& sink, const slice& source)
+    {
+        auto current_shape = sink.original_shape();
+
+        std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
+
+        hdf5::precursor::dataspace mem_space(mem_shape);
+        hdf5::precursor::dataspace file_space = source.selected_dataspace_;
+        hdf5::precursor::type datatype = source.sliced_dataset_.datatype();
+
+        auto slice_shape = sink.shape();
+        std::vector<hsize_t> count;
+
+        for (std::size_t i = 0; i < slice_shape.size(); ++i)
+        {
+            count.push_back(slice_shape[i] / sink.stride()[i]);
+        }
+
+        mem_space.select_hyperslab(H5S_SELECT_SET, sink.offset(), sink.stride(), count);
 
         read(source.sliced_dataset_, datatype, mem_space, file_space, sink);
     }

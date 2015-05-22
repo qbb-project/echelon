@@ -15,6 +15,7 @@
 #include <echelon/hdf5/slice.hpp>
 #include <echelon/hdf5/range.hpp>
 #include <echelon/hdf5/container_adaption.hpp>
+#include <echelon/hdf5/array_slice.hpp>
 
 #include <echelon/hdf5/attribute_repository.hpp>
 #include <echelon/hdf5/dataset_dimensions.hpp>
@@ -39,9 +40,6 @@ namespace echelon
 {
 namespace hdf5
 {
-struct unbound_t
-{
-};
 
 class invalid_layout_exception : public std::exception
 {
@@ -58,79 +56,6 @@ public:
 private:
     std::string what_;
 };
-
-static const unbound_t _ = {};
-
-namespace detail
-{
-
-template <std::size_t I, typename... Args>
-struct calculate_slice_boundaries;
-
-template <std::size_t I>
-struct calculate_slice_boundaries<I>
-{
-    static void eval(const std::vector<hsize_t>&, std::vector<totally_bound_range_t>&)
-    {
-    }
-};
-
-template <std::size_t I, typename Front, typename... Tail>
-struct calculate_slice_boundaries<I, Front, Tail...>
-{
-    static void eval(const std::vector<hsize_t>& current_shape,
-                     std::vector<totally_bound_range_t>& boundaries, Front front, Tail... tail)
-    {
-        boundaries.push_back(get_boundaries(current_shape[I], front));
-
-        calculate_slice_boundaries<I + 1, Tail...>::eval(current_shape, boundaries, tail...);
-    }
-
-private:
-    static totally_bound_range_t get_boundaries(hsize_t extend, unbound_t)
-    {
-        return range(0, extend);
-    }
-
-    template <typename Base>
-    static totally_bound_range_t get_boundaries(hsize_t extend, range_t<Base, unbound_t> r)
-    {
-        // FIXME: add a bound check
-
-        return range(r.base(), extend);
-    }
-
-    template <typename Bound>
-    static totally_bound_range_t get_boundaries(hsize_t, range_t<unbound_t, Bound> r)
-    {
-        // FIXME: add a bound check
-
-        return range(0, r.bound());
-    }
-
-    template <typename Base, typename Bound>
-    static totally_bound_range_t get_boundaries(hsize_t, range_t<Base, Bound> r)
-    {
-        static_assert(std::is_integral<Base>::value && std::is_integral<Bound>::value,
-                      "only integral values are allowed in slicing expressions");
-
-        // FIXME: add a bound check
-
-        return r;
-    }
-
-    template <typename T>
-    static totally_bound_range_t get_boundaries(hsize_t ECHELON_UNUSED_RELEASE(extend), T value)
-    {
-        static_assert(std::is_integral<T>::value,
-                      "only integral values are allowed in slicing expressions");
-
-        assert(value < extend);
-
-        return range(value, value + 1);
-    }
-};
-}
 
 /** \brief A handle to an HDF5 dataset.
  */
@@ -165,7 +90,7 @@ public:
     friend void operator<<=(dataset& sink, const T& source)
     {
         using std::begin;
-	using std::end;
+	    using std::end;
 
         const auto& current_shape = shape_adl(source);
 
@@ -190,7 +115,7 @@ public:
     friend void operator<<=(T& sink, const dataset& source)
     {
         using std::begin;
-	using std::end;
+	    using std::end;
 
         const auto& current_shape = shape_adl(sink);
 
@@ -199,6 +124,76 @@ public:
         hdf5::precursor::dataspace mem_space(mem_shape);
         hdf5::precursor::dataspace file_space = source.dataset_handle_.get_space();
         hdf5::precursor::type datatype = source.dataset_handle_.datatype();
+
+        read(source.dataset_handle_, datatype, mem_space, file_space, sink);
+    }
+
+    /** \brief Writes the content of an array slice into the dataset.
+     *
+     *  The shape of the slice must match the shape of the dataset.
+     *
+     *  \tparam T value type of the slice
+     *
+     *  \param sink  the dataset, which is used as a sink
+     *  \param source the array slice
+     */
+    template <typename T>
+    friend void operator<<=(dataset& sink, const array_slice<T>& source)
+    {
+        using std::begin;
+        using std::end;
+
+        const auto& current_shape = source.original_shape();
+
+        std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
+
+        hdf5::precursor::dataspace mem_space(mem_shape);
+        hdf5::precursor::dataspace file_space = sink.dataset_handle_.get_space();
+        hdf5::precursor::type datatype = sink.dataset_handle_.datatype();
+
+        auto slice_shape = source.shape();
+        std::vector<hsize_t> count;
+
+        for (std::size_t i = 0; i < slice_shape.size(); ++i)
+        {
+            count.push_back(slice_shape[i] / source.stride()[i]);
+        }
+
+        mem_space.select_hyperslab(H5S_SELECT_SET, source.offset(), source.stride(), count);
+
+        write(sink.dataset_handle_, datatype, mem_space, file_space, source);
+    }
+
+    /** \brief Reads the content of the dataset into an array slice.
+     *
+     *  \tparam T value type of the slice
+     *
+     *  \param sink the array slice
+     *  \param source the dataset, which is used as a source
+     */
+    template <typename T>
+    friend void operator<<=(const array_slice<T>& sink, const dataset& source)
+    {
+        using std::begin;
+        using std::end;
+
+        const auto& current_shape = sink.original_shape();
+
+        std::vector<hsize_t> mem_shape(begin(current_shape), end(current_shape));
+
+        hdf5::precursor::dataspace mem_space(mem_shape);
+        hdf5::precursor::dataspace file_space = source.dataset_handle_.get_space();
+        hdf5::precursor::type datatype = source.dataset_handle_.datatype();
+
+        auto slice_shape = sink.shape();
+        std::vector<hsize_t> count;
+
+        for (std::size_t i = 0; i < slice_shape.size(); ++i)
+        {
+            count.push_back(slice_shape[i] / sink.stride()[i]);
+        }
+
+        mem_space.select_hyperslab(H5S_SELECT_SET, sink.offset(), sink.stride(), count);
 
         read(source.dataset_handle_, datatype, mem_space, file_space, sink);
     }
@@ -215,7 +210,7 @@ public:
     void extend_along(std::size_t dimension_index, const Container& container) const
     {
         using std::begin;
-	using std::end;
+	    using std::end;
       
         auto extent = shape();
         auto new_extent = extent;

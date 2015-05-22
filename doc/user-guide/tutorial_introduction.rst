@@ -185,6 +185,24 @@ For example, one can write data into the slice: ::
 
     slice <<= data;
 
+In addition, echelon supports slicing of array via the make_slice function.
+For example, the code ::
+    
+    auto s = make_slice(c, _, range(1, 4));
+    
+slices the container c.
+
+Array slices can be used to either write or read data from a dataset.
+
+.. warning::
+    Currently, array slicing is only supported for mutable arrays and might not work otherwise.
+
+As a convenience, echelon's pre-defined containers support the same slicing syntax as dataset. ::
+    
+    auto s = c(_, range(1, 4));    
+    
+is equivalent to the previous example.
+
 Compression
 ===========
 

@@ -6,12 +6,16 @@
 #ifndef ECHELON_MULTI_ARRAY_VIEW_HPP
 #define ECHELON_MULTI_ARRAY_VIEW_HPP
 
+#include <echelon/range.hpp>
+
 #include <echelon/detail/map_indices.hpp>
 #include <echelon/detail/all_integral.hpp>
 
 #include <algorithm>
 #include <functional>
 #include <vector>
+#include <utility>
+#include <type_traits>
 
 namespace echelon
 {
@@ -56,7 +60,8 @@ public:
      *
      *  \return the specified element
      */
-    template <typename... Indices>
+    template <typename... Indices, typename Enabler = typename std::enable_if<
+            detail::all_integral<Indices...>::value>::type>
     const value_type& operator()(Indices... indices) const
     {
         static_assert(detail::all_integral<Indices...>::value,
@@ -79,13 +84,28 @@ public:
      *
      *  \return the specified element
      */
-    template <typename... Indices>
+    template <typename... Indices, typename Enabler = typename std::enable_if<
+            detail::all_integral<Indices...>::value>::type>
     value_type& operator()(Indices... indices)
     {
         static_assert(detail::all_integral<Indices...>::value,
                       "All indices must be of integral type.");
 
         return data_[detail::map_indices(shape_, indices...)];
+    }
+
+    /** \brief Slice the array.
+     *
+     *  \tparam Args types of the index range specifiers
+     *
+     *  \param args index range specifiers
+     *
+     *  \return the specified slice.
+     */
+    template <typename... Args>
+    echelon::hdf5::array_slice<T> operator()(Args... args)
+    {
+        return echelon::make_slice(*this, std::forward<Args>(args)...);
     }
 
     /** \brief Direct access to the underlying array.

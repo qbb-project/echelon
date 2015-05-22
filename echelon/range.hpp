@@ -7,11 +7,16 @@
 #define ECHELON_RANGE_HPP
 
 #include <echelon/hdf5/range.hpp>
+#include <echelon/hdf5/array_slice.hpp>
 
 namespace echelon
 {
 
+using hdf5::_;
+
 using echelon::hdf5::range;
+
+using hdf5::make_slice;
 }
 
 #endif
