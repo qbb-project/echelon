@@ -12,6 +12,12 @@ matrix:
   include:
     - compiler: gcc
       env: TEST_COVERAGE=true
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          packages:
+          - g++-5
 
 addons:
   apt:
