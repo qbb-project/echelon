@@ -7,10 +7,11 @@ compiler:
 - clang
 env:
 - TEST_COVERAGE=false
+- TEST_COVERAGE=true
 
 matrix:
-  include:
-    - compiler: gcc
+  exclude:
+    - compiler: clang
       env: TEST_COVERAGE=true
 
 addons:
