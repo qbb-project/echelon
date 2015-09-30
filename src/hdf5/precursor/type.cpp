@@ -14,7 +14,7 @@ namespace hdf5
 {
 namespace precursor
 {
-type::type() : type_id_(-1)
+type::type() : type_id_(-1), is_transient_(false)
 {
 }
 
