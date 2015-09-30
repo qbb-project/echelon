@@ -6,6 +6,7 @@ echelon is written using modern C++ to enable easy, versatile and save access to
 
 [![Build Status](https://travis-ci.org/qbb-project/echelon.svg)](https://travis-ci.org/qbb-project/echelon)
 [![Coverage Status](https://img.shields.io/coveralls/qbb-project/echelon.svg)](https://coveralls.io/r/qbb-project/echelon?branch=master)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/6506/badge.svg)](https://scan.coverity.com/projects/qbb-project-echelon)
 
 In publications, the latest release of echelon (currently v0.7.0) can
 be cited as: [![DOI](https://zenodo.org/badge/13184/qbb-project/echelon.svg)](http://dx.doi.org/10.5281/zenodo.17862).
