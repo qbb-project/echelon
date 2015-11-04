@@ -31,5 +31,5 @@ BOOST_FIXTURE_TEST_CASE( auto_reshape_test, access_fixture )
       
       std::vector<double> data;
       
-      BOOST_CHECK_NO_THROW(echelon::auto_reshape(data) <<= ds)
+      BOOST_CHECK_NO_THROW(echelon::auto_reshape(data) <<= ds);
 } 
