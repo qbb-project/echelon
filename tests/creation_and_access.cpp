@@ -39,10 +39,10 @@ BOOST_FIXTURE_TEST_CASE( creation_test, basic_fixture )
 
 BOOST_FIXTURE_TEST_CASE( access_test, access_fixture )
 {
-      BOOST_CHECK_NO_THROW(echelon::dataset ds = temp_file["dataset"])
-      BOOST_CHECK_NO_THROW(echelon::scalar_dataset sds = temp_file["scalar_dataset"])
-      BOOST_CHECK_NO_THROW(echelon::group ds = temp_file["group"])
-      BOOST_CHECK_NO_THROW(echelon::attribute ds = temp_file.attributes()["attribute"])
+      BOOST_CHECK_NO_THROW(echelon::dataset ds = temp_file["dataset"]);
+      BOOST_CHECK_NO_THROW(echelon::scalar_dataset sds = temp_file["scalar_dataset"]);
+      BOOST_CHECK_NO_THROW(echelon::group ds = temp_file["group"]);
+      BOOST_CHECK_NO_THROW(echelon::attribute ds = temp_file.attributes()["attribute"]);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
