@@ -24,11 +24,11 @@ addons:
     - clang-3.6
       
 before_install:
-  - wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download -O boost.tar.bz2
+  - wget --no-check-certificate http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download -O boost.tar.bz2
   - tar jxf boost.tar.bz2
-  - wget http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz -O cmake.tar.gz
+  - wget --no-check-certificate http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz -O cmake.tar.gz
   - tar zxf cmake.tar.gz
-  - wget http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.12/src/hdf5-1.8.12.tar.bz2 -O hdf5.tar.bz2
+  - wget --no-check-certificate http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.12/src/hdf5-1.8.12.tar.bz2 -O hdf5.tar.bz2
   - tar jxf hdf5.tar.bz2
 install:
   - if [ "$TEST_COVERAGE" = true ]; then pip install --user cpp-coveralls; fi
