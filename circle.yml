@@ -1,0 +1,22 @@
+machine:
+  services:
+    - docker
+  environment:
+    IMAGE_NAME: qbbproject/archlinux-ci:latest
+
+general:
+  branches:
+    ignore:
+      - gh-pages
+
+dependencies:
+  pre:
+    - docker pull ${IMAGE_NAME}
+    - mkdir build
+  override:
+    - docker run -v $PWD:/echelon -w /echelon/build ${IMAGE_NAME} cmake -DECHELON_BUILD_TESTS=ON ..
+    - docker run -v $PWD:/echelon -w /echelon/build ${IMAGE_NAME} make -j2
+
+test:
+  override:
+    - docker run -v $PWD:/echelon -w /echelon/build ${IMAGE_NAME} ctest
