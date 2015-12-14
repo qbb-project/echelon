@@ -7,7 +7,7 @@
 
 #include <exception>
 #include <map>
-
+#include <string>
 #include <utility>
 #include <functional>
 #include <cassert>
