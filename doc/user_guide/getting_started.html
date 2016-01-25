@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting started &mdash; echelon 0.8.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="echelon 0.8.0 documentation" href="index.html" />
+    <link rel="next" title="Tutorials" href="tutorial_introduction.html" />
+    <link rel="prev" title="About echelon" href="about_echelon.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tutorial_introduction.html" title="Tutorials"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="about_echelon.html" title="About echelon"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">echelon 0.8.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="how-to-install-echelon">
+<h2>How to install echelon?<a class="headerlink" href="#how-to-install-echelon" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="installing-echelon-on-linux">
+<h3>Installing echelon on Linux<a class="headerlink" href="#installing-echelon-on-linux" title="Permalink to this headline">¶</a></h3>
+<p>To install echelon on Linux, simply change into echelon&#8217;s root directory
+and create a build directory (for example build/).
+Afterwards change into your build directory and configure the build system
+using</p>
+<div class="highlight-bash"><div class="highlight"><pre>cmake ../
+</pre></div>
+</div>
+<p>Finally type</p>
+<div class="highlight-bash"><div class="highlight"><pre>make
+</pre></div>
+</div>
+<p>to start the compilation process.
+After the compilation has finished successfully, you can use</p>
+<div class="highlight-bash"><div class="highlight"><pre>make install
+</pre></div>
+</div>
+<p>to install echelon in /usr/local (an other path can be specified using CMake standard methods), if you want.</p>
+<p>To generate the documentation using doxygen just type</p>
+<div class="highlight-bash"><div class="highlight"><pre>make doc
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="how-to-integrate-echelon-into-your-application">
+<h2>How to integrate echelon into your application?<a class="headerlink" href="#how-to-integrate-echelon-into-your-application" title="Permalink to this headline">¶</a></h2>
+<p>echelon comes with two kinds of CMake integration. The first one treats echelon as an external
+dependency via CMake&#8217;s find_package mechanism and should be prefered, if you have installed
+echelon on your computer. The second one treats echelon as a subproject of your CMake-enabled
+project and should be prefered, if you use echelon on many different machines and don&#8217;t want to
+install echelon everywhere, or if you want to ship your code with echelon in one package.</p>
+<p>If you don&#8217;t use CMake, I am afraid that you are on your own and should try to convince your
+compiler/build system to find echelon for you.</p>
+<div class="section" id="using-echelon-as-an-external-dependency">
+<h3>Using echelon as an external dependency<a class="headerlink" href="#using-echelon-as-an-external-dependency" title="Permalink to this headline">¶</a></h3>
+<p>After you have build and installed echelon somewhere, you can use CMake&#8217;s find_package mechanism
+to obtain an imported target for echelon. Afterwards you can simply call</p>
+<div class="highlight-python"><div class="highlight"><pre>target_link_libraries(your-target echelon::echelon)
+</pre></div>
+</div>
+<p>to the link against the library via the imported target echelon::echelon.</p>
+</div>
+<div class="section" id="using-echelon-as-a-subproject">
+<h3>Using echelon as a subproject<a class="headerlink" href="#using-echelon-as-a-subproject" title="Permalink to this headline">¶</a></h3>
+<p>To use echelon as a subproject, simply copy its root directory to some reasonable place within your project&#8217;s
+directory hierarchy and integrate echelon&#8217;s build system into your exisiting build system
+by adding</p>
+<div class="highlight-python"><div class="highlight"><pre>add_subdirectory(echelon&#39;s-root-directory)
+</pre></div>
+</div>
+<p>If used as a subproject, echelon defines the same
+targets, as if it would have done in the external dependency case, which makes both approaches quite interchangeable.
+The big advantage of the subproject approach is, that echelon is automatically build alongside your project
+and you don&#8217;t have to bother with a second manual compilation.</p>
+</div>
+<div class="section" id="manually-link-against-echelon">
+<h3>Manually link against echelon<a class="headerlink" href="#manually-link-against-echelon" title="Permalink to this headline">¶</a></h3>
+<p>If you use a different build system than CMake (or good old manual compilation), you need to link manually against
+the libraries echelon and echelon_hdf5, together with the HDF5 libraries hdf5 and hdf5_hl.
+In addition, the compiler&#8217;s C++11 support has to be enabled.</p>
+</div>
+</div>
+<div class="section" id="breaking-changes">
+<h2>Breaking changes<a class="headerlink" href="#breaking-changes" title="Permalink to this headline">¶</a></h2>
+<p>This section contains a compilation of breaking changes which you may encounter while porting your code the newer versions of echelon
+and suitably fixes.</p>
+<div class="section" id="automatic-reshape-of-arrays">
+<h3>Automatic reshape of arrays<a class="headerlink" href="#automatic-reshape-of-arrays" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p><strong>Change</strong>: echelon does not reshape arrays while reading data anymore. The array has to be properly shaped prior to the read or the operation will throw an exception.</p>
+<p><strong>Possible symptoms</strong>: An inconsistent_selection_size_exception is thrown.</p>
+<p><strong>Fix</strong>: Reshape the array prior to the read with the proper shape. You can use the new <a class="reference external" href="./../api_doc/namespaceechelon.html#a2c20595d249468981ac7c1a4a668cf1d">echelon::auto_reshape</a> sink adaptor to do this automatically.</p>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Getting started</a><ul>
+<li><a class="reference internal" href="#how-to-install-echelon">How to install echelon?</a><ul>
+<li><a class="reference internal" href="#installing-echelon-on-linux">Installing echelon on Linux</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-to-integrate-echelon-into-your-application">How to integrate echelon into your application?</a><ul>
+<li><a class="reference internal" href="#using-echelon-as-an-external-dependency">Using echelon as an external dependency</a></li>
+<li><a class="reference internal" href="#using-echelon-as-a-subproject">Using echelon as a subproject</a></li>
+<li><a class="reference internal" href="#manually-link-against-echelon">Manually link against echelon</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#breaking-changes">Breaking changes</a><ul>
+<li><a class="reference internal" href="#automatic-reshape-of-arrays">Automatic reshape of arrays</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="about_echelon.html"
+                        title="previous chapter">About echelon</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial_introduction.html"
+                        title="next chapter">Tutorials</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/getting_started.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tutorial_introduction.html" title="Tutorials"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="about_echelon.html" title="About echelon"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">echelon 0.8.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2013-2015, Christopher Hinz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.4.
+    </div>
+  </body>
+</html>

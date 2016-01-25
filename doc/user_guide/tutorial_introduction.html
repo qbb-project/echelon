@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorials &mdash; echelon 0.8.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="echelon 0.8.0 documentation" href="index.html" />
+    <link rel="next" title="echelon file format specification" href="file_format_specification.html" />
+    <link rel="prev" title="Getting started" href="getting_started.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="file_format_specification.html" title="echelon file format specification"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting started"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">echelon 0.8.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="tutorial-1-introduction">
+<h2>Tutorial 1 - Introduction<a class="headerlink" href="#tutorial-1-introduction" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="file-creation-and-basic-write-access">
+<h3>File creation and basic write access<a class="headerlink" href="#file-creation-and-basic-write-access" title="Permalink to this headline">¶</a></h3>
+<p>To create an empty file, we simply construct a new <a class="reference external" href="./../api_doc/classechelon_1_1file.html">file</a> handle, specifing the file path and a creation mode.
+For this example, we choose the truncate mode, which ensures, that the content of any pre-existing file is discarded.
+The code</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">file</span> <span class="nf">hdf5_file</span><span class="p">(</span><span class="s">&quot;first_file.h5&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">::</span><span class="n">create_mode</span><span class="o">::</span><span class="n">truncate</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>creates the empty HDF5 file &#8216;first_file.h5&#8217; and names the resulting handle hdf5_file.
+With the first step done, we can add new objects to the file and store our data.</p>
+<p>Before, we will store any data in our newly created file, we discuss one of the main benefits and major concepts of HDF5, the group.
+An HDF5 <a class="reference external" href="./../api_doc/classechelon_1_1group.html">group</a>
+allows us to save and access our data in a structured way. You can think of a group as an object similar to a folder
+in your favorite file system, since both are used to bundle related objects together, even other groups/folders.
+If you are familiar with UNIX file systems, you may even notice more similarities. Any new file starts with a group, which
+we call the root group and denote with &#8216;/&#8217;. Since the file and the root group are strongly related, we normally
+use the two terms interchangeable. This is reflected by the file class by providing the same interface as a group.</p>
+<p>Using</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">group</span> <span class="n">data</span> <span class="o">=</span> <span class="n">hdf5_file</span><span class="p">.</span><span class="n">create_group</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>we create a new group &#8216;data&#8217; within the root group and save the group handle in data.</p>
+<p>Now, we will store some test data in our file. To do this, we have to create a new dataset.
+A dataset is a rectangular, homogeneous collection of elements and is the primary facility for
+data storage in HDF5. A dataset can distribute its elements over an arbitrary number of dimensions.
+This is convenient, since many objects in science, for example matrices and tensors, extend along several
+dimensions and we can map our data structures naturally onto our file structure.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">dataset</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">create_dataset</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;ds&quot;</span><span class="p">,</span> <span class="p">{</span> <span class="mi">10</span> <span class="p">});</span>
+</pre></div>
+</div>
+<p>will create a new dataset, named &#8216;ds&#8217;, of ten double elements along a single dimension and stores the
+dataset handle in ds.
+The final step is to store our data in the dataset, which can be done by using the, hopefully reasonable, syntax</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ds</span> <span class="o">&lt;&lt;=</span> <span class="n">v</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>In our example, v is a std::vector&lt;double&gt;, which contains ten elements. It should be noted, that
+the shape and datatype of the data must always match the shape and datatype of the dataset. An exception is thrown otherwise.
+While we will restrict ourself to the element type double and the container std::vector in this example, echelon supports
+several other types and containers, and can be extended to handle many more. Since this topic is a very complex one,
+we will discuss it in its entire at a later point. For now, it should be sufficient, that you know, that every primitive
+C++ type is supported.</p>
+<p>The following code summarizes every step we have done so far, from the creation of our file to the storage of
+our data:</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;echelon/echelon.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">echelon</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">file</span> <span class="n">hdf5_file</span><span class="p">(</span><span class="s">&quot;first_file.h5&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">::</span><span class="n">create_mode</span><span class="o">::</span><span class="n">truncate</span><span class="p">);</span>
+
+    <span class="n">group</span> <span class="n">data</span> <span class="o">=</span> <span class="n">hdf5_file</span><span class="p">.</span><span class="n">create_group</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">);</span>
+
+    <span class="n">dataset</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">create_dataset</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;ds&quot;</span><span class="p">,</span> <span class="p">{</span> <span class="mi">10</span> <span class="p">});</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">v</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">};</span>
+
+    <span class="n">ds</span> <span class="o">&lt;&lt;=</span> <span class="n">v</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="basic-read-access">
+<h3>Basic read access<a class="headerlink" href="#basic-read-access" title="Permalink to this headline">¶</a></h3>
+<p>By now, we have learned how to store data in our file.
+But it would be rather pointless to store data in the file, if we could not load it again.
+In this section, we will learn how to load the data from the previous example into a container.</p>
+<p>As a first step we create a handle</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">file</span> <span class="nf">hdf5_file</span><span class="p">(</span><span class="s">&quot;first_file.h5&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">::</span><span class="n">open_mode</span><span class="o">::</span><span class="n">read_only</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>to our old file &#8216;first_file.h5&#8217;. The only difference to the first example is, that
+we specify an open mode and not a creation mode. Since we only want to read data
+in this example, we use the read-only mode.</p>
+<p>You may remember, that we stored our dataset within a group during the previous example.
+To access the dataset, we have to acquire a handle to the group first.
+For this purpose group overloads the square bracket operator,
+which takes the name of the object and returns a handle, if the object exists. Otherwise
+an exception is thrown.
+In our case we use</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">group</span> <span class="n">data</span> <span class="o">=</span> <span class="n">hdf5_file</span><span class="p">[</span><span class="s">&quot;data&quot;</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>to acquire a group handle to the previously created group &#8216;data&#8217;.</p>
+<p>The semantic of the above statement is much more complicated then one might expect at first glance.
+Since groups can store objects of many different types and the structure of the file is not available at compile-time,
+the square bracket operator does not know what kind of handle it should return. Instead it returns an object
+handle, which can reference any object. Therefore we call such a handle a polymorphic handle.
+To convert it to a meaningful handle, we guess a handle type at compile-time, in our case group,
+and assign the object handle to it. echelon then checks at runtime, if our guess does match the real type of the object and throws an exception, if
+we guessed wrong. One consequence of this is, that you can&#8217;t use the auto keyword in this case, since the object handle would not
+be converted to any meaningful type.</p>
+<p>It is now straightforward to acquire a handle to the dataset</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">dataset</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&quot;ds&quot;</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>using the same syntax and to load the data into the std::vector&lt;double&gt; container v using</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">auto_reshape</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;&lt;=</span> <span class="n">ds</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>While the container is automatically resized to hold the data if necessary, the value type of the dataset and
+the value type of the container must match again. Otherwise an exception is thrown.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In general, echelon will not resize your containers, since they might not support this operation.
+To enable this functionality, you have to wrap your container in a call to auto_reshape as shown above.</p>
+</div>
+<p>The following code summarizes the second example and prints the content of the container
+using the standard output stream:</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;echelon/echelon.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">echelon</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">file</span> <span class="n">hdf5_file</span><span class="p">(</span><span class="s">&quot;first_file.h5&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">::</span><span class="n">open_mode</span><span class="o">::</span><span class="n">read_only</span><span class="p">);</span>
+
+    <span class="n">group</span> <span class="n">data</span> <span class="o">=</span> <span class="n">hdf5_file</span><span class="p">[</span><span class="s">&quot;data&quot;</span><span class="p">];</span>
+
+    <span class="n">dataset</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&quot;ds&quot;</span><span class="p">];</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">v</span><span class="p">;</span>
+
+    <span class="n">auto_reshape</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;&lt;=</span> <span class="n">ds</span><span class="p">;</span>
+
+    <span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="nl">value</span> <span class="p">:</span> <span class="n">v</span><span class="p">)</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">value</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;  &quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="tutorial-2-partial-i-o-and-compression">
+<h2>Tutorial 2 - Partial I/O and compression<a class="headerlink" href="#tutorial-2-partial-i-o-and-compression" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="slicing">
+<h3>Slicing<a class="headerlink" href="#slicing" title="Permalink to this headline">¶</a></h3>
+<p>Until now, we have read entire datasets from the file into the main memory. While this is sufficient for simple use cases it is often not possible or desirable to read all data at the same time.
+For similar reasons, one might to assemble a dataset chunk by chunk instead of writing it in one go.
+In these use cases, partial I/O comes into play. It allows one to only read or write a certain subset of the dataset. Just now, echelon supports the use of regular, rectangular access patterns
+called <a class="reference external" href="./../api_doc/classechelon_1_1slice.html">slices</a>. While slice usually only denotes a subset with a lower rank, we will also use it for selections with the same rank as the dataset for convenience.
+Creating slices in echelon is fairly trivial. For example the following code</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">using</span> <span class="n">echelon</span><span class="o">::</span><span class="n">_</span><span class="p">;</span>
+
+<span class="k">auto</span> <span class="n">slice</span> <span class="o">=</span> <span class="n">my_dataset</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">_</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>will create a 1-slice (a one-dimensional slice) from a two-dimensional dataset by fixing the first index to ten. The <a class="reference external" href="./../api_doc/classechelon_1_1dataset.html#a7f6a77989adaaa06343c9a660956a2db">slicing operator</a>
+always takes the same number of arguments as the rank of the dataset. A runtime error is raised otherwise. echelon::_ is a placeholder for unrestricted dimensions.
+In a similar way, one can restrict a dimension to certain bounds. The code</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">using</span> <span class="n">echelon</span><span class="o">::</span><span class="n">_</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">echelon</span><span class="o">::</span><span class="n">range</span><span class="p">;</span>
+
+<span class="k">auto</span> <span class="n">slice</span> <span class="o">=</span> <span class="n">my_dataset</span><span class="p">(</span><span class="n">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">_</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>restricts the first dimension of the dataset to the interval <img class="math" src="_images/math/88d1ab2f7c484a8a92c7dbe7806d9fac90742c51.png" alt="\left[2, 10\right["/>. If a certain bound should not be restricted the placeholder _ can be used.
+For detailed informations about all possible slicing pattern, one should consult the documentation of the <a class="reference external" href="./../api_doc/classechelon_1_1dataset.html#a7f6a77989adaaa06343c9a660956a2db">slicing operator</a>.</p>
+<p>At the time of writing, <a class="reference external" href="./../api_doc/classechelon_1_1slice.html">echelon::slice</a> does support most operations, which are valid on a dataset.
+For example, one can write data into the slice:</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">slice</span> <span class="o">&lt;&lt;=</span> <span class="n">data</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>In addition, echelon supports slicing of array via the make_slice function.
+For example, the code</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">auto</span> <span class="n">s</span> <span class="o">=</span> <span class="n">make_slice</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>slices the container c.</p>
+<p>Array slices can be used to either write or read data from a dataset.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Currently, array slicing is only supported for mutable arrays and might not work otherwise.</p>
+</div>
+<p>As a convenience, echelon&#8217;s pre-defined containers support the same slicing syntax as dataset.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">auto</span> <span class="n">s</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>is equivalent to the previous example.</p>
+</div>
+<div class="section" id="compression">
+<h3>Compression<a class="headerlink" href="#compression" title="Permalink to this headline">¶</a></h3>
+<p>If working with large amounts of data it is often desirable to avoid a huge memory footprint, especially in the case of long-term storage. In many cases, one can achieve this
+by compressing the dataset, while sacrificing I/O performance at the same time. Luckily, echelon&#8212;respectively HDF5&#8212;comes with built-in compression capabilities.
+Compression can be enabled during dataset creation through the <a class="reference external" href="./../api_doc/classechelon_1_1dataset__options.html">echelon::dataset_options</a> class and the corresponding argument of the <a class="reference external" href="./../api_doc/classechelon_1_1group.html#a4c73941fff8ac67ca4175e1e4d157889">echelon::group::create_dataset()</a>
+and <a class="reference external" href="./../api_doc/classechelon_1_1group.html#a4cc5cb2f19cf0541aebd59a9b87fa30c">echelon::group::require_dataset()</a> methods by setting the respective option. For example</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">echelon</span><span class="o">::</span><span class="n">dataset_options</span> <span class="n">options</span><span class="p">;</span>
+<span class="n">options</span><span class="p">.</span><span class="n">compression_level</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="n">my_group</span><span class="p">.</span><span class="n">create_dataset</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">},</span> <span class="n">options</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>will enable deflate compression with a compression level of 4.</p>
+<p>HDF5 requires to change the storage layout of the dataset from &#8216;continuous&#8217; to &#8216;chunked&#8217; if compression is enabled. echelon will automatically try to guess a reasonable shape of the chunks.
+Since this choice might have a huge impact on compression ratio and I/O performance, one can override the auto-chunking heuristic by providing one&#8217;s own chunk shape through the
+<a class="reference external" href="./../api_doc/classechelon_1_1dataset__options.html">echelon::dataset_options</a> class. As of now, a single chunk should not be larger than the entire dataset.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Enabling the shuffle filter via the corresponding option might increase the compression ratio.</p>
+</div>
+</div>
+</div>
+<div class="section" id="tutorial-x-advanced-tidbits">
+<h2>Tutorial x - Advanced tidbits<a class="headerlink" href="#tutorial-x-advanced-tidbits" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="dimensions-and-dimension-scales">
+<h3>Dimensions and dimension scales<a class="headerlink" href="#dimensions-and-dimension-scales" title="Permalink to this headline">¶</a></h3>
+<p>One feature of datasets which wasn&#8217;t presented so far are <a class="reference external" href="./../api_doc/classechelon_1_1dimension.html">dataset dimensions</a>.
+The dimensions are accessed through the, hopefully indisputably named, dataset property <a class="reference external" href="./../api_doc/classechelon_1_1dataset.html#acabd2468ae71553441342410481005d7">dimensions</a>.
+For example, one could give each dimension a descriptive label, as shown in the following code sample</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">my_dataset</span><span class="p">.</span><span class="n">dimensions</span><span class="p">()[</span><span class="mi">0</span><span class="p">].</span><span class="n">relabel</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>For details, please refer to the corresponding <a class="reference external" href="./../api_doc/classechelon_1_1dataset__dimensions.html">API documentation</a>.</p>
+<p>Another useful feature linked to dataset dimensions are <a class="reference external" href="./../api_doc/classechelon_1_1dimension__scale.html">dimension scales</a> which can be used to add certain meta-data to that dimension. For example, if one has saved a tabulated function in a dataset, one could add the corresponding value for each variable in a dimension scale, keeping this meta-data close to the actual data.</p>
+<p>The following code shows how to add a dimension scale &#8216;x&#8217; of type double to the first dimension of an already existing dataset</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">my_dataset</span><span class="p">.</span><span class="n">dimensions</span><span class="p">()[</span><span class="mi">0</span><span class="p">].</span><span class="n">attach_dimension_scale</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Echelon will automatically assemble the necessary data structures within the file and will free them if the dataset is destroyed. The shape of each dimensions scale is always one-dimensional and
+matches the length of the corresponding dataset dimension.</p>
+<p>Since dimension scales are in a sense specialized datasets one can use them as is usual for datasets. For example the code</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">my_dimension_scale</span> <span class="o">&lt;&lt;=</span> <span class="n">x</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>would write the content of the container x into the dimension scale.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tutorials</a><ul>
+<li><a class="reference internal" href="#tutorial-1-introduction">Tutorial 1 - Introduction</a><ul>
+<li><a class="reference internal" href="#file-creation-and-basic-write-access">File creation and basic write access</a></li>
+<li><a class="reference internal" href="#basic-read-access">Basic read access</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tutorial-2-partial-i-o-and-compression">Tutorial 2 - Partial I/O and compression</a><ul>
+<li><a class="reference internal" href="#slicing">Slicing</a></li>
+<li><a class="reference internal" href="#compression">Compression</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tutorial-x-advanced-tidbits">Tutorial x - Advanced tidbits</a><ul>
+<li><a class="reference internal" href="#dimensions-and-dimension-scales">Dimensions and dimension scales</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="getting_started.html"
+                        title="previous chapter">Getting started</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="file_format_specification.html"
+                        title="next chapter">echelon file format specification</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tutorial_introduction.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="file_format_specification.html" title="echelon file format specification"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting started"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">echelon 0.8.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2013-2015, Christopher Hinz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.4.
+    </div>
+  </body>
+</html>

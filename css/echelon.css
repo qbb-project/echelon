@@ -1,0 +1,30 @@
+.md5sum
+{
+    font-size: 9px;
+    color: grey;
+}
+
+li.project-status
+{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+
+ul.project-status
+{
+    list-style: outside none none;
+    font-size: 20px;
+}
+
+div.project-status
+{
+    float: right;
+}
+
+div.project-status-desc
+{
+    width: 55%;
+}

@@ -1,0 +1,9 @@
+\form#0:$ [N,M) $
+\form#1:$ \left(s_1,...s_{rank}\right) $
+\form#2:$ \left(i_1,...i_{rank_2}\right) $
+\form#3:$ rank = rank_2 $
+\form#4:$ i_{i} < s_{i} $
+\form#5:$ i \in \left\{ 0,...,rank-1 \right\} $
+\form#6:$ (s_1,...,s_{N}) $
+\form#7:$ s $
+\form#8:$ \prod_{i} s_{i} = s $

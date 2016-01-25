@@ -16,7 +16,7 @@
   <link href="/css/echelon.css" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
-  <link rel="canonical" href="http://echelon.qbb-project.org/">
+  <link rel="canonical" href="http://echelon.qbb-project.org/download.html">
   <link rel="alternate" type="application/rss+xml" title="echelon" href="/feed.xml">
 
    <script>
@@ -67,86 +67,53 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="jumbotron">
-    <div class="container">
-        <h1>echelon</h1>
-
-        <p>is a HDF5-based library for saving and managing scientific data written in modern C++.</p>
-    </div>
-</div>
-
-<div class="container">
+        <div class="container">
     <div class="row">
-        <div class="col-md-4">
-            <h2>Status</h2>
+        <div class="col-md-12">
+            <div class="jumbotron">
+                <div class="container">
+                    <h1>Releases</h1>
 
-            <div>
-                <ul class="project-status">
-                    <li class="project-status">
-                        <div class="project-status-desc">CI</div>
-                        <div><a
-                                href='https://travis-ci.org/qbb-project/echelon'><img
-                                style="float: left;"
-                                src='https://travis-ci.org/qbb-project/echelon.svg?branch=master'/></a>
-                        </div>
-                    </li>
-                    <li class="project-status">
-                        <div class="project-status-desc">Stable version</div>
-                        <div class="project-status">
-                            <div class="project-status">
-                            <a href="https://github.com/qbb-project/echelon/archive/v0.7.0.tar.gz"
-                               role="button" class="btn btn-primary">
+                    <p>
+                        As an alternative to obtain the code via <a href="https://github.com/qbb-project/echelon">official repository</a> at GitHub, we provide
+                        prepacked archives of all releases.
+                    </p>
+
+                    <p>
+                        To find out how to build echelon, please consult the <a href="/doc/user_guide/getting_started.html">build instructions</a>.
+                    </p>
+                </div>
+            </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Version</th>
+                    <th>Date</th>
+                    <th>MD5</th>
+                    <th>File</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">0.7.0</th>
+                    <td>2015-05-22</td>
+                    <td>b6236e471edefb6e2795a1f7e88279f4</td>
+                    <td>
+                        <a href="https://github.com/qbb-project/echelon/archive/v0.7.0.tar.gz"
+                                                       role="button" class="btn btn-primary">
                                 <span
-                                    class="fa fa-arrow-circle-down" aria-hidden="true">
+                                        class="fa fa-arrow-circle-down" aria-hidden="true">
                                 </span>
-                                0.7.0
-                            </a>
-                            </div>
-                            <div class="md5sum project-status">MD5: b6236e471edefb6e2795a1f7e88279f4</div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <h2>News</h2>
-            <div>
-                <ul>
-                
-                </ul>
-            </div>
-        </div>
-        <div class="col-md-8">
-            <h2>Features</h2>
-
-            <div>
-                <ul>
-                    <li>Fast and portable data storage via HDF5</li>
-                    <li>Access to arbitrarily large datasets</li>
-                    <li>Powerful and intuitive slicing syntax</li>
-                </ul>
-            </div>
-
-            <h2>Examples</h2>
-
-            <h3>Dataset slicing</h3>
-            <pre class="prettyprint lang-cpp">
-using namespace echelon;
-
-file f("data.h5", file::open_mode::read_only);
-group data = f["data"];
-
-dataset density = data["density"];
-
-for (long int i = 0; i < N; ++i)
-{
-    multi_array&lt;double, 2&gt; density_slice;
-    auto_reshape(density_slice) <<= density(i, _, _);
-
-    analyze_slice(density_slice);
-}</pre>
+                        v0.7.0.tar.gz
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
       </div>
     </div>
 

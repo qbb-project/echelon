@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>About echelon &mdash; echelon 0.8.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="echelon 0.8.0 documentation" href="index.html" />
+    <link rel="next" title="Getting started" href="getting_started.html" />
+    <link rel="prev" title="Welcome to echelon’s documentation!" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting started"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to echelon’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">echelon 0.8.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="about-echelon">
+<h1>About echelon<a class="headerlink" href="#about-echelon" title="Permalink to this headline">¶</a></h1>
+<p>echelon is an HDF5-based library for saving and managing scientific data. echelon is written using modern C++ to enable
+easy, versatile and save access to your data.</p>
+<div class="section" id="project-goals">
+<h2>Project goals<a class="headerlink" href="#project-goals" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This section needs to be extended.</p>
+</div>
+<ul class="simple">
+<li>The usage of the library should be as distraction-free as possible. All boilerplate operations should be automatically
+performed by the library.</li>
+<li>Common use cases should be straightforward.</li>
+<li>The library should be extendable, if appropriate. Especially user-defined data types should be supported.</li>
+<li>The library should be able to read and manipulate every valid HDF5 file,
+which was created by a supported version of the HDF5 library. (note: This goal is slightly outdated. See below.)</li>
+<li>The design of the library should be driven by common concepts rather than special cases.</li>
+<li>The library should permit peak performance for common usage patterns.</li>
+</ul>
+</div>
+<div class="section" id="what-echelon-is-not">
+<h2>What echelon is not<a class="headerlink" href="#what-echelon-is-not" title="Permalink to this headline">¶</a></h2>
+<p>echelon is not a low-level C++ wrapper for HDF5. Therefore, not all echelon objects map directly to their HDF5
+counterparts. if they have any. While this might make the handling of echelon-produced files with low-level HDF5
+libraries more cumbersome, this was a deliberate design decision from the start as many of the advanced features
+of this library are hard or even impossible to implement without using much more elaborate structures to express
+them within the HDF5 object model. The HDF5 library even predates us in this decision, as for example dimension
+scales map to a quite complex set of primitive HDF5 objects. To aid all users which want to use echelon in combination
+with low-level HDF5 libraries (or HDF5-enabled software), we will provide a file-scoped option which will disable those
+advanced features in the future. It should be noted however, that each echelon file is always a valid HDF5 file
+and that we try to map each feature to the HDF5 object model as plain as possible.</p>
+<p>If you are actually interested in a low-level wrapper for HDF5, you might have a look at the echelon.HDF5 sub-library,
+which is shipped with the core library. While this library is mainly intended for internal usage, it might serve you well.
+Unfortunately the library is not documented at all at the point of this writing.
+There is an ongoing proposal to document the library properly and
+lower some of the advanced features from the core library into echelon.HDF5.</p>
+</div>
+<div class="section" id="how-can-i-contribute-to-the-project">
+<h2>How can I contribute to the project?<a class="headerlink" href="#how-can-i-contribute-to-the-project" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This section needs to be written.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">About echelon</a><ul>
+<li><a class="reference internal" href="#project-goals">Project goals</a></li>
+<li><a class="reference internal" href="#what-echelon-is-not">What echelon is not</a></li>
+<li><a class="reference internal" href="#how-can-i-contribute-to-the-project">How can I contribute to the project?</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to echelon&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="getting_started.html"
+                        title="next chapter">Getting started</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/about_echelon.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting started"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to echelon’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">echelon 0.8.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2013-2015, Christopher Hinz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.4.
+    </div>
+  </body>
+</html>
