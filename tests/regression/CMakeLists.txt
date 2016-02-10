@@ -5,10 +5,6 @@
 
 if(ECHELON_BUILD_TESTS)
 
-    add_executable(static_shape_writeable static_shape_writeable.cpp)
-    target_include_directories(static_shape_writeable PUBLIC ${Boost_INCLUDE_DIRS})
-    target_compile_options(static_shape_writeable PRIVATE ${COVERAGE_FLAGS})
-    target_link_libraries(static_shape_writeable echelon ${Boost_LIBRARIES} ${COVERAGE_LINKER_FLAGS})
-    add_test(static_shape_writeable ${CMAKE_CURRENT_BINARY_DIR}/static_shape_writeable)
+    echelon_add_simple_test(static_shape_writeable)
 
 endif()

@@ -42,14 +42,40 @@ inline auto data_adl(C&& container) -> decltype(data(container))
     return data(container);
 }
 
+namespace detail
+{
+template <typename T>
+constexpr auto has_user_provided_shape_property_impl(int)
+    -> decltype((shape(std::declval<T>(), adl_enabler{}), bool{}))
+{
+    return true;
+}
+
+template <typename T>
+constexpr bool has_user_provided_shape_property_impl(...)
+{
+    return false;
+}
+
+template <typename T>
+constexpr bool has_user_provided_shape_property()
+{
+    return detail::has_user_provided_shape_property_impl<T>(0);
+}
+}
+
 template <typename C>
-inline auto shape(const C& container) -> decltype(shape(container, adl_enabler{}))
+inline auto shape(const C& container) ->
+    typename std::enable_if<detail::has_user_provided_shape_property<C>(),
+                            decltype(shape(container, adl_enabler{}))>::type
 {
     return shape(container, adl_enabler{});
 }
 
 template <typename C>
-inline auto shape(const C& container) -> decltype(container.shape())
+inline auto shape(const C& container) ->
+    typename std::enable_if<!detail::has_user_provided_shape_property<C>(),
+                            decltype(container.shape())>::type
 {
     return container.shape();
 }
@@ -159,7 +185,6 @@ constexpr bool is_container()
     return has_data_accessor<T>() && has_shape_property<T>();
 }
 
-
 template <typename C>
 struct container_trait
 {
@@ -167,7 +192,6 @@ struct container_trait
 
     using value_type = typename std::decay<decltype(*data_adl(std::declval<const C>()))>::type;
 };
-
 }
 }
 
