@@ -8,6 +8,9 @@
 
 #include <utility>
 #include <type_traits>
+#include <cstddef>
+#include <vector>
+#include <cassert>
 
 namespace echelon
 {
@@ -112,6 +115,64 @@ inline auto reshape_adl(C& container, const std::vector<std::size_t>& new_shape)
     -> decltype(reshape(container, new_shape))
 {
     return reshape(container, new_shape);
+}
+
+template <typename C>
+inline auto storage_order(C&& container) -> decltype(storage_order(container, adl_enabler{}))
+{
+    return storage_order(container, adl_enabler{});
+}
+
+template <typename Shape>
+class row_major_storage_order
+{
+public:
+    explicit row_major_storage_order(Shape shape_) : shape_(shape_)
+    {
+    }
+
+    template <typename Indices>
+    std::size_t map(const Indices& indices) const
+    {
+        std::size_t rank = shape_.size();
+
+        assert(rank == indices.size());
+
+        std::size_t address = 0;
+
+        for (std::size_t i = 0; i < rank; ++i)
+        {
+            address = address * shape_[i] + indices[i];
+        }
+
+        return address;
+    }
+
+private:
+    Shape shape_;
+};
+
+template<typename StorageOrder>
+struct is_native_storage_order : std::false_type
+{
+};
+
+template<typename Shape>
+struct is_native_storage_order<row_major_storage_order<Shape>> : std::true_type
+{
+};
+
+template <typename C>
+inline auto storage_order(const C& container, adl_enabler)
+-> decltype(row_major_storage_order<decltype(shape_adl(container))>(shape_adl(container)))
+{
+    return row_major_storage_order<decltype(shape_adl(container))>(shape_adl(container));
+}
+
+template <typename C>
+inline auto storage_order_adl(C&& container) -> decltype(storage_order(container))
+{
+    return storage_order(container);
 }
 
 namespace detail

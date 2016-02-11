@@ -1,4 +1,4 @@
-//  Copyright (c) 2015 Christopher Hinz
+//  Copyright (c) 2015-2016 Christopher Hinz
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -14,16 +14,32 @@
 
 #include "basic_fixture.hpp"
 
+#include <cassert>
+
 namespace echelon
 {
 namespace hdf5
 {
+
 template <typename T, std::size_t NumDims>
 inline std::vector<std::size_t> shape(const boost::multi_array<T, NumDims>& container, adl_enabler)
 {
     auto shape = container.shape();
 
     return std::vector<std::size_t>(shape, shape + NumDims);
+}
+
+/* Note: This function shouldn't be used outside of this test since
+ *       it only works under the assumption that we only use
+ *       multi_arrays with fortran_storage_order.
+ */
+template <typename T, std::size_t NumDims>
+inline column_major_storage_order<std::vector<std::size_t>>
+storage_order(const boost::multi_array<T, NumDims>& container, adl_enabler)
+{
+    assert(container.storage_order() == boost::fortran_storage_order());
+
+    return column_major_storage_order<std::vector<std::size_t>>(shape_adl(container));
 }
 }
 }
@@ -153,9 +169,9 @@ BOOST_FIXTURE_TEST_CASE(column_major_storage_slicing_test, layout_test_fixture)
 
     for (long int i = 0; i < 10; ++i)
     {
-        for (long int j = 0; j < 2; ++j)
+        for (long int j = 4; j < 6; ++j)
         {
-            BOOST_CHECK_EQUAL(data2[i][j], i * 10 + j);
+            BOOST_CHECK_EQUAL(data2[i][j - 4], i * 10 + j);
         }
     }
 }

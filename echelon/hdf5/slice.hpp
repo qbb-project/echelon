@@ -83,8 +83,8 @@ public:
      *
      *  \param source the array slice
      */
-    template <typename T>
-    void operator<<=(const array_slice<T>& source)
+    template <typename T, typename StorageOrder>
+    void operator<<=(const array_slice<T, StorageOrder>& source)
     {
         auto current_shape = source.original_shape();
 
@@ -115,8 +115,8 @@ public:
      *  \param sink the data sink
      *  \param source the slice, which is used as a source
      */
-    template <typename T>
-    friend void operator<<=(const array_slice<T>& sink, const slice& source)
+    template <typename T, typename StorageOrder>
+    friend void operator<<=(const array_slice<T, StorageOrder>& sink, const slice& source)
     {
         auto current_shape = sink.original_shape();
 

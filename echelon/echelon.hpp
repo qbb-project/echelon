@@ -27,4 +27,6 @@
 
 #include <echelon/sink_adaptors.hpp>
 
+#include <echelon/support/column_major_storage_order.hpp>
+
 #endif

@@ -137,8 +137,8 @@ public:
      *  \param sink  the dataset, which is used as a sink
      *  \param source the array slice
      */
-    template <typename T>
-    friend void operator<<=(dataset& sink, const array_slice<T>& source)
+    template <typename T, typename StorageOrder>
+    friend void operator<<=(dataset& sink, const array_slice<T, StorageOrder>& source)
     {
         using std::begin;
         using std::end;
@@ -151,15 +151,7 @@ public:
         hdf5::precursor::dataspace file_space = sink.dataset_handle_.get_space();
         hdf5::precursor::type datatype = sink.dataset_handle_.datatype();
 
-        auto slice_shape = source.shape();
-        std::vector<hsize_t> count;
-
-        for (std::size_t i = 0; i < slice_shape.size(); ++i)
-        {
-            count.push_back(slice_shape[i] / source.stride()[i]);
-        }
-
-        mem_space.select_hyperslab(H5S_SELECT_SET, source.offset(), source.stride(), count);
+        mem_space.select_hyperslab(H5S_SELECT_SET, source.offset(), source.stride(), source.shape());
 
         write(sink.dataset_handle_, datatype, mem_space, file_space, source);
     }
@@ -171,8 +163,8 @@ public:
      *  \param sink the array slice
      *  \param source the dataset, which is used as a source
      */
-    template <typename T>
-    friend void operator<<=(const array_slice<T>& sink, const dataset& source)
+    template <typename T, typename StorageOrder>
+    friend void operator<<=(const array_slice<T, StorageOrder>& sink, const dataset& source)
     {
         using std::begin;
         using std::end;
@@ -185,15 +177,7 @@ public:
         hdf5::precursor::dataspace file_space = source.dataset_handle_.get_space();
         hdf5::precursor::type datatype = source.dataset_handle_.datatype();
 
-        auto slice_shape = sink.shape();
-        std::vector<hsize_t> count;
-
-        for (std::size_t i = 0; i < slice_shape.size(); ++i)
-        {
-            count.push_back(slice_shape[i] / sink.stride()[i]);
-        }
-
-        mem_space.select_hyperslab(H5S_SELECT_SET, sink.offset(), sink.stride(), count);
+        mem_space.select_hyperslab(H5S_SELECT_SET, sink.offset(), sink.stride(), sink.shape());
 
         read(source.dataset_handle_, datatype, mem_space, file_space, sink);
     }
