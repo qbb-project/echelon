@@ -75,9 +75,9 @@ public:
     {
         std::array<hsize_t, sizeof...(indices)> indices_({static_cast<hsize_t>(indices)...});
 
-        auto storage_order = storage_order(*this);
+        auto order = storage_order(*this);
 
-        return data_[storage_order.map(indices_)];
+        return data_[order.map(indices_)];
     }
 
     template <typename... Indices>
@@ -85,9 +85,9 @@ public:
     {
         std::array<hsize_t, sizeof...(indices)> indices_({static_cast<hsize_t>(indices)...});
 
-        auto storage_order = storage_order(*this);
+        auto order = storage_order(*this);
 
-        return data_[storage_order.map(indices_)];
+        return data_[order.map(indices_)];
     }
 
     T* data() const
