@@ -15,6 +15,8 @@
 #include <echelon/hdf5/precursor/dataspace.hpp>
 #include <echelon/hdf5/precursor/type.hpp>
 
+#include <echelon/detail/nested_for_each.hpp>
+
 #include <utility>
 #include <functional>
 #include <vector>
@@ -27,7 +29,6 @@
 
 #include <boost/format.hpp>
 
-
 namespace echelon
 {
 namespace hdf5
@@ -36,9 +37,12 @@ namespace hdf5
 class inconsistent_selection_size_exception : public std::exception
 {
 public:
-    explicit inconsistent_selection_size_exception(hssize_t mem_selection_size_, hssize_t file_selection_size_)
+    explicit inconsistent_selection_size_exception(hssize_t mem_selection_size_,
+                                                   hssize_t file_selection_size_)
     {
-        what_ = str(boost::format("The number of selected elements in the memory space (%1%) and the file space (%2%) differs.") % mem_selection_size_ % file_selection_size_);
+        what_ = str(boost::format("The number of selected elements in the memory space (%1%) and "
+                                  "the file space (%2%) differs.") %
+                    mem_selection_size_ % file_selection_size_);
     }
 
     const char* what() const noexcept override
@@ -63,8 +67,40 @@ inline void write_impl(Sink& sink, const hdf5::precursor::type& datatype,
 
     static_assert(is_hdf5_type<value_type>::value, "trivially storable types must be HDF5 types.");
 
-    sink.write(datatype, memspace, filespace, hdf5::precursor::default_property_list,
-               data_adl(container));
+    auto data = data_adl(container);
+
+    if (is_native_storage_order<decltype(storage_order(container))>::value)
+    {
+        sink.write(datatype, memspace, filespace, hdf5::precursor::default_property_list,
+                   data);
+    }
+    else
+    {
+        auto order = storage_order_adl(container);
+
+        auto shape = shape_adl(container);
+
+        auto buffer_size = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<std::size_t>());
+
+        std::vector<value_type> buffer(buffer_size);
+
+        row_major_storage_order<decltype(shape)> native_order(shape);
+
+        nested_for_each(shape, [&](const decltype(shape) &indices)
+        {
+            auto native_offset = native_order.map(indices);
+            auto offset = order.map(indices);
+
+            buffer[native_offset] = data[offset];
+        });
+
+        std::vector<hsize_t> shape_(shape.begin(), shape.end());
+
+        hdf5::precursor::dataspace buffer_space(shape_);
+
+        sink.write(datatype, buffer_space, filespace, hdf5::precursor::default_property_list,
+                   buffer.data());
+    }
 }
 
 template <typename Sink, typename C>
@@ -120,6 +156,9 @@ inline void read_impl(const Source& source, const hdf5::precursor::type& datatyp
                       const hdf5::precursor::dataspace& memspace,
                       const hdf5::precursor::dataspace& filespace, C& container, std::true_type)
 {
+    using std::begin;
+    using std::end;
+
     static_assert(is_container<C>(), "C does not fulfill the Container requirements");
 
     using value_type = typename std::decay<decltype(*data_adl(container))>::type;
@@ -127,13 +166,45 @@ inline void read_impl(const Source& source, const hdf5::precursor::type& datatyp
     static_assert(is_hdf5_type<value_type>::value, "trivially storable types must be HDF5 types.");
 
     auto memory_selection_size = memspace.select_npoints();
-    auto file_selection_size = filespace.select_npoints(); 
-    
-    if(memory_selection_size != file_selection_size)
+    auto file_selection_size = filespace.select_npoints();
+
+    if (memory_selection_size != file_selection_size)
         throw inconsistent_selection_size_exception(memory_selection_size, file_selection_size);
 
-    source.read(datatype, memspace, filespace, hdf5::precursor::default_property_list,
-                data_adl(container));
+    auto data = data_adl(container);
+
+    if (is_native_storage_order<decltype(storage_order(container))>::value)
+    {
+        source.read(datatype, memspace, filespace, hdf5::precursor::default_property_list,
+                    data);
+    }
+    else
+    {
+        auto order = storage_order_adl(container);
+
+        auto shape = shape_adl(container);
+
+        auto buffer_size = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<std::size_t>());
+
+        std::vector<value_type> buffer(buffer_size);
+
+        std::vector<hsize_t> shape_(shape.begin(), shape.end());
+
+        hdf5::precursor::dataspace buffer_space(shape_);
+        source.read(datatype, buffer_space, filespace, hdf5::precursor::default_property_list,
+                    buffer.data());
+
+        row_major_storage_order<decltype(shape)> native_order(shape);
+
+        nested_for_each(
+                shape, [&](const decltype(shape) &indices)
+        {
+            auto native_offset = native_order.map(indices);
+            auto offset = order.map(indices);
+
+            data[offset] = buffer[native_offset];
+        });
+    }
 }
 
 template <typename Source, typename C>
@@ -149,11 +220,11 @@ inline void read_impl(const Source& source, const hdf5::precursor::type& datatyp
         typename std::decay<decltype(lower_type_internal(*data_adl(container), {}))>::type;
 
     auto memory_selection_size = memspace.select_npoints();
-    auto file_selection_size = filespace.select_npoints(); 
+    auto file_selection_size = filespace.select_npoints();
 
-    if(memory_selection_size != file_selection_size)
+    if (memory_selection_size != file_selection_size)
         throw inconsistent_selection_size_exception(memory_selection_size, file_selection_size);
-    
+
     std::vector<lowered_type> lowered_buffer(memory_selection_size);
 
     read(source, datatype, memspace, filespace, lowered_buffer);
@@ -208,7 +279,7 @@ inline void write(Sink& sink, const T& value)
 }
 
 template <typename Sink, typename T, int N>
-inline void write(Sink& sink, const T (&value)[N])
+inline void write(Sink& sink, const T(&value)[N])
 {
     using value_type = typename std::decay<T>::type;
 
@@ -261,7 +332,7 @@ inline void read(Source& source, T& value)
 }
 
 template <typename Source, typename T, int N>
-inline void read(Source& source, T (&value)[N])
+inline void read(Source& source, T(&value)[N])
 {
     using value_type = typename std::decay<T>::type;
 

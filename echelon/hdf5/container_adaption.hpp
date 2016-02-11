@@ -8,6 +8,9 @@
 
 #include <utility>
 #include <type_traits>
+#include <cstddef>
+#include <vector>
+#include <cassert>
 
 namespace echelon
 {
@@ -42,14 +45,40 @@ inline auto data_adl(C&& container) -> decltype(data(container))
     return data(container);
 }
 
+namespace detail
+{
+template <typename T>
+constexpr auto has_user_provided_shape_property_impl(int)
+    -> decltype((shape(std::declval<T>(), adl_enabler{}), bool{}))
+{
+    return true;
+}
+
+template <typename T>
+constexpr bool has_user_provided_shape_property_impl(...)
+{
+    return false;
+}
+
+template <typename T>
+constexpr bool has_user_provided_shape_property()
+{
+    return detail::has_user_provided_shape_property_impl<T>(0);
+}
+}
+
 template <typename C>
-inline auto shape(const C& container) -> decltype(shape(container, adl_enabler{}))
+inline auto shape(const C& container) ->
+    typename std::enable_if<detail::has_user_provided_shape_property<C>(),
+                            decltype(shape(container, adl_enabler{}))>::type
 {
     return shape(container, adl_enabler{});
 }
 
 template <typename C>
-inline auto shape(const C& container) -> decltype(container.shape())
+inline auto shape(const C& container) ->
+    typename std::enable_if<!detail::has_user_provided_shape_property<C>(),
+                            decltype(container.shape())>::type
 {
     return container.shape();
 }
@@ -86,6 +115,64 @@ inline auto reshape_adl(C& container, const std::vector<std::size_t>& new_shape)
     -> decltype(reshape(container, new_shape))
 {
     return reshape(container, new_shape);
+}
+
+template <typename C>
+inline auto storage_order(C&& container) -> decltype(storage_order(container, adl_enabler{}))
+{
+    return storage_order(container, adl_enabler{});
+}
+
+template <typename Shape>
+class row_major_storage_order
+{
+public:
+    explicit row_major_storage_order(Shape shape_) : shape_(shape_)
+    {
+    }
+
+    template <typename Indices>
+    std::size_t map(const Indices& indices) const
+    {
+        std::size_t rank = shape_.size();
+
+        assert(rank == indices.size());
+
+        std::size_t address = 0;
+
+        for (std::size_t i = 0; i < rank; ++i)
+        {
+            address = address * shape_[i] + indices[i];
+        }
+
+        return address;
+    }
+
+private:
+    Shape shape_;
+};
+
+template<typename StorageOrder>
+struct is_native_storage_order : std::false_type
+{
+};
+
+template<typename Shape>
+struct is_native_storage_order<row_major_storage_order<Shape>> : std::true_type
+{
+};
+
+template <typename C>
+inline auto storage_order(const C& container, adl_enabler)
+-> decltype(row_major_storage_order<decltype(shape_adl(container))>(shape_adl(container)))
+{
+    return row_major_storage_order<decltype(shape_adl(container))>(shape_adl(container));
+}
+
+template <typename C>
+inline auto storage_order_adl(C&& container) -> decltype(storage_order(container))
+{
+    return storage_order(container);
 }
 
 namespace detail
@@ -159,7 +246,6 @@ constexpr bool is_container()
     return has_data_accessor<T>() && has_shape_property<T>();
 }
 
-
 template <typename C>
 struct container_trait
 {
@@ -167,7 +253,6 @@ struct container_trait
 
     using value_type = typename std::decay<decltype(*data_adl(std::declval<const C>()))>::type;
 };
-
 }
 }
 

@@ -32,4 +32,6 @@
 
 #include <echelon/hdf5/precursor/error_handling.hpp>
 
+#include <echelon/support/column_major_storage_order.hpp>
+
 #endif

@@ -104,7 +104,7 @@ public:
      */
     template <typename... Args, typename Enabler = typename std::enable_if<
                                     !detail::all_integral<Args...>::value>::type>
-    echelon::hdf5::array_slice<T> operator()(Args... args)
+    auto operator()(Args... args) -> decltype(echelon::make_slice(*this, std::forward<Args>(args)...))
     {
         return echelon::make_slice(*this, std::forward<Args>(args)...);
     }

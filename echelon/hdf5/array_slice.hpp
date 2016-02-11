@@ -10,6 +10,7 @@
 #include <echelon/hdf5/container_adaption.hpp>
 
 #include <vector>
+#include <array>
 #include <utility>
 
 namespace echelon
@@ -17,31 +18,76 @@ namespace echelon
 namespace hdf5
 {
 
-template <typename T>
+template <typename StorageOrder>
+class array_slice_storage_order
+{
+public:
+    array_slice_storage_order(const std::vector<hsize_t>& offset_,
+                              const std::vector<hsize_t>& stride_,
+                              const StorageOrder& underlying_storage_order_)
+    : offset_(&offset_), stride_(&stride_), underlying_storage_order_(&underlying_storage_order_)
+    {
+    }
+
+    template <typename Indices>
+    hsize_t map(const Indices& indices) const
+    {
+        auto num_dims = indices.size();
+
+        std::vector<hsize_t> modified_indices;
+        modified_indices.reserve(num_dims);
+
+        for (decltype(num_dims) i = 0; i < num_dims; ++i)
+        {
+            modified_indices.push_back((*offset_)[i] + indices[i] * (*stride_)[i]);
+        }
+
+        return underlying_storage_order_->map(modified_indices);
+    }
+
+private:
+    const std::vector<hsize_t>* offset_;
+    const std::vector<hsize_t>* stride_;
+    const StorageOrder* underlying_storage_order_;
+};
+
+template <typename StorageOrder>
+struct is_native_storage_order<array_slice_storage_order<StorageOrder>>
+    : is_native_storage_order<StorageOrder>
+{
+};
+
+template <typename T, typename StorageOrder>
 class array_slice
 {
 public:
-    array_slice(T* data_, std::vector<hsize_t> original_shape_, std::vector<hsize_t> offset_,
+    array_slice(T* data_, std::vector<hsize_t> original_shape_,
+                StorageOrder underlying_storage_order_, std::vector<hsize_t> offset_,
                 std::vector<hsize_t> shape_, std::vector<hsize_t> stride_)
     : data_(std::move(data_)), original_shape_(std::move(original_shape_)),
-      offset_(std::move(offset_)), shape_(std::move(shape_)), stride_(std::move(stride_))
+      underlying_storage_order_(std::move(underlying_storage_order_)), offset_(std::move(offset_)),
+      shape_(std::move(shape_)), stride_(std::move(stride_))
     {
     }
 
     template <typename... Indices>
-    T operator()(Indices... indices) const
+    const T& operator()(Indices... indices) const
     {
-        std::vector<hsize_t> indices_({static_cast<hsize_t>(indices)...});
+        std::array<hsize_t, sizeof...(indices)> indices_({static_cast<hsize_t>(indices)...});
 
-        hsize_t linear_index = 0;
+        auto order = storage_order(*this);
 
-        for (std::size_t i = indices_.size(); i-- > 0;)
-        {
-            linear_index =
-                linear_index * original_shape_[i] + (offset_[i] + indices_[i] * stride_[i]);
-        }
+        return data_[order.map(indices_)];
+    }
 
-        return data_[linear_index];
+    template <typename... Indices>
+    T& operator()(Indices... indices)
+    {
+        std::array<hsize_t, sizeof...(indices)> indices_({static_cast<hsize_t>(indices)...});
+
+        auto order = storage_order(*this);
+
+        return data_[order.map(indices_)];
     }
 
     T* data() const
@@ -52,6 +98,11 @@ public:
     const std::vector<hsize_t>& original_shape() const
     {
         return original_shape_;
+    }
+
+    const StorageOrder& underlying_storage_order() const
+    {
+        return underlying_storage_order_;
     }
 
     const std::vector<hsize_t>& offset() const
@@ -72,10 +123,19 @@ public:
 private:
     T* data_;
     std::vector<hsize_t> original_shape_;
+    StorageOrder underlying_storage_order_;
     std::vector<hsize_t> offset_;
     std::vector<hsize_t> shape_;
     std::vector<hsize_t> stride_;
 };
+
+template <typename T, typename StorageOrder>
+inline array_slice_storage_order<StorageOrder>
+storage_order(const array_slice<T, StorageOrder>& container, adl_enabler)
+{
+    return array_slice_storage_order<StorageOrder>(container.offset(), container.stride(),
+                                                   container.underlying_storage_order());
+}
 
 /** \brief Slice a container.
  *
@@ -86,7 +146,8 @@ private:
  *  \param args index range specifiers
  */
 template <typename C, typename... Args>
-array_slice<typename container_trait<C>::value_type> make_slice(C&& container, Args... args)
+auto make_slice(C&& container, Args... args)
+    -> array_slice<typename container_trait<C>::value_type, decltype(storage_order_adl(container))>
 {
     static_assert(is_container<C>(), "C does not fulfill the Container requirements.");
 
@@ -118,8 +179,16 @@ array_slice<typename container_trait<C>::value_type> make_slice(C&& container, A
         stride.push_back(bounds.stride());
     }
 
-    return array_slice<value_type>(echelon::hdf5::data_adl(container), std::move(shape_),
-                                   std::move(offset), std::move(slice_shape), std::move(stride));
+    auto num_dims = slice_shape.size();
+
+    for (decltype(num_dims) i = 0; i < num_dims; ++i)
+    {
+        slice_shape[i] /= stride[i];
+    }
+
+    return array_slice<value_type, decltype(storage_order_adl(container))>(
+        echelon::hdf5::data_adl(container), std::move(shape_), storage_order_adl(container),
+        std::move(offset), std::move(slice_shape), std::move(stride));
 }
 }
 }

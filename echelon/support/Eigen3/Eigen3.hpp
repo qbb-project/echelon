@@ -8,6 +8,8 @@
 
 #include <echelon/hdf5/container_adaption.hpp>
 
+#include <echelon/support/column_major_storage_order.hpp>
+
 #include <Eigen/Dense>
 #include <cassert>
 
@@ -17,6 +19,14 @@ namespace hdf5
 {
 
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
+inline column_major_storage_order<std::vector<std::size_t>>
+storage_order(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& container,
+              adl_enabler)
+{
+    return column_major_storage_order<std::vector<std::size_t>>(shape_adl(container));
+}
+
+template <typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
 inline std::vector<std::size_t>
 shape(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& container, adl_enabler)
 {
@@ -24,8 +34,9 @@ shape(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& contai
 }
 
 template <typename Scalar, int Options, int MaxRows, int MaxCols>
-inline void reshape(Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options, MaxRows, MaxCols>& container,
-                    const std::vector<std::size_t>& new_shape, adl_enabler)
+inline void
+reshape(Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options, MaxRows, MaxCols>& container,
+        const std::vector<std::size_t>& new_shape, adl_enabler)
 {
     assert(new_shape.size() == 2);
 
@@ -33,8 +44,9 @@ inline void reshape(Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Option
 }
 
 template <typename Scalar, int Cols, int Options, int MaxRows, int MaxCols>
-inline void reshape(Eigen::Matrix<Scalar, Eigen::Dynamic, Cols, Options, MaxRows, MaxCols>& container,
-                    const std::vector<std::size_t>& new_shape, adl_enabler)
+inline void
+reshape(Eigen::Matrix<Scalar, Eigen::Dynamic, Cols, Options, MaxRows, MaxCols>& container,
+        const std::vector<std::size_t>& new_shape, adl_enabler)
 {
     assert(new_shape.size() == 1);
 
@@ -42,14 +54,14 @@ inline void reshape(Eigen::Matrix<Scalar, Eigen::Dynamic, Cols, Options, MaxRows
 }
 
 template <typename Scalar, int Rows, int Options, int MaxRows, int MaxCols>
-inline void reshape(Eigen::Matrix<Scalar, Rows, Eigen::Dynamic, Options, MaxRows, MaxCols>& container,
-                    const std::vector<std::size_t>& new_shape, adl_enabler)
+inline void
+reshape(Eigen::Matrix<Scalar, Rows, Eigen::Dynamic, Options, MaxRows, MaxCols>& container,
+        const std::vector<std::size_t>& new_shape, adl_enabler)
 {
     assert(new_shape.size() == 1);
 
     container.resize(Eigen::NoChange, new_shape[0]);
 }
-
 }
 }
 

@@ -71,8 +71,8 @@ public:
         sink <<= source.dataset_handle_;
     }
 
-    template <typename T>
-    friend void operator<<=(const hdf5::array_slice<T>& sink, const dataset& source)
+    template <typename T, typename StorageOrder>
+    friend void operator<<=(const hdf5::array_slice<T, StorageOrder>& sink, const dataset& source)
     {
         sink <<= source.dataset_handle_;
     }

@@ -53,8 +53,8 @@ public:
         sink <<= source.native_slice_;
     }
 
-    template <typename T>
-    friend void operator<<=(const hdf5::array_slice<T>& sink, const slice& source)
+    template <typename T, typename StorageOrder>
+    friend void operator<<=(const hdf5::array_slice<T, StorageOrder>& sink, const slice& source)
     {
         sink <<= source.native_slice_;
     }
