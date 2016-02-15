@@ -251,7 +251,9 @@ struct container_trait
 {
     static_assert(is_container<C>(), "C does not fulfill the Container requirements.");
 
-    using value_type = typename std::decay<decltype(*data_adl(std::declval<const C>()))>::type;
+    using qualified_value_type = typename std::remove_reference<decltype(*data_adl(std::declval<const C>()))>::type;
+    using value_type = typename std::remove_cv<qualified_value_type>::type;
+    static constexpr bool is_immutable = std::is_const<qualified_value_type>::value;
 };
 }
 }
