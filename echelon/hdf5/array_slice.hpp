@@ -147,11 +147,12 @@ storage_order(const array_slice<T, StorageOrder>& container, adl_enabler)
  */
 template <typename C, typename... Args>
 auto make_slice(C&& container, Args... args)
-    -> array_slice<typename container_trait<C>::value_type, decltype(storage_order_adl(container))>
+    -> array_slice<typename container_trait<C>::qualified_value_type,
+                   decltype(storage_order_adl(container))>
 {
     static_assert(is_container<C>(), "C does not fulfill the Container requirements.");
 
-    using value_type = typename container_trait<C>::value_type;
+    using qualified_value_type = typename container_trait<C>::qualified_value_type;
 
     std::vector<hsize_t> shape_;
 
@@ -186,7 +187,7 @@ auto make_slice(C&& container, Args... args)
         slice_shape[i] /= stride[i];
     }
 
-    return array_slice<value_type, decltype(storage_order_adl(container))>(
+    return array_slice<qualified_value_type, decltype(storage_order_adl(container))>(
         echelon::hdf5::data_adl(container), std::move(shape_), storage_order_adl(container),
         std::move(offset), std::move(slice_shape), std::move(stride));
 }

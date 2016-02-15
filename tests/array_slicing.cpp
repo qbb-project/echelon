@@ -97,4 +97,14 @@ BOOST_FIXTURE_TEST_CASE(double_slicing_test, basic_fixture)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(immutable_container_test, basic_fixture)
+{
+    using echelon::_;
+
+    echelon::multi_array<double> C({10});
+    echelon::multi_array_view<const double> view(C.data(), {10});
+
+    view(_);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
