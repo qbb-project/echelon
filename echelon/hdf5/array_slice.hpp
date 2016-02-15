@@ -140,14 +140,13 @@ storage_order(const array_slice<T, StorageOrder>& container, adl_enabler)
 /** \brief Slice a container.
  *
  *  \tparam C type of the container; must fulfill the Container requirements
- *  \tparam Args types of the index range specifiers
  *
  *  \param container the sliced container
- *  \param args index range specifiers
+ *  \param slice_boundaries boundaries of the slice
  */
-template <typename C, typename... Args>
-auto make_slice(C&& container, Args... args)
-    -> array_slice<typename container_trait<C>::value_type, decltype(storage_order_adl(container))>
+template <typename C>
+auto make_slice(C&& container, const std::vector<totally_bound_range_t>& slice_boundaries)
+-> array_slice<typename container_trait<C>::value_type, decltype(storage_order_adl(container))>
 {
     static_assert(is_container<C>(), "C does not fulfill the Container requirements.");
 
@@ -161,10 +160,6 @@ auto make_slice(C&& container, Args... args)
     {
         shape_.push_back(extent);
     }
-
-    std::vector<totally_bound_range_t> slice_boundaries;
-
-    detail::calculate_slice_boundaries<0, Args...>::eval(shape_, slice_boundaries, args...);
 
     std::vector<hsize_t> offset;
     std::vector<hsize_t> slice_shape;
@@ -187,8 +182,38 @@ auto make_slice(C&& container, Args... args)
     }
 
     return array_slice<value_type, decltype(storage_order_adl(container))>(
-        echelon::hdf5::data_adl(container), std::move(shape_), storage_order_adl(container),
-        std::move(offset), std::move(slice_shape), std::move(stride));
+            echelon::hdf5::data_adl(container), std::move(shape_), storage_order_adl(container),
+            std::move(offset), std::move(slice_shape), std::move(stride));
+}
+
+/** \brief Slice a container.
+ *
+ *  \tparam C type of the container; must fulfill the Container requirements
+ *  \tparam Args types of the index range specifiers
+ *
+ *  \param container the sliced container
+ *  \param args index range specifiers
+ */
+template <typename C, typename... Args>
+auto make_slice(C&& container, Args... args)
+    -> array_slice<typename container_trait<C>::value_type, decltype(storage_order_adl(container))>
+{
+    static_assert(is_container<C>(), "C does not fulfill the Container requirements.");
+
+    std::vector<hsize_t> shape_;
+
+    auto shape = echelon::hdf5::shape_adl(container);
+
+    for (auto extent : shape)
+    {
+        shape_.push_back(extent);
+    }
+
+    std::vector<totally_bound_range_t> slice_boundaries;
+
+    detail::calculate_slice_boundaries<0, Args...>::eval(shape_, slice_boundaries, args...);
+
+    return make_slice(container, slice_boundaries);
 }
 }
 }

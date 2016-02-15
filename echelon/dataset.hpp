@@ -105,6 +105,19 @@ public:
 
     /** \brief Slices the dataset.
      *
+     *  The number of bounds must match the rank of the dataset.
+     *
+     *  For further information on slicing have a look at the other overload of this function.
+     *
+     *  \param bounds boundaries of the slice
+     */
+    slice operator()(const std::vector<totally_bound_range_t>& bounds) const
+    {
+        return slice(dataset_handle_(bounds));
+    }
+
+    /** \brief Slices the dataset.
+     *
      *  The boundaries of the slice within the dataset are specified by index
      *  ranges, which can be
      *  constructed using echelon::range.
