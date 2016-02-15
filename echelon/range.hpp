@@ -16,6 +16,8 @@ using hdf5::_;
 
 using echelon::hdf5::range;
 
+using echelon::hdf5::totally_bound_range_t;
+
 using hdf5::make_slice;
 }
 

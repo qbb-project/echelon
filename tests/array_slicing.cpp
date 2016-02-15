@@ -97,6 +97,33 @@ BOOST_FIXTURE_TEST_CASE(double_slicing_test, basic_fixture)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(array_slicing_bounds_via_vector_test, basic_fixture)
+{
+    auto ds = temp_file.create_dataset<double>("ds", {2, 2});
+
+    echelon::multi_array<double> C1({2, 2});
+
+    C1(0, 0) = 1;
+    C1(0, 1) = 2;
+    C1(1, 0) = 3;
+    C1(1, 1) = 4;
+
+    ds <<= C1;
+
+    echelon::multi_array<double> C2({4, 4});
+
+    std::vector<echelon::totally_bound_range_t> bounds;
+    bounds.push_back(echelon::range(1, 3));
+    bounds.push_back(echelon::range(1, 3));
+
+    C2(bounds) <<= ds;
+
+    BOOST_CHECK_EQUAL(C2(1, 1), 1);
+    BOOST_CHECK_EQUAL(C2(1, 2), 2);
+    BOOST_CHECK_EQUAL(C2(2, 1), 3);
+    BOOST_CHECK_EQUAL(C2(2, 2), 4);
+}
+
 BOOST_FIXTURE_TEST_CASE(immutable_container_test, basic_fixture)
 {
     using echelon::_;
