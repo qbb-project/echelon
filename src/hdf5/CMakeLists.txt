@@ -24,6 +24,9 @@ set_property(TARGET echelon_hdf5 APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ech
 target_include_directories(echelon_hdf5 PUBLIC ${Boost_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS} $<BUILD_INTERFACE:${ECHELON_ROOT_DIR}>)
 target_link_libraries(echelon_hdf5 PUBLIC ${HDF5_LIBRARIES} ${COVERAGE_LINKER_FLAGS})
 target_compile_options(echelon_hdf5 PRIVATE -pedantic -Wall -Wextra ${COVERAGE_FLAGS})
+# Activate the compatibility mode until we have ported the code to the new interface
+# introduced in HDF5 1.10.
+target_compile_definitions(echelon_hdf5 PUBLIC -DH5_USE_18_API)
 
 if(CMAKE_VERSION VERSION_LESS "3.1.0")
     target_compile_options(echelon_hdf5 PUBLIC -std=c++11)
