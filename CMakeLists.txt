@@ -1,4 +1,4 @@
-#  Copyright (c) 2012-2014 Christopher Hinz
+#  Copyright (c) 2012-2016 Christopher Hinz
 #
 #  Distributed under the Boost Software License, Version 1.0. (See accompanying
 #  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -35,6 +35,9 @@ if(NOT CMAKE_BUILD_TYPE)
       "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
       FORCE)
 endif()
+
+option(ECHELON_ENABLE_1_0_FORMAT_COMPATIBILITY "Enable backwards compatibility for the file format 1.0" ON)
+mark_as_advanced(ECHELON_ENABLE_1_0_FORMAT_COMPAT)
 
 set(ECHELON_BUILD_STATIC OFF CACHE BOOL "Build static libraries if enabled.")
 

@@ -14,8 +14,13 @@ file::file(const std::string& path, create_mode mode)
                                                    : hdf5::file::create_mode::exclusive),
   root_group_(*this)
 {
-    root_group_.attributes().create("echelon.library_version", "0.7.0");
+    root_group_.attributes().create("echelon.library_version", "0.8.0");
+#if !defined(ECHELON_HAVE_1_0_FORMAT_COMPATIBILITY)
+    root_group_.attributes().create("echelon.format_version", "2.0.0");
+#else
     root_group_.attributes().create("echelon.format_version", "1.0.0");
+#endif
+
 }
 
 file::file(const std::string& path, open_mode mode)

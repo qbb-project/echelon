@@ -1,4 +1,4 @@
-//  Copyright (c) 2012-2014 Christopher Hinz
+//  Copyright (c) 2012-2016 Christopher Hinz
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -45,6 +45,11 @@ public:
 
     void set_char_encoding(H5T_cset_t encoding);
     H5T_cset_t get_char_encoding();
+
+#if !defined(ECHELON_HAVE_1_0_FORMAT_COMPATIBILITY)
+    void set_file_space(H5F_file_space_type_t strategy);
+    void set_file_space(H5F_file_space_type_t strategy, hsize_t threshold);
+#endif
 
     std::vector<hsize_t> get_chunk() const;
 

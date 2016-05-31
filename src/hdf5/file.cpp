@@ -1,17 +1,34 @@
-//  Copyright (c) 2012-2014 Christopher Hinz
+//  Copyright (c) 2012-2016 Christopher Hinz
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <echelon/hdf5/file.hpp>
 
+#include <echelon/hdf5/precursor/property_list.hpp>
+
 namespace echelon
 {
 namespace hdf5
 {
+
+namespace
+{
+precursor::property_list make_default_creation_property_list()
+{
+    precursor::property_list default_creation_property_list(precursor::property_list_class(H5P_FILE_CREATE));
+
+#if !defined(ECHELON_HAVE_1_0_FORMAT_COMPATIBILITY)
+    default_creation_property_list.set_file_space(H5F_FILE_SPACE_ALL_PERSIST);
+#endif
+
+    return default_creation_property_list;
+}
+}
+
 file::file(const std::string& path, create_mode mode)
-: file_wrapper_(path, mode == create_mode::truncate ? H5F_ACC_TRUNC : H5F_ACC_EXCL, H5P_DEFAULT,
-                H5P_DEFAULT),
+: file_wrapper_(path, mode == create_mode::truncate ? H5F_ACC_TRUNC : H5F_ACC_EXCL,
+                make_default_creation_property_list().id(), H5P_DEFAULT),
   root_group_(*this)
 {
 }
