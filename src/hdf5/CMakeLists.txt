@@ -1,4 +1,4 @@
-#  Copyright (c) 2012-2014 Christopher Hinz
+#  Copyright (c) 2012-2016 Christopher Hinz
 #
 #  Distributed under the Boost Software License, Version 1.0. (See accompanying
 #  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -26,7 +26,13 @@ target_link_libraries(echelon_hdf5 PUBLIC ${HDF5_LIBRARIES} ${COVERAGE_LINKER_FL
 target_compile_options(echelon_hdf5 PRIVATE -pedantic -Wall -Wextra ${COVERAGE_FLAGS})
 # Activate the compatibility mode until we have ported the code to the new interface
 # introduced in HDF5 1.10.
-target_compile_definitions(echelon_hdf5 PUBLIC -DH5_USE_18_API)
+set(echelon_hdf5_compile_definitions "-DH5_USE_18_API")
+
+if (ECHELON_ENABLE_1_0_FORMAT_COMPATIBILITY)
+    set(echelon_hdf5_compile_definitions "${echelon_hdf5_compile_definitions} -DECHELON_HAVE_1_0_FORMAT_COMPATIBILITY")
+endif()
+
+target_compile_definitions(echelon_hdf5 PUBLIC ${echelon_hdf5_compile_definitions})
 
 if(CMAKE_VERSION VERSION_LESS "3.1.0")
     target_compile_options(echelon_hdf5 PUBLIC -std=c++11)

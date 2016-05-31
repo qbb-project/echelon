@@ -1,4 +1,4 @@
-//  Copyright (c) 2012-2014 Christopher Hinz
+//  Copyright (c) 2012-2016 Christopher Hinz
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -135,6 +135,21 @@ H5T_cset_t property_list::get_char_encoding()
 
     return encoding;
 }
+
+#if !defined(ECHELON_HAVE_1_0_FORMAT_COMPATIBILITY)
+
+void property_list::set_file_space(H5F_file_space_type_t strategy)
+{
+    set_file_space(strategy, 0);
+}
+
+void property_list::set_file_space(H5F_file_space_type_t strategy, hsize_t threshold)
+{
+    if (H5Pset_file_space(id(), strategy, threshold) < 0)
+        throw_on_hdf5_error();
+}
+
+#endif
 
 hid_t property_list::id() const
 {
