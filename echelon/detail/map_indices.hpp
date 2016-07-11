@@ -8,7 +8,7 @@
 
 #include <vector>
 #include <cstddef>
-#include <algorithm>
+#include <numeric>
 #include <initializer_list>
 #include <cassert>
 
