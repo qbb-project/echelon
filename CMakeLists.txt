@@ -21,7 +21,15 @@ set(CPACK_SOURCE_IGNORE_FILES "${CMAKE_CURRENT_BINARY_DIR}/;/.git/;/.kdev4/;eche
 
 include(CPack)
 
-add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+	set(ECHELON_IS_A_SUBPROJECT 0)
+else()
+	set(ECHELON_IS_A_SUBPROJECT 1)
+endif()
+
+if (NOT ECHELON_IS_A_SUBPROJECT)
+	add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
+endif()
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
   message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt.")
@@ -40,12 +48,6 @@ option(ECHELON_ENABLE_1_0_FORMAT_COMPATIBILITY "Enable backwards compatibility f
 mark_as_advanced(ECHELON_ENABLE_1_0_FORMAT_COMPAT)
 
 set(ECHELON_BUILD_STATIC OFF CACHE BOOL "Build static libraries if enabled.")
-
-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
-  set(ECHELON_IS_A_SUBPROJECT 0)
-else()
-  set(ECHELON_IS_A_SUBPROJECT 1)
-endif()
 
 set(ECHELON_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
