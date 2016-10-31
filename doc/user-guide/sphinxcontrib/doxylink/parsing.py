@@ -122,7 +122,7 @@ def normalise(symbol):
 				argument_string_list.append(''.join(arg.qualifier.asList() + [' ']))
 			argument_string_list.append(arg.input_type)
 		
-			#Functions can have a funny combination of *, & and const between the type and the name so build up a list of theose here:
+			#Functions can have a funny combination of *, & and const between the type and the name so build up a list of those here:
 			const_pointer_ref_list = []
 			const_pointer_ref_list.append(arg.pointer_or_reference1)
 			if arg.const_pointer_or_reference:
