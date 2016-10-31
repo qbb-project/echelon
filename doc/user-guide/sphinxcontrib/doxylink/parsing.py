@@ -119,7 +119,7 @@ def normalise(symbol):
 			#Here is where we build up our normalised form of the argument
 			argument_string_list = ['']
 			if arg.qualifier:
-				argument_string_list.append(''.join((arg.qualifier,' ')))
+				argument_string_list.append(''.join(arg.qualifier.asList() + [' ']))
 			argument_string_list.append(arg.input_type)
 		
 			#Functions can have a funny combination of *, & and const between the type and the name so build up a list of theose here:
