@@ -1,9 +1,9 @@
-#  Copyright (c) 2012-2014 Christopher Hinz
+#  Copyright (c) 2012-2019 Christopher Hinz
 #
 #  Distributed under the Boost Software License, Version 1.0. (See accompanying
 #  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(ECHELON_BUILD_TESTS OFF CACHE Bool "build the test suite")
+set(ECHELON_BUILD_TESTS OFF CACHE BOOL "build the test suite")
 
 function(echelon_add_test name src_file)
     add_executable(${name} ${src_file})
